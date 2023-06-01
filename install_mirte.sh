@@ -29,6 +29,10 @@ sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip
 cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
 pip3 install .
 
+cd $MIRTE_SRC_DIR/mirte-rpi-telemetrix-aio
+pip3 install .
+
+cd $MIRTE_SRC_DIR/
 # Install Telemtrix4Arduino project
 # TODO: building STM sometimes fails (and/or hangs)
 cd $MIRTE_SRC_DIR/mirte-install-scripts
