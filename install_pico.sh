@@ -2,7 +2,7 @@
 set -x #echo on
 
 # sudo apt update
-sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential libusb-1.0-0-dev -y
+sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential libusb-1.0-0-dev libstdc++-arm-none-eabi-newlib -y
 cd ~/
 mkdir pico
 cd pico
