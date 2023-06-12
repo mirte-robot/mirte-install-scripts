@@ -3,8 +3,9 @@
 BLINK_SPEED=.5
 VALUE=$1
 OPI=$(uname -a | grep sunxi)
-OPI2=$(cat /proc/device-tree/model | grep "Orange Pi Zero 2")
-RPI=$(cat /proc/device-tree/model | grep Raspberry)
+OPI2=$(grep "Orange Pi Zero 2" /proc/device-tree/model)
+RPI=$(grep -a "Raspberry" /proc/device-tree/model)
+
 if [ "$RPI" ]; then
    echo none > /sys/class/leds/ACT/trigger
    echo none > /sys/class/leds/PWR/trigger
@@ -15,8 +16,8 @@ red_on() {
       echo 'default-on' > /sys/class/leds/orangepi\:red\:status/trigger
    elif [ "$OPI2" ]; then
       echo '255' > /sys/class/leds/orangepi\:red\:power/brightness
-   else
-      echo 1 > /sys/class/leds/ACT/brightness
+   elif [ "$RPI" ]; then
+      echo 1 > /sys/class/leds/PWR/brightness
    fi
 }
 red_off() {
@@ -24,8 +25,8 @@ red_off() {
       echo 'none' > /sys/class/leds/orangepi\:red\:status/trigger
    elif [ "$OPI2" ]; then
       echo '0' > /sys/class/leds/orangepi\:red\:power/brightness
-   else
-      echo '0' > /sys/class/leds/ACT/brightness
+   elif [ "$RPI" ]; then
+      echo '0' > /sys/class/leds/PWR/brightness
    fi
 }
 
@@ -34,8 +35,8 @@ green_on() {
       echo 'default-on' > /sys/class/leds/orangepi\:green\:pwr/trigger
    elif [ "$OPI2" ]; then
       echo '255' > /sys/class/leds/orangepi\:green\:status/brightness
-   else
-      echo 1 > /sys/class/leds/PWR/brightness
+   elif [ "$RPI" ]; then
+      echo 1 > /sys/class/leds/ACT/brightness
    fi
 }
 
@@ -44,8 +45,8 @@ green_off() {
       echo 'none' > /sys/class/leds/orangepi\:green\:pwr/trigger
    elif [ "$OPI2" ]; then
       echo '0' > /sys/class/leds/orangepi\:green\:status/brightness
-   else
-      echo 0 > /sys/class/leds/PWR/brightness
+   elif [ "$RPI" ]; then
+      echo 0 > /sys/class/leds/ACT/brightness
    fi
 }
 
