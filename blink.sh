@@ -50,7 +50,6 @@ green_off() {
    fi
 }
 
-#TODO: also blink on raspberry pi
 if ! [ "$OPI" ]; then
 
   echo "Blinking"
