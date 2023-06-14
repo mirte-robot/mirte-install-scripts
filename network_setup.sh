@@ -67,16 +67,21 @@ function check_connection {
    # Wait for a connection with a known ssid (timeout 10 seconds)
      nmcli device set wlan0 autoconnect yes
      TIMEOUT=25;
-     NEXT_WAIT_TIME=0; until [ $NEXT_WAIT_TIME -eq $TIMEOUT ] || [ `iwgetid -r` ]; do echo "wating for connection"; sleep 1; let "NEXT_WAIT_TIME=NEXT_WAIT_TIME+1"; done
+     NEXT_WAIT_TIME=0;
+     until [ $NEXT_WAIT_TIME -eq $TIMEOUT ] || sudo nmcli con show --active | grep wlan0 ; do
+            echo "waiting for connection"
+            sleep 1
+            let "NEXT_WAIT_TIME=NEXT_WAIT_TIME+1"
+        done   
    fi
 
    # Get wifi connection if connected
-   sudo iwgetid -r
-   if [ $? -eq 0 ]; then
+    if sudo nmcli con show --active | grep wlan0 ; then
       # Bugfix (see network_install.sh)
       sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
-      printf 'Connected to wifi connection:', iwgetid -r,'\n'
+      printf 'Connected to wifi connection:'
+      nmcli con show --active | grep wlan0
       $MIRTE_SRC_DIR/mirte-install-scripts/blink.sh $(hostname -I) &
       start_avahi
    else
