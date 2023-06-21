@@ -6,7 +6,7 @@ repositories:
   mirte-telemetrix4arduino:
     type: git
     url: https://github.com/arendJan/Telemetrix4Arduino.git
-    version: master
+    version: platformio
   mirte-install-scripts:
     type: git
     url: https://github.com/arendJan/mirte-install-scripts.git
