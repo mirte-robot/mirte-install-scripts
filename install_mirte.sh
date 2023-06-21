@@ -38,34 +38,34 @@ ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/libraries/Tele
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino/examples/Telemetrix4Arduino/Telemetrix4Arduino.ino /home/mirte/arduino_project/Telemetrix4Arduino
 
 {
-# Install arduino firmata upload script
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_arduino.sh
- } &
-
-{
-# Install Mirte Python package
-cd $MIRTE_SRC_DIR/mirte-python
-pip3 install .
+	# Install arduino firmata upload script
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_arduino.sh
 } &
 
 {
-# Install Mirte Interface
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_web.sh 
+	# Install Mirte Python package
+	cd $MIRTE_SRC_DIR/mirte-python
+	pip3 install .
 } &
 
 {
-# Install Jupyter Notebook
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_jupyter_ros.sh 
-}&
+	# Install Mirte Interface
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_web.sh
+} &
 
 {
-# Install Mirte ROS packages
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_ROS.sh 
-}&
+	# Install Jupyter Notebook
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_jupyter_ros.sh
+} &
+
+{
+	# Install Mirte ROS packages
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_ROS.sh
+} &
 
 # Install numpy
 pip3 install numpy
@@ -78,23 +78,23 @@ sudo apt install -y bluez joystick
 
 # Install Mirte documentation
 {
-cd $MIRTE_SRC_DIR/mirte-documentation
-sudo apt install -y python3.8-venv libenchant-dev
-python3 -m venv docs-env
-source docs-env/bin/activate
-pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
-pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
-mkdir -p _modules/catkin_ws/src
-cd _modules
-ln -s $MIRTE_SRC_DIR/mirte-python .
-cd mirte-python
-pip install .
-source /opt/ros/noetic/setup.bash
-source /home/mirte/mirte_ws/devel/setup.bash
-cd ../../
-make html 
-deactivate
-}&
+	cd $MIRTE_SRC_DIR/mirte-documentation
+	sudo apt install -y python3.8-venv libenchant-dev
+	python3 -m venv docs-env
+	source docs-env/bin/activate
+	pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
+	pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
+	mkdir -p _modules/catkin_ws/src
+	cd _modules
+	ln -s $MIRTE_SRC_DIR/mirte-python .
+	cd mirte-python
+	pip install .
+	source /opt/ros/noetic/setup.bash
+	source /home/mirte/mirte_ws/devel/setup.bash
+	cd ../../
+	make html
+	deactivate
+} &
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
 # Currently only instaling, not enabled
