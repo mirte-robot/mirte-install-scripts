@@ -24,22 +24,22 @@ ls -alh
 # Set piwheels as pip repo
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
+if false; then
 
-{
-	# Install telemetrix
-	cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
-	pip3 install .
-	echo "done telemetrix"
-} 2>&1 | sed -u 's/^/telemetrix::: /' &
+	{
+		# Install telemetrix
+		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
+		pip3 install .
+		echo "done telemetrix"
+	} 2>&1 | sed -u 's/^/telemetrix::: /' &
 
-{
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	{
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
 
-	. ./install_arduino.sh
-	echo "done arduino"
-} 2>&1 | sed -u 's/^/arduino::: /' &
+		. ./install_arduino.sh
+		echo "done arduino"
+	} 2>&1 | sed -u 's/^/arduino::: /' &
 
-if true; then
 	{
 		# Install Mirte Python package
 		cd $MIRTE_SRC_DIR/mirte-python

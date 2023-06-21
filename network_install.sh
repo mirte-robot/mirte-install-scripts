@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 # Make sure there are no conflicting hcdp-servers
