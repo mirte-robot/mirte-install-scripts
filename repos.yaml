@@ -10,7 +10,7 @@ repositories:
   mirte-install-scripts:
     type: git
     url: https://github.com/arendJan/mirte-install-scripts.git
-    version: main
+    version: parralel-jobs
   mirte-telemetrix-aio:
     type: git
     url: https://github.com/arendJan/telemetrix-aio.git
