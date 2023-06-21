@@ -2,6 +2,8 @@
 set -ex
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
+UPDATE=false
+
 
 # Update
 sudo apt update
