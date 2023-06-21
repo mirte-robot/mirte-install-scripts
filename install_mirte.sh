@@ -24,7 +24,7 @@ ls -alh
 # Set piwheels as pip repo
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
-if false; then
+if true; then
 
 	{
 		# Install telemetrix

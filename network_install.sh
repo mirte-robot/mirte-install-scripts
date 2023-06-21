@@ -18,6 +18,8 @@ ping -c 10 af.arend-jan.com
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/50-cloud-init.yaml /etc/netplan/
 ping -c 10 ag.arend-jan.com
 sudo netplan apply
+sleep 10
+ping -c 5 8.8.8.8
 ping -c 10 ah.arend-jan.com
 sudo apt purge -y ifupdown
 ping -c 10 ai.arend-jan.com
