@@ -19,7 +19,7 @@ UPDATE=true
 	echo "done arduino"
 } 2>&1 | sed -u 's/^/arduino::: /' &
 
-if false; then
+if true; then
 	{
 		# Install Mirte Python package
 		cd $MIRTE_SRC_DIR/mirte-python
