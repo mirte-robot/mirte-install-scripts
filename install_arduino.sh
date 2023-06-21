@@ -12,5 +12,3 @@ curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/Telemetrix4Arduino
 cd /home/mirte/Arduino/Telemetrix4Arduino
 pio run
-
-

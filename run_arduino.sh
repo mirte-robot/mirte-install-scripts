@@ -36,11 +36,11 @@ if test "$1" == "upload" || test "$1" == "upload_stm32"; then
 	# arduino-cli -v upload -p /dev/ttyACM0 --fqbn STM32:stm32:GenF1:pnum=BLUEPILL_F103C8,upload_method=dfu2Method,xserial=generic,usb=CDCgen,xusb=FS,opt=osstd,rtlib=nano /home/mirte/arduino_project/$2
 fi
 if test "$1" == "upload_nano"; then
-pio run -t upload -e nanoatmega328new
+	pio run -t upload -e nanoatmega328new
 	# arduino-cli -v upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano:cpu=atmega328 /home/mirte/arduino_project/$2
 fi
 if test "$1" == "upload_nano_old"; then
-pio run -t upload -e nanoatmega328
+	pio run -t upload -e nanoatmega328
 	# arduino-cli -v upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano:cpu=atmega328old /home/mirte/arduino_project/$2
 fi
 if test "$1" == "upload_uno"; then

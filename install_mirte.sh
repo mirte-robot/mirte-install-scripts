@@ -31,57 +31,59 @@ sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip
 } 2>&1 | sed -u 's/^/telemetrix::: /' &
 
 {
-	
+
 	./install_arduino.sh
 	echo "done arduino"
 } 2>&1 | sed -u 's/^/arduino::: /' &
 
-{
-	# Install Mirte Python package
-	cd $MIRTE_SRC_DIR/mirte-python
-	pip3 install .
-	echo "done mirte-python"
-} 2>&1 | sed -u 's/^/mirte-python::: /' &
+if false; then
+	{
+		# Install Mirte Python package
+		cd $MIRTE_SRC_DIR/mirte-python
+		pip3 install .
+		echo "done mirte-python"
+	} 2>&1 | sed -u 's/^/mirte-python::: /' &
 
-{
-	# Install Mirte Interface
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
-	./install_web.sh
-	echo "done web"
-} 2>&1 | sed -u 's/^/web::: /' &
+	{
+		# Install Mirte Interface
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		./install_web.sh
+		echo "done web"
+	} 2>&1 | sed -u 's/^/web::: /' &
 
-{
-	# Install Jupyter Notebook
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
-	./install_jupyter_ros.sh
-	echo "done jupyter_ros"
-} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
+	{
+		# Install Jupyter Notebook
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		./install_jupyter_ros.sh
+		echo "done jupyter_ros"
+	} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
 
-{
-	# Install Mirte ROS packages
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
-	./install_ROS.sh
-	echo "done ROS"
-} 2>&1 | sed -u 's/^/ROS::: /' &
+	{
+		# Install Mirte ROS packages
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		./install_ROS.sh
+		echo "done ROS"
+	} 2>&1 | sed -u 's/^/ROS::: /' &
 
-# Install numpy
-pip3 install numpy
+	# Install numpy
+	pip3 install numpy
 
-sudo apt install -y bluez joystick
-# if [ "$(uname -a | grep sunxi)" != "" ]; then
-# 	# currently only supporting cheap USB dongles on OrangePi
-# 	./install_fake_bt.sh
-# fi
+	sudo apt install -y bluez joystick
+	# if [ "$(uname -a | grep sunxi)" != "" ]; then
+	# 	# currently only supporting cheap USB dongles on OrangePi
+	# 	./install_fake_bt.sh
+	# fi
 
-# Install Mirte documentation
-{
-	./install_docs.sh
-	echo "done docs"
-} 2>&1 | sed -u 's/^/docs::: /' &
+	# Install Mirte documentation
+	{
+		./install_docs.sh
+		echo "done docs"
+	} 2>&1 | sed -u 's/^/docs::: /' &
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
 # Currently only instaling, not enabled
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
+fi
 echo "Waiting"
 time wait # wait on all the backgrounded stuff
 echo "Done installing"
