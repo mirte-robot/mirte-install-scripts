@@ -37,36 +37,47 @@ mkdir -p /home/mirte/arduino_project/Telemetrix4Arduino
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/libraries/Telemetrix4Arduino
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino/examples/Telemetrix4Arduino/Telemetrix4Arduino.ino /home/mirte/arduino_project/Telemetrix4Arduino
 
+{
 # Install arduino firmata upload script
 cd $MIRTE_SRC_DIR/mirte-install-scripts
 ./install_arduino.sh
+ } &
 
+{
 # Install Mirte Python package
 cd $MIRTE_SRC_DIR/mirte-python
 pip3 install .
+} &
 
+{
 # Install Mirte Interface
 cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_web.sh
+./install_web.sh 
+} &
 
+{
 # Install Jupyter Notebook
 cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_jupyter_ros.sh
+./install_jupyter_ros.sh 
+}&
 
+{
 # Install Mirte ROS packages
 cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_ROS.sh
+./install_ROS.sh 
+}&
 
 # Install numpy
 pip3 install numpy
 
 sudo apt install -y bluez joystick
-if [ "$(uname -a | grep sunxi)" != "" ]; then
-	# currently only supporting cheap USB dongles on OrangePi
-	./install_fake_bt.sh
-fi
+# if [ "$(uname -a | grep sunxi)" != "" ]; then
+# 	# currently only supporting cheap USB dongles on OrangePi
+# 	./install_fake_bt.sh
+# fi
 
 # Install Mirte documentation
+{
 cd $MIRTE_SRC_DIR/mirte-documentation
 sudo apt install -y python3.8-venv libenchant-dev
 python3 -m venv docs-env
@@ -81,10 +92,11 @@ pip install .
 source /opt/ros/noetic/setup.bash
 source /home/mirte/mirte_ws/devel/setup.bash
 cd ../../
-make html
+make html 
 deactivate
-
+}&
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
 # Currently only instaling, not enabled
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
+wait # wait on all the backgrounded stuff
