@@ -11,6 +11,7 @@ sudo apt install -y locales python3.8 python3-pip python3-setuptools
 	sudo locale-gen "nl_NL.UTF-8"
 	sudo locale-gen "en_US.UTF-8"
 	sudo update-locale LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
+	echo "done locale"
 } 2>&1 | sed -u 's/^/locales::: /' &
 # Install vcstool
 cp repos.yaml $MIRTE_SRC_DIR
@@ -29,6 +30,7 @@ sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip
 	# Install telemetrix
 	cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
 	pip3 install .
+	echo "done telemetrix"
 } 2>&1 | sed -u 's/^/telemetrix::: /' &
 {
 	# Install Telemtrix4Arduino project
@@ -42,30 +44,35 @@ sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip
 	# Install arduino firmata upload script
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
 	./install_arduino.sh
+	echo "done arduino"
 } 2>&1 | sed -u 's/^/arduino::: /' &
 
 {
 	# Install Mirte Python package
 	cd $MIRTE_SRC_DIR/mirte-python
 	pip3 install .
+	echo "done mirte-python"
 } 2>&1 | sed -u 's/^/mirte-python::: /' &
 
 {
 	# Install Mirte Interface
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
 	./install_web.sh
+	echo "done web"
 } 2>&1 | sed -u 's/^/web::: /' &
 
 {
 	# Install Jupyter Notebook
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
 	./install_jupyter_ros.sh
+	echo "done jupyter_ros"
 } 2>&1 | sed -u 's/^/jupyter_ros::: /' &
 
 {
 	# Install Mirte ROS packages
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
 	./install_ROS.sh
+	echo "done ROS"
 } 2>&1 | sed -u 's/^/ROS::: /' &
 
 # Install numpy
@@ -95,6 +102,7 @@ sudo apt install -y bluez joystick
 	cd ../../
 	make html
 	deactivate
+	echo "done docs"
 } 2>&1 | sed -u 's/^/docs::: /' &
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
