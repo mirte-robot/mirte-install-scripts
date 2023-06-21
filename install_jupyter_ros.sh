@@ -3,14 +3,14 @@
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 # install basic python tools
-sudo apt install -y python3 python3-venv python3-dev git libffi-dev
+$UPDATE || sudo apt install -y python3 python3-venv python3-dev git libffi-dev
 
 # create and activate virtualenv
 # Due to a build error on numpy we need to install numpy and
 # padnas globally and us it in the virtual environment
 cd /home/mirte || exit
-sudo apt install -y python3-numpy python3-pandas
-python3 -m venv jupyter --system-site-packages
+$UPDATE || sudo apt install -y python3-numpy python3-pandas
+$UPDATE || python3 -m venv jupyter --system-site-packages
 source /home/mirte/jupyter/bin/activate
 
 # install jupyros
@@ -23,7 +23,13 @@ deactivate
 sudo chown -R mirte:mirte /home/mirte/jupyter
 
 # TEMP: download examples
-git clone https://github.com/RoboStack/jupyter-ros.git
+if [ "$UPDATE" ]; then
+	cd /home/mirte/jupyter-ros
+	git pull
+else
+	git clone https://github.com/RoboStack/jupyter-ros.git
+fi
+
 sudo chown -R mirte:mirte /home/mirte/jupyter-ros
 
 # Add systemd service to start jupyter

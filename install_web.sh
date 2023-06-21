@@ -6,11 +6,11 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 sudo apt update
 
 # Install nodeenv
-sudo apt install -y python3-pip python3-setuptools python3-wheel
+$UPDATE || sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
 # Install nodeenv
-nodeenv --node=16.2.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
+$UPDATE || nodeenv --node=16.2.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 
 # Install web interface
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
@@ -30,7 +30,7 @@ npm install .
 deactivate_node
 
 # Install nginx (as reverse proxy to all services)
-sudo apt install -y nginx
+$UPDATE || sudo apt install -y nginx
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/
 
 # Add systemd service

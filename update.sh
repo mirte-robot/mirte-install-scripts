@@ -1,29 +1,9 @@
 #!/bin/bash
-set -ex
-
 MIRTE_SRC_DIR=/usr/local/src/mirte
-UPDATE=false
 
-# Update
-sudo apt update
-sudo apt install -y locales python3.8 python3-pip python3-setuptools
-{
-	# Install locales
-	sudo locale-gen "nl_NL.UTF-8"
-	sudo locale-gen "en_US.UTF-8"
-	sudo update-locale LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
-	echo "done locale"
-} 2>&1 | sed -u 's/^/locales::: /' &
-# Install vcstool
-pwd
-ls -alh
-. ./download_repos.sh
+UPDATE=true
 
-# Install dependecnies to be able to run python3.8
-
-# Set piwheels as pip repo
-sudo bash -c "echo '[global]' > /etc/pip.conf"
-sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
+# TODO: update git packages
 
 {
 	# Install telemetrix
@@ -67,15 +47,6 @@ if false; then
 		. ./install_ROS.sh
 		echo "done ROS"
 	} 2>&1 | sed -u 's/^/ROS::: /' &
-
-	# Install numpy
-	pip3 install numpy
-
-	sudo apt install -y bluez joystick
-	# if [ "$(uname -a | grep sunxi)" != "" ]; then
-	# 	# currently only supporting cheap USB dongles on OrangePi
-	# 	. ./install_fake_bt.sh
-	# fi
 
 	# Install Mirte documentation
 	{
