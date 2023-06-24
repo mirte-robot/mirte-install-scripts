@@ -8,7 +8,7 @@ sudo apt install -y python3 python3-venv python3-dev git libffi-dev
 # create and activate virtualenv
 # Due to a build error on numpy we need to install numpy and
 # padnas globally and us it in the virtual environment
-cd /home/mirte
+cd /home/mirte || exit
 sudo apt install -y python3-numpy python3-pandas
 python3 -m venv jupyter --system-site-packages
 source /home/mirte/jupyter/bin/activate

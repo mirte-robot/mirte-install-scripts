@@ -29,7 +29,7 @@ sudo dpkg -i linux-headers*.deb
 wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.10.21.tar.xz
 xz -d -v linux-5.10.21.tar.xz
 tar xvf linux-5.10.21.tar linux-5.10.21/net/bluetooth
-cd linux-5.10.21/net/bluetooth
+cd linux-5.10.21/net/bluetooth || exit
 
 # Apply 'fix'
 sed -i 's/flt_type = HCI_FLT_CLEAR_ALL;/\/\/flt_type = HCI_FLT_CLEAR_ALL;/g' hci_core.c
