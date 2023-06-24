@@ -17,7 +17,10 @@ sudo apt install -y locales python3.8 python3-pip python3-setuptools
 # Install vcstool
 pwd
 ls -alh
-. ./download_repos.sh
+sudo sh -c 'echo "deb http://ftp.tudelft.nl/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | sudo apt-key add -
+
+# . ./download_repos.sh
 
 # Install dependecnies to be able to run python3.8
 
