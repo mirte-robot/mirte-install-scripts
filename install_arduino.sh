@@ -50,7 +50,7 @@ sudo adduser mirte dialout
 
 # By default, armbian has ssh login for root enabled with password 1234.
 # The password need to be set to mirte_mirte so users can use the
-# Arduino IDE remotely. 
+# Arduino IDE remotely.
 # TODO: when the Arduino IDE also supports ssh for non-root-users
 # this has to be changed
 echo -e "mirte_mirte\nmirte_mirte" | sudo passwd root

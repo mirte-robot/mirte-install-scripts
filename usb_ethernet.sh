@@ -7,8 +7,8 @@
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 sudo killall -9 dnsmasq
-sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh down `ls /sys/class/udc | tail -n1`
-sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh up `ls /sys/class/udc | tail -n1`
+sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh down "$(ls /sys/class/udc | tail -n1)"
+sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh up "$(ls /sys/class/udc | tail -n1)"
 
 # For now, we just create a different IP address for each interface. We need
 # to change this to private namespaces (see below). In order to getinthernet
@@ -35,14 +35,10 @@ sudo iptables -A FORWARD -i usb1 -o wlan0 -j ACCEPT
 #and forward all traffic to locahost
 sudo iptables -t nat -A POSTROUTING -i usb1 -d 192.168.43.1 -j DNAT --to-destination 127.0.0.1
 
-
-
-# For now we have to start the dhcp server before wificonnect. Not needed 
+# For now we have to start the dhcp server before wificonnect. Not needed
 # after we moved to different namespaces
 # For some reason we neet to set the dns-server manually
 sudo dnsmasq --address=/#/192.168.43.1 --dhcp-range=192.168.43.10,192.168.43.100 --conf-file --domain-needed --bogus-priv --server=8.8.8.8 --dhcp-option=option:dns-server,8.8.8.8 --interface=usb1 --except-interface=lo --bind-interfaces
-
-
 
 # Since we want both networks to have the same IP address as the wifi AP (192.168.42.1)
 # we need to have a seperate network namespace for both of them.
