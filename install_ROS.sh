@@ -9,16 +9,25 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 # https://apt.kitware.com/
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
 echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-sudo apt-get update
+
+until sudo apt update
+do
+    echo "retrying apt update in 1s"
+    sleep 1
+done
 sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
-sudo apt-get install kitware-archive-keyring
-sudo apt-get install cmake-data=3.20.5-0kitware1ubuntu20.04.1
-sudo apt-get install cmake=3.20.5-0kitware1ubuntu20.04.1
+sudo apt install kitware-archive-keyring
+sudo apt install cmake-data=3.20.5-0kitware1ubuntu20.04.1
+sudo apt install cmake=3.20.5-0kitware1ubuntu20.04.1
 
 # Install ROS Noetic
 sudo sh -c 'echo "deb http://ftp.tudelft.nl/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-sudo apt update
+until sudo apt update
+do
+    echo "retrying apt update in 1s"
+    sleep 1
+done
 sudo apt install -y ros-noetic-ros-base python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential python3-catkin-tools python3-osrf-pycommon
 grep -qxF "source /opt/ros/noetic/setup.bash" /home/mirte/.bashrc || echo "source /opt/ros/noetic/setup.bash" >>/home/mirte/.bashrc
 source /opt/ros/noetic/setup.bash

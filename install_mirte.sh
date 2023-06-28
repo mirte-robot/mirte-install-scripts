@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 UPDATE=false
@@ -7,12 +7,14 @@ UPDATE=false
 # Update
 sudo apt update
 sudo apt install -y locales python3.8 python3-pip python3-setuptools
+LOCALE_DONE=false
 {
 	# Install locales
 	sudo locale-gen "nl_NL.UTF-8"
 	sudo locale-gen "en_US.UTF-8"
 	sudo update-locale LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
 	echo "done locale"
+	LOCALE_DONE=true
 } 2>&1 | sed -u 's/^/locales::: /' &
 # Install vcstool
 pwd
@@ -28,12 +30,13 @@ curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
 if true; then
-
+	TMX_DONE=false
 	{
 		# Install telemetrix
 		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
 		pip3 install .
 		echo "done telemetrix"
+		TMX_DONE=false
 	} 2>&1 | sed -u 's/^/telemetrix::: /' &
 
 	{
@@ -93,3 +96,5 @@ fi
 echo "Waiting"
 time wait # wait on all the backgrounded stuff
 echo "Done installing"
+cd /home/mirte/
+date > nu.txt
