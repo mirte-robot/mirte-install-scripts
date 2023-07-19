@@ -29,8 +29,7 @@ curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE
 # Set piwheels as pip repo
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
-if true; then
-	TMX_DONE=false
+
 	{
 		# Install telemetrix
 		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
@@ -92,7 +91,7 @@ if true; then
 # sudo apt install -y overlayroot
 # Currently only instaling, not enabled
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
-fi
+
 echo "Waiting"
 time wait # wait on all the backgrounded stuff
 echo "Done installing"
