@@ -10,7 +10,6 @@ sed -i 's/#DNSStubListener=yes/DNSStubListener=no/g' /etc/systemd/resolved.conf
 sudo apt install -y netplan.io
 sudo apt install -y network-manager
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/50-cloud-init.yaml /etc/netplan/
-# sudo netplan apply
 sudo apt purge -y ifupdown
 
 # Fix for bug in systemd-resolved

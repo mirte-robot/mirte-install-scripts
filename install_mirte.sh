@@ -43,6 +43,8 @@ if $INSTALL_ROS; then
 		# Install telemetrix
 		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
 		pip3 install .
+		cd $MIRTE_SRC_DIR/mirte-tmx-pico-aio
+		pip3 install .
 		echo "done telemetrix"
 	} 2>&1 | sed -u 's/^/telemetrix::: /' &
 fi

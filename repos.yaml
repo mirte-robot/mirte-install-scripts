@@ -15,6 +15,10 @@ repositories:
     type: git
     url: https://github.com/arendJan/telemetrix-aio.git
     version: master
+  mirte-tmx-pico-aio:
+    type: git
+    url: https://github.com/mirte-robot/tmx-pico-aio.git
+    version: master
   mirte-ros-packages:
     type: git
     url: https://github.com/arendJan/mirte-ros-packages.git

@@ -20,8 +20,8 @@ sudo apt install cmake-data=3.20.5-0kitware1ubuntu20.04.1
 sudo apt install cmake=3.20.5-0kitware1ubuntu20.04.1
 
 # Install ROS Noetic
-sudo sh -c 'echo "deb http://ftp.tudelft.nl/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
 until sudo apt update; do
 	echo "retrying apt update in 1s"
 	sleep 1
