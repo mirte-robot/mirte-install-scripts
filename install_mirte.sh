@@ -3,8 +3,16 @@ set -x
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 UPDATE=false
-. $MIRTE_SRC_DIR/settings.sh || true
-echo $INSTALL_JUPYTER
+. $MIRTE_SRC_DIR/settings.sh || (
+	export INSTALL_DOCS=true
+	export INSTALL_ROS=true
+	export INSTALL_ARDUINO=true
+	export INSTALL_WEB=true
+	export INSTALL_PYTHON=true
+	export INSTALL_JUPYTER=true
+	export EXPIRE_PASSWD=true
+	export INSTALL_NETWORK=true
+)
 # Update
 sudo apt update
 sudo apt install -y locales python3.8 python3-pip python3-setuptools
@@ -31,72 +39,70 @@ sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
 
 if $INSTALL_ROS; then
-{
-	# Install telemetrix
-	cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
-	pip3 install .
-	echo "done telemetrix"
-} 2>&1 | sed -u 's/^/telemetrix::: /' &
+	{
+		# Install telemetrix
+		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
+		pip3 install .
+		echo "done telemetrix"
+	} 2>&1 | sed -u 's/^/telemetrix::: /' &
 fi
 
 if $INSTALL_ARDUINO; then
-{
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	{
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
 
-	. ./install_arduino.sh
-	echo "done arduino"
-} 2>&1 | sed -u 's/^/arduino::: /' &
+		. ./install_arduino.sh
+		echo "done arduino"
+	} 2>&1 | sed -u 's/^/arduino::: /' &
 fi
-
 
 if $INSTALL_PYTHON; then
 
-{
-	# Install Mirte Python package
-	cd $MIRTE_SRC_DIR/mirte-python
-	pip3 install .
-	echo "done mirte-python"
-} 2>&1 | sed -u 's/^/mirte-python::: /' &
+	{
+		# Install Mirte Python package
+		cd $MIRTE_SRC_DIR/mirte-python
+		pip3 install .
+		echo "done mirte-python"
+	} 2>&1 | sed -u 's/^/mirte-python::: /' &
 fi
 
 if $INSTALL_WEB; then
 
-{
-	# Install Mirte Interface
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
-	. ./install_web.sh
-	echo "done web"
-} 2>&1 | sed -u 's/^/web::: /' &
+	{
+		# Install Mirte Interface
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		. ./install_web.sh
+		echo "done web"
+	} 2>&1 | sed -u 's/^/web::: /' &
 fi
 
 if $INSTALL_JUPYTER; then
 
-{
-	# Install Jupyter Notebook
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
-	. ./install_jupyter_ros.sh
-	echo "done jupyter_ros"
-} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
+	{
+		# Install Jupyter Notebook
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		. ./install_jupyter_ros.sh
+		echo "done jupyter_ros"
+	} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
 fi
 
 if $INSTALL_ROS; then
 
-{
-	# Install Mirte ROS packages
-	cd $MIRTE_SRC_DIR/mirte-install-scripts
-	. ./install_ROS.sh
-	echo "done ROS"
-} 2>&1 | sed -u 's/^/ROS::: /' &
+	{
+		# Install Mirte ROS packages
+		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		. ./install_ROS.sh
+		echo "done ROS"
+	} 2>&1 | sed -u 's/^/ROS::: /' &
 fi
-
 
 if $INSTALL_DOCS; then
 
-# Install Mirte documentation
-{
-	. ./install_docs.sh
-	echo "done docs"
-} 2>&1 | sed -u 's/^/docs::: /' &
+	# Install Mirte documentation
+	{
+		. ./install_docs.sh
+		echo "done docs"
+	} 2>&1 | sed -u 's/^/docs::: /' &
 fi
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
@@ -111,8 +117,6 @@ sudo apt install -y bluez joystick
 # 	# currently only supporting cheap USB dongles on OrangePi
 # 	. ./install_fake_bt.sh
 # fi
-
-
 
 echo "Waiting"
 time wait # wait on all the backgrounded stuff
