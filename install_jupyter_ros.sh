@@ -24,7 +24,7 @@ sudo chown -R mirte:mirte /home/mirte/jupyter
 
 # TEMP: download examples
 if [ "$UPDATE" ]; then
-	cd /home/mirte/jupyter-ros
+	cd /home/mirte/jupyter-ros || exit
 	git pull
 else
 	git clone https://github.com/RoboStack/jupyter-ros.git

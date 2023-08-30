@@ -2,7 +2,7 @@
 set -x
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
-UPDATE=false
+export UPDATE=false
 . $MIRTE_SRC_DIR/settings.sh || (
 	export INSTALL_DOCS=true
 	export INSTALL_ROS=true
@@ -41,9 +41,9 @@ sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip
 if $INSTALL_ROS; then
 	{
 		# Install telemetrix
-		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
+		cd $MIRTE_SRC_DIR/mirte-telemetrix-aio || exit
 		pip3 install .
-		cd $MIRTE_SRC_DIR/mirte-tmx-pico-aio
+		cd $MIRTE_SRC_DIR/mirte-tmx-pico-aio || exit
 		pip3 install .
 		echo "done telemetrix"
 	} 2>&1 | sed -u 's/^/telemetrix::: /' &
@@ -51,7 +51,7 @@ fi
 
 if $INSTALL_ARDUINO; then
 	{
-		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 
 		. ./install_arduino.sh
 		echo "done arduino"
@@ -62,7 +62,7 @@ if $INSTALL_PYTHON; then
 
 	{
 		# Install Mirte Python package
-		cd $MIRTE_SRC_DIR/mirte-python
+		cd $MIRTE_SRC_DIR/mirte-python || exit
 		pip3 install .
 		echo "done mirte-python"
 	} 2>&1 | sed -u 's/^/mirte-python::: /' &
@@ -72,7 +72,7 @@ if $INSTALL_WEB; then
 
 	{
 		# Install Mirte Interface
-		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 		. ./install_web.sh
 		echo "done web"
 	} 2>&1 | sed -u 's/^/web::: /' &
@@ -82,7 +82,7 @@ if $INSTALL_JUPYTER; then
 
 	{
 		# Install Jupyter Notebook
-		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 		. ./install_jupyter_ros.sh
 		echo "done jupyter_ros"
 	} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
@@ -92,7 +92,7 @@ if $INSTALL_ROS; then
 
 	{
 		# Install Mirte ROS packages
-		cd $MIRTE_SRC_DIR/mirte-install-scripts
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 		. ./install_ROS.sh
 		echo "done ROS"
 	} 2>&1 | sed -u 's/^/ROS::: /' &

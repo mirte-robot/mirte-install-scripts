@@ -12,7 +12,7 @@ if test "$1" == "upload" && [[ $ROS_RUNNING == "1" ]]; then
 	sudo service mirte-ros stop || /bin/true
 fi
 
-cd /home/mirte/Arduino/Telemetrix4Arduino
+cd /home/mirte/Arduino/Telemetrix4Arduino || exit
 # Different build scripts
 if test "$1" == "build"; then
 	pio run -e robotdyn_blackpill_f303cc

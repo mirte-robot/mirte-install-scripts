@@ -13,5 +13,5 @@ $UPDATE || curl -fsSL https://raw.githubusercontent.com/platformio/platformio-co
 $UPDATE || mkdir -p /home/mirte/Arduino/Telemetrix4Arduino
 ls $MIRTE_SRC_DIR/mirte-telemetrix4arduino -al
 $UPDATE || ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/Telemetrix4Arduino || true
-cd $MIRTE_SRC_DIR/mirte-telemetrix4arduino
+cd $MIRTE_SRC_DIR/mirte-telemetrix4arduino || exit
 pio run -e robotdyn_blackpill_f303cc -e nanoatmega328new -e nanoatmega328
