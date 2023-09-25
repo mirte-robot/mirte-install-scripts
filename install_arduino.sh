@@ -15,3 +15,12 @@ ls $MIRTE_SRC_DIR/mirte-telemetrix4arduino -al
 $UPDATE || ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/Telemetrix4Arduino || true
 cd $MIRTE_SRC_DIR/mirte-telemetrix4arduino || exit
 pio run -e robotdyn_blackpill_f303cc -e nanoatmega328new -e nanoatmega328
+
+sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+echo "export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico-sdk/" >/home/mirte/.bashrc
+export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico-sdk/
+cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico
+mkdir build
+cd build
+cmake ..
+make
