@@ -3,7 +3,7 @@ Description=My test service
 After=multi-user.target
 [Service]
 Type=simple
-Restart=always
-ExecStart=/usr/bin/python3 /home/mirte/provisioning/provisioning.py
+Restart=never
+ExecStart=/usr/bin/python3 /usr/local/src/mirte/mirte-install-scripts/provisioning/provisioning.py
 [Install]
 WantedBy=multi-user.target

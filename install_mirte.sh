@@ -12,6 +12,7 @@ export UPDATE=false
 	export INSTALL_JUPYTER=true
 	export EXPIRE_PASSWD=true
 	export INSTALL_NETWORK=true
+	export INSTALL_PROVISIONING=true
 )
 # Update
 sudo apt update
@@ -112,6 +113,7 @@ if $INSTALL_PROVISIONING; then
 
 	# Install Mirte documentation
 	{
+		sudoo pip install watchdog pyyaml nmcli
 		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/provisioning.service /lib/systemd/system/
 		systemctl enable provisioning.service
 		echo "done docs"
