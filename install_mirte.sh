@@ -106,6 +106,17 @@ if $INSTALL_DOCS; then
 		echo "done docs"
 	} 2>&1 | sed -u 's/^/docs::: /' &
 fi
+
+
+if $INSTALL_PROVISIONING; then
+
+	# Install Mirte documentation
+	{
+		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/provisioning.service /lib/systemd/system/
+		systemctl enable provisioning.service
+		echo "done docs"
+	} 2>&1 | sed -u 's/^/docs::: /' &
+fi
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
 # Currently only instaling, not enabled
