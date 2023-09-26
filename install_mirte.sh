@@ -111,13 +111,13 @@ fi
 
 if $INSTALL_PROVISIONING; then
 
-	# Install Mirte documentation
+	# Install Mirte provisioning system
 	{
 		sudo pip install watchdog pyyaml nmcli
 		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/provisioning.service /lib/systemd/system/
 		sudo systemctl enable provisioning.service
-		echo "done docs"
-	} 2>&1 | sed -u 's/^/docs::: /' &
+		echo "done provisioning"
+	} 2>&1 | sed -u 's/^/provisioning::: /' &
 fi
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
