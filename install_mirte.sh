@@ -115,7 +115,7 @@ if $INSTALL_PROVISIONING; then
 	{
 		sudoo pip install watchdog pyyaml nmcli
 		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/provisioning.service /lib/systemd/system/
-		systemctl enable provisioning.service
+		sudo systemctl enable provisioning.service
 		echo "done docs"
 	} 2>&1 | sed -u 's/^/docs::: /' &
 fi
