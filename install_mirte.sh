@@ -113,7 +113,7 @@ if $INSTALL_PROVISIONING; then
 
 	# Install Mirte documentation
 	{
-		sudoo pip install watchdog pyyaml nmcli
+		sudo pip install watchdog pyyaml nmcli
 		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/provisioning.service /lib/systemd/system/
 		sudo systemctl enable provisioning.service
 		echo "done docs"
