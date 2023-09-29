@@ -13,7 +13,7 @@ import robot_config
 import machine_config
 import ssh
 
-modules = [robot_config,machine_config, ssh]
+modules = [robot_config, machine_config, ssh]
 
 event_loop = asyncio.get_event_loop()
 
@@ -24,15 +24,15 @@ for module in modules:
         print(e)
         print(traceback.format_exc())
 
+
 async def main():
     count = 1000
-    while(True):
-        count+=-1
+    while True:
+        count += -1
         await asyncio.sleep(1)
 
 
 event_loop.run_until_complete(main())
-
 
 
 for module in modules:
