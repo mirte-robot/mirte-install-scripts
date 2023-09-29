@@ -108,7 +108,6 @@ if $INSTALL_DOCS; then
 	} 2>&1 | sed -u 's/^/docs::: /' &
 fi
 
-
 if $INSTALL_PROVISIONING; then
 
 	# Install Mirte provisioning system

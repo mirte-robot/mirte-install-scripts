@@ -7,12 +7,13 @@ import asyncio
 prev_config = os.path.join( os.path.dirname(os.path.realpath(__file__)), "store/machine_config.yaml")
 print(prev_config)
 
-hostname = "Mirte-4A01A5"
+hostname = "Mirte-XXXXX"
 
 def start(mount_point, loop):
     config_file = f"{mount_point}/machine_config.yaml"
     if(not os.path.isfile(config_file)):
         print("No machine_config configuration, stopping config provisioning")
+        write_back_configuration(configuration, config_file)
         return
 
     with open(config_file, 'r') as file:
@@ -26,6 +27,7 @@ def start(mount_point, loop):
         access_points(configuration, loop)
     if("password" in configuration):
         set_password(configuration["password"]) # todo: do only when not already done
+    write_back_configuration(configuration, config_file)
     
 
 def access_points(configuration, loop):
@@ -86,3 +88,15 @@ def set_password(new_password):
     o = os.system(f"echo \"{new_password}\n{new_password}\" | sudo passwd mirte")
     print(o)
     
+
+def write_back_configuration(configuration, config_file):
+    # read back in the hostname file, if not set in this run, then the user can know the hostname after a first boot
+    with open('/etc/hostname', 'r') as file:
+        current_name = file.readlines()[0].strip()
+    # if XXXXX, then network setup did not set the hostname yet
+    if(current_name != "Mirte-XXXXXX"):
+        configuration["hostname"] = current_name
+        config_text = yaml.dump(configuration)
+        with open(config_file, 'w') as file:
+            file.writelines(config_text)
+
