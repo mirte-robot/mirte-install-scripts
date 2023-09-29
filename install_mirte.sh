@@ -124,7 +124,7 @@ fi
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
 
 # Install numpy
-pip3 install --only-binary numpy
+pip3 install --only-binary=:all:  numpy
 
 sudo apt install -y bluez joystick
 # if [ "$(uname -a | grep sunxi)" != "" ]; then
