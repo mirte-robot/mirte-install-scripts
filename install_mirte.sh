@@ -113,8 +113,8 @@ if $INSTALL_PROVISIONING; then
 	# Install Mirte provisioning system
 	{
 		sudo pip install watchdog pyyaml nmcli
-		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/provisioning.service /lib/systemd/system/
-		sudo systemctl enable provisioning.service
+		sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/provisioning/mirte-provisioning.service /lib/systemd/system/
+		sudo systemctl enable mirte-provisioning.service
 		echo "done provisioning"
 	} 2>&1 | sed -u 's/^/provisioning::: /' &
 fi

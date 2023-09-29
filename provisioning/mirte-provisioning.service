@@ -1,5 +1,5 @@
 [Unit]
-Description=My test service
+Description=Mirte provisioning service
 After=multi-user.target
 [Service]
 Type=simple
