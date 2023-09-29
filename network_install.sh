@@ -80,3 +80,7 @@ sudo bash -c 'echo "kernel.panic = 10" > /etc/sysctl.conf'
 # separate service for usb ethernet
 sudo rm /lib/systemd/system/mirte-usb.service
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-usb.service /lib/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl stop mirte-usb || /bin/true
+sudo systemctl start mirte-usb
+sudo systemctl enable mirte-usb
