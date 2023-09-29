@@ -76,3 +76,7 @@ sudo bash -c "echo 'match-device=driver:wlan0' >> /etc/NetworkManager/NetworkMan
 # panic the kernel (at boot). Instead of waiting an unkown
 # time and reboot manually, we will reboot automatically
 sudo bash -c 'echo "kernel.panic = 10" > /etc/sysctl.conf'
+
+# separate service for usb ethernet
+sudo rm /lib/systemd/system/mirte-usb.service
+sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-usb.service /lib/systemd/system/
