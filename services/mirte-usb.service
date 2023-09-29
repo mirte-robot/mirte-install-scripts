@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 KillMode=process
-ExecStart=/bin/bash -c "/usr/local/src/mirte/mirte-install-scripts/usb_eth_setup.sh"
+ExecStart=/bin/bash -c "/usr/local/src/mirte/mirte-install-scripts/usb_ethernet.sh"
 
 [Install]
 WantedBy=multi-user.target
