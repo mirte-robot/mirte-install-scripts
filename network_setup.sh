@@ -100,8 +100,6 @@ function check_connection {
 	fi
 }
 
-
-
 # Create unique SSID
 # This must be run every time on boot, since it should
 # be generated on first boot (so not when generating
