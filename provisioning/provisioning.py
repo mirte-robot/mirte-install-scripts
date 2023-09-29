@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import time
 import asyncio
-
+import traceback
 
 # Provisioning system for the Mirte sd cards.
 # Only activate this service when you want to copy configurations from the second partition to the operating system
@@ -22,6 +22,7 @@ for module in modules:
         module.start(mount_point, event_loop)
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
 
 async def main():
     count = 10
