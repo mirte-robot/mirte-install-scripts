@@ -58,3 +58,5 @@ sudo dnsmasq --address=/#/192.168.43.1 --dhcp-range=192.168.43.10,192.168.43.100
 #sudo ip netns exec windows ip address add 192.168.42.1/24 dev usb1
 #sudo ip netns exec windows ifconfig usb1 up
 #sudo ip netns exec windows dnsmasq --address=/#/192.168.42.1 --dhcp-range=192.168.42.10,192.168.42.100 --conf-file
+sudo rm /lib/systemd/system/mirte-usb.service
+sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-usb.service /lib/systemd/system/

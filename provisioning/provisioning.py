@@ -25,8 +25,8 @@ for module in modules:
         print(traceback.format_exc())
 
 async def main():
-    count = 10
-    while(count > 0):
+    count = 1000
+    while(True):
         count+=-1
         await asyncio.sleep(1)
 

@@ -100,9 +100,7 @@ function check_connection {
 	fi
 }
 
-MIRTE_SRC_DIR=/usr/local/src/mirte
 
-$MIRTE_SRC_DIR/mirte-install-scripts/usb_ethernet.sh
 
 # Create unique SSID
 # This must be run every time on boot, since it should

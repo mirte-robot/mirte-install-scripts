@@ -47,6 +47,7 @@ def stop():
     stopped = True
 
 
+# Nmcli can only connect to a network that is in the air, so we need to continuously check available networks and if not connected, try any known connections
 async def ap_loop(configuration):
     while(not stopped):
         await asyncio.sleep(10)
