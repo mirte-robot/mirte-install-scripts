@@ -50,59 +50,56 @@ green_off() {
 	fi
 }
 
-if ! [ "$OPI" ]; then
+echo "Blinking"
+echo "$VALUE"
 
-	echo "Blinking"
-	echo "$VALUE"
+for ((repeat = 0; repeat < 5; repeat++)); do
+	# Start sequence with fast blinking both
+	for ((i = 0; i < 10; i++)); do
+		FAST=$(echo "scale=2; $BLINK_SPEED/20" | bc)
+		green_on
+		red_on
+		sleep "$FAST"
+		green_off
+		red_off
+		sleep "$FAST"
+	done
+	sleep $BLINK_SPEED
 
-	for ((repeat = 0; repeat < 5; repeat++)); do
-		# Start sequence with fast blinking both
-		for ((i = 0; i < 10; i++)); do
-			FAST=$(echo "scale=2; $BLINK_SPEED/20" | bc)
-			green_on
-			red_on
-			sleep "$FAST"
-			green_off
-			red_off
-			sleep "$FAST"
-		done
+	for ((i = 0; i < ${#VALUE}; i++)); do
+		# Next character
+		green_on
+		sleep $BLINK_SPEED
+		green_off
 		sleep $BLINK_SPEED
 
-		for ((i = 0; i < ${#VALUE}; i++)); do
-			# Next character
+		if [ "${VALUE:i:1}" == "." ]; then
 			green_on
+			red_on
 			sleep $BLINK_SPEED
 			green_off
+			red_off
 			sleep $BLINK_SPEED
-
-			if [ "${VALUE:i:1}" == "." ]; then
-				green_on
-				red_on
-				sleep $BLINK_SPEED
-				green_off
-				red_off
-				sleep $BLINK_SPEED
+		else
+			if [ "${VALUE:i:1}" == "0" ]; then
+				TWICE=$(echo "scale=2; $BLINK_SPEED*2" | bc)
+				sleep "$TWICE"
 			else
-				if [ "${VALUE:i:1}" == "0" ]; then
-					TWICE=$(echo "scale=2; $BLINK_SPEED*2" | bc)
-					sleep "$TWICE"
-				else
-					# Convert hex to decimal number
-					DEC_VAL=$(echo "obase=10; ibase=16; ${VALUE:i:1}" | bc)
+				# Convert hex to decimal number
+				DEC_VAL=$(echo "obase=10; ibase=16; ${VALUE:i:1}" | bc)
 
-					# Blink decimal number
-					for ((j = 0; j < DEC_VAL; j++)); do
-						red_on
-						sleep $BLINK_SPEED
-						red_off
-						sleep $BLINK_SPEED
-					done
-				fi
+				# Blink decimal number
+				for ((j = 0; j < DEC_VAL; j++)); do
+					red_on
+					sleep $BLINK_SPEED
+					red_off
+					sleep $BLINK_SPEED
+				done
 			fi
-		done
+		fi
 	done
+done
 
-	# Reset to defaults
-	green_on
-	red_off
-fi
+# Reset to defaults
+green_on
+red_off
