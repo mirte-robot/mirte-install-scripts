@@ -13,6 +13,7 @@ export UPDATE=false
 	export EXPIRE_PASSWD=true
 	export INSTALL_NETWORK=true
 	export INSTALL_PROVISIONING=true
+	export PARALLEL=true
 )
 # Update
 sudo apt update
@@ -25,6 +26,9 @@ sudo apt install -y locales python3.8 python3-pip python3-setuptools
 	sudo update-locale LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
 	echo "done locale"
 } 2>&1 | sed -u 's/^/locales::: /' &
+if ! $PARALLEL; then
+	wait
+fi
 # Install vcstool
 pwd
 ls -alh
@@ -49,7 +53,9 @@ if $INSTALL_ROS; then
 		echo "done telemetrix"
 	} 2>&1 | sed -u 's/^/telemetrix::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_ARDUINO; then
 	{
 		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
@@ -58,7 +64,9 @@ if $INSTALL_ARDUINO; then
 		echo "done arduino"
 	} 2>&1 | sed -u 's/^/arduino::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_PYTHON; then
 
 	{
@@ -68,7 +76,9 @@ if $INSTALL_PYTHON; then
 		echo "done mirte-python"
 	} 2>&1 | sed -u 's/^/mirte-python::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_WEB; then
 
 	{
@@ -78,7 +88,9 @@ if $INSTALL_WEB; then
 		echo "done web"
 	} 2>&1 | sed -u 's/^/web::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_JUPYTER; then
 
 	{
@@ -88,7 +100,9 @@ if $INSTALL_JUPYTER; then
 		echo "done jupyter_ros"
 	} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_ROS; then
 
 	{
@@ -98,7 +112,9 @@ if $INSTALL_ROS; then
 		echo "done ROS"
 	} 2>&1 | sed -u 's/^/ROS::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_DOCS; then
 
 	# Install Mirte documentation
@@ -107,7 +123,9 @@ if $INSTALL_DOCS; then
 		echo "done docs"
 	} 2>&1 | sed -u 's/^/docs::: /' &
 fi
-
+if ! $PARALLEL; then
+	wait
+fi
 if $INSTALL_PROVISIONING; then
 
 	# Install Mirte provisioning system
@@ -117,6 +135,9 @@ if $INSTALL_PROVISIONING; then
 		sudo systemctl enable mirte-provisioning.service
 		echo "done provisioning"
 	} 2>&1 | sed -u 's/^/provisioning::: /' &
+fi
+if ! $PARALLEL; then
+	wait
 fi
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
