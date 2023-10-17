@@ -73,7 +73,7 @@ sudo pip3 install adafruit-circuitpython-busdevice==5.1.1 adafruit-circuitpython
 sudo pip3 install pillow adafruit-circuitpython-ssd1306==2.12.1
 
 # Install aio dependencies
-sudo pip3 install janus async-generator nest-asyncio
+sudo pip3 install janus async-generator nest-asyncio catkin_pkg
 git clone https://github.com/locusrobotics/aiorospy.git
 cd aiorospy/aiorospy || exit
 sudo pip3 install .
