@@ -111,6 +111,7 @@ $MIRTE_SRC_DIR/mirte-install-scripts/usb_ethernet.sh
 if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]]; then
 	UNIQUE_ID=$(openssl rand -hex 3)
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
+	MIRTE_SSID=${MIRTE_SSID//0/A} # replace al 0s with As
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
 	# And add them to the hosts file
