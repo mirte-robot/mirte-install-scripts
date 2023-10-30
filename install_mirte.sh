@@ -103,18 +103,7 @@ fi
 if ! $PARALLEL; then
 	wait
 fi
-if $INSTALL_ROS; then
 
-	{
-		# Install Mirte ROS packages
-		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
-		. ./install_ROS.sh
-		echo "done ROS"
-	} 2>&1 | sed -u 's/^/ROS::: /' &
-fi
-if ! $PARALLEL; then
-	wait
-fi
 if $INSTALL_DOCS; then
 
 	# Install Mirte documentation
@@ -137,6 +126,17 @@ if $INSTALL_PROVISIONING; then
 	} 2>&1 | sed -u 's/^/provisioning::: /' &
 fi
 if ! $PARALLEL; then
+	wait
+fi
+
+if $INSTALL_ROS; then
+	wait # rosdep does wait for other apt scripts to finish, then it just fails installing. If we wait for the others to finish, there won't be parralel apt scripts running.
+	{
+		# Install Mirte ROS packages
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
+		. ./install_ROS.sh
+		echo "done ROS"
+	} 2>&1 | sed -u 's/^/ROS::: /' &
 	wait
 fi
 # Install overlayfs and make sd card read only (software)
