@@ -29,6 +29,9 @@ npm install .
 #npm -g install wetty
 deactivate_node
 
+# Install strace for linetrace functionality
+sudo apt install -y strace
+
 # Install nginx (as reverse proxy to all services)
 sudo apt install -y nginx
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/

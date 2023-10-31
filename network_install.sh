@@ -11,7 +11,6 @@ sed -i 's/#DNSStubListener=yes/DNSStubListener=no/g' /etc/systemd/resolved.conf
 sudo apt install -y netplan.io
 sudo apt install -y network-manager
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/50-cloud-init.yaml /etc/netplan/
-sudo netplan apply
 sudo apt purge -y ifupdown
 
 # Fix for bug in systemd-resolved
@@ -22,9 +21,9 @@ sudo bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
 
 # Install wifi-connect
 MY_ARCH=$(arch)
-if [[ $MY_ARCH == "armv7l" ]]; then MY_ARCH="rpi"; fi
-wget https://github.com/balena-os/wifi-connect/releases/download/v4.4.6/wifi-connect-v4.4.6-linux-"$(echo "$MY_ARCH")".tar.gz
-tar -xf wifi-connect*
+if [[ $MY_ARCH == "armv7l" ]]; then MY_ARCH="armv7hf"; fi
+wget https://github.com/balena-os/wifi-connect/releases/download/v4.11.1/wifi-connect-v4.11.1-linux-"$(echo "$MY_ARCH")".zip
+unzip wifi-connect*
 sudo mv wifi-connect /usr/local/sbin
 rm wifi-connect*
 
