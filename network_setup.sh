@@ -100,12 +100,41 @@ function check_connection {
 	fi
 }
 
+function check_ssh_host_keys() {
+	# Sometimes these files are empty after first boot and ssh won't work.
+	# This will check the files for size and regenerate them when one of them is empty
+	# Similar issues: https://github.com/NixOS/nixpkgs/issues/98842 and https://forum.armbian.com/topic/12934-ssh-host-keys-not-generated/
+	if
+		file_empty "/etc/ssh/ssh_host_ecdsa_key" || file_empty "/etc/ssh/ssh_host_ecdsa_key.pub" ||
+			file_empty "/etc/ssh/ssh_host_ed25519_key" || file_empty "/etc/ssh/ssh_host_ed25519_key.pub" ||
+			file_empty "/etc/ssh/ssh_host_rsa_key" || file_empty "/etc/ssh/ssh_host_rsa_key.pub"
+	then
+		echo "Regenerating ssh host keys and restarting sshd"
+		ssh-keygen -A
+		systemctl restart sshd
+	fi
+
+}
+function file_empty() {
+	FILE=$1
+	if [[ ! -s $FILE ]]; then
+		echo $FILE is empty
+		return 0 # true
+	fi
+	return 1 # false
+
+}
+
+MIRTE_SRC_DIR=/usr/local/src/mirte
+
+$MIRTE_SRC_DIR/mirte-install-scripts/usb_ethernet.sh
+
 # Create unique SSID
 # This must be run every time on boot, since it should
 # be generated on first boot (so not when generating
 # the image in network_setup.sh)
 if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]]; then
-	UNIQUE_ID=$(tr -cd "1-9A-F" < /dev/urandom | head -c 6)
+	UNIQUE_ID=$(tr -cd "1-9A-F" </dev/urandom | head -c 6)
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
@@ -115,6 +144,8 @@ if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]]; then
 	# Not needed anymore once we first generate the SSID and then start the network
 	sudo bash -c 'echo "127.0.0.1 Mirte-XXXXXX" >> /etc/hosts'
 fi
+
+check_ssh_host_keys
 
 check_connection
 
