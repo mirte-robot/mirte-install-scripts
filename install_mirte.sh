@@ -152,9 +152,14 @@ sudo apt install -y bluez joystick
 # 	# currently only supporting cheap USB dongles on OrangePi
 # 	. ./install_fake_bt.sh
 # fi
+./install_pico.sh
+echo "Cleaning cache"
+sudo du -sh /var/cache/apt/archives
+sudo apt clean
 
 echo "Waiting"
 time wait # wait on all the backgrounded stuff
 echo "Done installing"
 # cd /home/mirte/
 date >install_date.txt
+
