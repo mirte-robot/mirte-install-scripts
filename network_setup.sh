@@ -101,7 +101,7 @@ function check_connection {
 }
 
 function check_ssh_host_keys() {
-	# Sometimes these files are empty after first boot and ssh won't work. 
+	# Sometimes these files are empty after first boot and ssh won't work.
 	# This will check the files for size and regenerate them when one of them is empty
 	if
 		file_empty "/etc/ssh/ssh_host_ecdsa_key" || file_empty "/etc/ssh/ssh_host_ecdsa_key.pub" ||
