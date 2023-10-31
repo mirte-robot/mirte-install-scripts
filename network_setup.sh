@@ -109,10 +109,8 @@ $MIRTE_SRC_DIR/mirte-install-scripts/usb_ethernet.sh
 # be generated on first boot (so not when generating
 # the image in network_setup.sh)
 if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]]; then
-	UNIQUE_ID=$(openssl rand -hex 3)
+	UNIQUE_ID=$(tr -cd "1-9A-F" < /dev/urandom | head -c 6)
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
-	# replace al 0s with As to make it clearer for users when looking at the leds, as 0 is difficult to recognize
-	MIRTE_SSID=${MIRTE_SSID//0/A}
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
 	# And add them to the hosts file
