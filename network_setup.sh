@@ -105,7 +105,7 @@ function check_connection {
 # be generated on first boot (so not when generating
 # the image in network_setup.sh)
 if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]]; then
-	UNIQUE_ID=$(openssl rand -hex 3)
+	UNIQUE_ID=$(tr -cd "1-9A-F" < /dev/urandom | head -c 6)
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
