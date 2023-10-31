@@ -101,12 +101,14 @@ function check_connection {
 }
 
 function check_ssh_host_keys() {
+	# Sometimes these files are empty after first boot and ssh won't work. 
+	# This will check the files for size and regenerate them when one of them is empty
 	if
 		file_empty "/etc/ssh/ssh_host_ecdsa_key" || file_empty "/etc/ssh/ssh_host_ecdsa_key.pub" ||
 			file_empty "/etc/ssh/ssh_host_ed25519_key" || file_empty "/etc/ssh/ssh_host_ed25519_key.pub" ||
 			file_empty "/etc/ssh/ssh_host_rsa_key" || file_empty "/etc/ssh/ssh_host_rsa_key.pub"
 	then
-		echo "Regenerating ssh keys"
+		echo "Regenerating ssh host keys and restarting sshd"
 		ssh-keygen -A
 		systemctl restart sshd
 	fi
