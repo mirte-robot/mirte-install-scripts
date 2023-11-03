@@ -34,7 +34,8 @@ sudo apt install -y strace
 
 # Install nginx (as reverse proxy to all services)
 sudo apt install -y nginx
-sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/
+sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/sites-available/mirte.conf
+sudo ln /etc/nginx/sites-available/mirte.conf /etc/nginx/sites-enabled/
 
 # Add systemd service
 sudo rm /lib/systemd/system/mirte-web-interface.service
