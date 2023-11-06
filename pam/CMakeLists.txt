@@ -19,19 +19,27 @@ include_directories(
 set(modules warn storepassword)
 
 foreach(module ${modules})
-
-    set(WARN_FILE ${module}.so)
-    # gcc -fPIC -fno-stack-protector -c warn.c && ld -x --shared -o /lib/security/warn.so warn.o  
-    set(WARN_CMD "gcc" "-fPIC" "-fno-stack-protector" "-c" ../${module}.c)
-    set(WARN_LD_CMD "ld" "-x" "--shared" "-o" ${module}.so ${module}.o)
-
-    add_custom_command(OUTPUT ${WARN_FILE}
-            COMMAND ${WARN_CMD}
-            COMMAND ${WARN_LD_CMD}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS ${module}.c VERBATIM)
-            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${module}.so
-            DESTINATION /lib/security/)
+    add_library(mirte_pam_${module} SHARED ${module}.c)
     
-    add_custom_target(mirte_pam_${module} ALL DEPENDS ${WARN_FILE})
+    find_package(json-c CONFIG)
+    target_link_libraries(mirte_pam_${module} PRIVATE json-c::json-c)
+
+    install(TARGETS mirte_pam_${module} DESTINATION /lib/security/)
+
 endforeach(module ${modules})
+
+add_executable(myprogram test.c storepassword.c)
+target_link_libraries(myprogram PRIVATE json-c::json-c)
+
+# cmake_minimum_required(VERSION 2.4.0)
+
+# project(mycustomlib)
+
+# # Find source files
+# file(GLOB SOURCES warn.c)
+
+
+# # Create shared library
+# add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+# Install library
