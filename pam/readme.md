@@ -2,17 +2,24 @@
 requires 
 sudo apt-get install libpam0g-dev
 
+# Build
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+make install # requires sudo privileges
+```
 
-mkdir /lib/security
-gcc -fPIC -fno-stack-protector -c storepassword.c && ld -x --shared -o /lib/security/storepassword.so storepassword.o
-gcc -fPIC -fno-stack-protector -c warn.c && ld -x --shared -o /lib/security/warn.so warn.o  
+This will build the Mirte pam modules(warning and storepassword), install them to `/lib/security/limbirte_pam_xxx.so` and add the required lines to `/etc/pam.d/passwd`.
 
-/etc/pam.d/common-password:
-password required /lib/security/storepassword.so
-
-/etc/pam.d/passwd:
-password required /lib/security/warn.so
-
-before @include
-
-
+# passwd
+The resulting `/etc/pam.d/passwd` should look like:
+```
+#
+# The PAM configuration file for the Shadow `passwd' service
+#
+password required /lib/security/libmirte_pam_warn.so
+@include common-password
+password required /lib/security/libmirte_pam_storepassword.so
+```
