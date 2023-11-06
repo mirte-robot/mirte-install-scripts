@@ -3,7 +3,7 @@ project(mirte_pam)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-find_package(PAM REQUIRED)
+find_package(PAM)
 
 # Check if we found PAM.
 if (NOT PAM_FOUND)

