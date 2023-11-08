@@ -22,7 +22,7 @@ done
 
 # Add the license terms after <!--TERMS--> in the vscode/index.html file that the users must accept before using it.
 # rerun vscode with the same port to let it stop immediately, but it will show the license terms
-sudo sed -i '/^<\!--TERMS-->$/r'<(~/code serve-web --port 9000 --host 0.0.0.0 | grep -v error) $MIRTE_SRC_DIR/mirte-install-scripts/vscode/index.html
+sudo sed -i '/^<\!--TERMS-->$/r'<(~/code serve-web --port 9000 --host 0.0.0.0 | grep -v error) $MIRTE_SRC_DIR/mirte-install-scripts/sites/vscode/index.html
 
 # Stop the server started earlier
 kill $code_pid
