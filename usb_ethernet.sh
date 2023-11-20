@@ -6,11 +6,6 @@
 # to usb1. Both networks then are shown on the host.
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
-# on orange pi zero1 the g_serial module is set by default, disable it and load the g_ether module
-# keeping /etc/modules with g_serial makes it possible to still have a serial connection when mirte-ap is disabled by the user.
-modprobe -r g_serial || true
-modprobe g_ether || true
-
 sudo killall -9 dnsmasq
 sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh down "$(ls /sys/class/udc | tail -n1)" || true
 sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh up "$(ls /sys/class/udc | tail -n1)" || true
@@ -44,12 +39,24 @@ function setup_network_usb() {
 	sudo dnsmasq --address=/#/192.168."$SUBNET".1 --dhcp-range=192.168."$SUBNET".10,192.168."$SUBNET".100 --conf-file --domain-needed --bogus-priv --server=8.8.8.8 --dhcp-option=option:dns-server,8.8.8.8 --interface="$USB_NAME" --except-interface=lo --bind-interfaces
 }
 
+#start handing out subnets from 43
+SUBNET=43
+
+# prefer usb1 to have .43.xxx(orange pi zero2 uses this for windows)
 if [ -d /sys/class/net/usb1 ]; then
-	setup_network_usb usb1 43
+	setup_network_usb usb1 $SUBNET
+	((SUBNET += 1))
 fi
-if [ -d /sys/class/net/usb0 ]; then
-	setup_network_usb usb0 44
-fi
+
+# Loop over rest of usb interfaces to setup as well.
+for USB_PATH in /sys/class/net/usb*; do
+	USB=$(basename $USB_PATH)
+	if [[ $USB == "usb1" ]]; then
+		continue
+	fi
+	setup_network_usb $USB $SUBNET
+	((SUBNET += 1))
+done
 
 # For now, we just create a different IP address for each interface. We need
 # to change this to private namespaces (see below). In order to getinthernet

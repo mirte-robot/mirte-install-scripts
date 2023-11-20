@@ -64,6 +64,8 @@ wget https://raw.githubusercontent.com/ev3dev/ev3-systemd/ev3dev-buster/scripts/
 sudo chmod +x $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh
 sudo chown mirte:mirte $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh
 sudo bash -c 'echo "libcomposite" >> /etc/modules'
+# remove g_serial from modules to let the ev3-usb script enable usb ethernet on the orange pi zero 1 as well.
+sudo bash -c "sed -i '/g_serial/d' /etc/modules"
 
 # Generate wifi password (TODO: generate random password and put on NTFS)
 if [ ! -f /home/mirte/.wifi_pwd ]; then
