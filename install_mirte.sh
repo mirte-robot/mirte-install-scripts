@@ -8,12 +8,14 @@ export UPDATE=false
 	export INSTALL_ROS=true
 	export INSTALL_ARDUINO=true
 	export INSTALL_WEB=true
+	export BUILD_WEB=true
 	export INSTALL_PYTHON=true
 	export INSTALL_JUPYTER=true
 	export EXPIRE_PASSWD=true
 	export INSTALL_NETWORK=true
 	export INSTALL_PROVISIONING=true
 	export PARALLEL=true
+
 )
 # Update
 sudo apt update
@@ -162,4 +164,3 @@ time wait # wait on all the backgrounded stuff
 echo "Done installing"
 # cd /home/mirte/
 date >install_date.txt
-
