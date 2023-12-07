@@ -12,6 +12,11 @@ PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
   char *user;
   int r = pam_get_item(pamh, PAM_AUTHTOK, (const void **)&pwd);
   pam_get_item(pamh, PAM_USER, (const void **)&user);
+  // Don't show anything when it is not the mirte user
+  if (strcmp(user, mirte_username) != 0)
+  {
+    return PAM_SUCCESS;
+  }
   printf(GRN
          "Mirte:\t" RESET "The new password for \"%s\" is \"%s\".\n" GRN
          "Mirte:\t" RESET "The password will be updated for the webpages.\n" GRN
@@ -23,11 +28,6 @@ PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 
 void savePassword(char *username, char *passwd)
 {
-  if (strcmp(username, mirte_username) != 0)
-  {
-    printf(GRN "Mirte:\t" RESET "Not Mirte user, so not changing the wifi password.\n");
-    return;
-  }
   if (!checkDirectory())
   {
     printf(GRN "Mirte:\t" RESET "Mirte home directory does not exist, not storing "
