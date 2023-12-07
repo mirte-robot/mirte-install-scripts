@@ -92,7 +92,3 @@ sudo apt install -y overlayroot
 # Currently only instaling, not enabled
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
 
-cd $MIRTE_SRC_DIR/mirte-install-scripts/pam/password_manager/
-python3 -m pip install -r requirements.txt
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-passwords.service /lib/systemd/system/
-sudo systemctl enable mirte-passwords
