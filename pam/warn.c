@@ -8,15 +8,12 @@
    /etc/pam.d/passwd to let it run before the passwd system.
 */
 PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
-                                const char **argv)
-{
-  if (flags == PAM_PRELIM_CHECK)
-  {
+                                const char **argv) {
+  if (flags == PAM_PRELIM_CHECK) {
     char *user;
     pam_get_item(pamh, PAM_USER, (const void **)&user);
     // Don't show anything when it is not the mirte user
-    if (strcmp(user, mirte_username) != 0)
-    {
+    if (strcmp(user, mirte_username) != 0) {
       return PAM_SUCCESS;
     }
     printf(GRN

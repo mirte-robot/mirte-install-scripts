@@ -36,7 +36,7 @@ sudo apt install -y strace
 sudo apt install -y nginx libnginx-mod-http-auth-pam
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/sites-available/mirte.conf
 sudo ln /etc/nginx/sites-available/mirte.conf /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default #this will catch :80 by default
+sudo rm /etc/nginx/sites-enabled/default # otherwise this will catch :80 by default
 
 # give nginx access to the passwords file for login
 sudo usermod -aG shadow www-data

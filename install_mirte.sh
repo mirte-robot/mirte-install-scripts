@@ -91,4 +91,3 @@ deactivate
 sudo apt install -y overlayroot
 # Currently only instaling, not enabled
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
-
