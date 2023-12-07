@@ -1,6 +1,6 @@
 # password module
 
-This system will show some info to the user when changing passwords and stores the new password in `/root/users.json`. The warnings are hooked in to `passwd` by using pam modules.
+This system will show some info to the user when changing passwords and stores the new password in `/home/mirte/.wifi_pwd`. The warnings are hooked in to `passwd` by using pam modules.
 
 Output:
 

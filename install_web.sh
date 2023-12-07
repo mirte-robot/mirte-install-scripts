@@ -38,8 +38,10 @@ sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/sites-availab
 sudo ln /etc/nginx/sites-available/mirte.conf /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default #this will catch :80 by default
 
-# give nginx access to the passwords file:
+# give nginx access to the passwords file for login
 sudo usermod -aG shadow www-data
+
+sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/sites/401.html /var/www/html/
 
 # Add systemd service
 sudo rm /lib/systemd/system/mirte-web-interface.service
