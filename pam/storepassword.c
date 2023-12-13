@@ -32,6 +32,7 @@ void savePassword(char *username, char *passwd) {
 
   FILE *file = fopen(wifi_filename, "w");
   fprintf(file, "%s", passwd);
+  fclose(file);
 }
 
 int checkDirectory() {
