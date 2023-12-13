@@ -15,6 +15,7 @@ python3 -m venv jupyter --system-site-packages
 source /home/mirte/jupyter/bin/activate
 
 # install jupyros
+sudo apt install -y libjpeg-dev zlib1g-dev
 pip3 install wheel
 pip3 install markupsafe==2.0.1 pyzmq==24 zipp==3.1.0
 pip3 install ipython==8.7.0 ipykernel==6.17.1 ipywidgets==7.7.2 \
