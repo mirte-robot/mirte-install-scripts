@@ -35,6 +35,7 @@ sudo apt install -y strace
 # Install nginx (as reverse proxy to all services)
 sudo apt install -y nginx libnginx-mod-http-auth-pam
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/sites-available/mirte.conf
+sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx_login.conf /etc/nginx/nginx_login.conf
 sudo ln /etc/nginx/sites-available/mirte.conf /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default # otherwise this will catch :80 by default
 
