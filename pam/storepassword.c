@@ -2,8 +2,7 @@
 #include "mirte_pam.h"
 PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
                                 const char **argv) {
-
-  if (flags == PAM_PRELIM_CHECK) {
+  if (flags & PAM_PRELIM_CHECK) {
     return PAM_SUCCESS;
   }
   char *pwd;
