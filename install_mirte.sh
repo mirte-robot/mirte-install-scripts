@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
