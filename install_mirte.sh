@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
@@ -14,7 +14,7 @@ sudo update-locale LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
 
 # Install vcstool
 cp repos.yaml $MIRTE_SRC_DIR
-cp download_repos.sh $MIRTE_SRC_DIR
+cp download_repos.sh $MIRTE_SRC_DIR || true
 cd $MIRTE_SRC_DIR || exit
 ./download_repos.sh
 

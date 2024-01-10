@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -xe
 #TODO: get this as a parameter
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
