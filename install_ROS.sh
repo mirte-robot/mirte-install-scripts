@@ -50,7 +50,7 @@ source /home/mirte/mirte_ws/devel/setup.bash
 #sudo pip3 install twisted pyOpenSSL autobahn tornado pymongo
 
 # Add systemd service to start ROS nodes
-sudo rm /lib/systemd/system/mirte-ros.service
+sudo rm /lib/systemd/system/mirte-ros.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service /lib/systemd/system/
 
 sudo systemctl daemon-reload

@@ -28,7 +28,7 @@ sudo mv wifi-connect /usr/local/sbin
 rm wifi-connect*
 
 # Added systemd service to account for fix: https://askubuntu.com/questions/472794/hostapd-error-nl80211-could-not-configure-driver-mode
-sudo rm /lib/systemd/system/mirte-ap.service
+sudo rm /lib/systemd/system/mirte-ap.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ap.service /lib/systemd/system/
 
 sudo systemctl daemon-reload
@@ -37,7 +37,7 @@ sudo systemctl start mirte-ap
 sudo systemctl enable mirte-ap
 
 # Added systemd service to check on boot error for OPi
-sudo rm /lib/systemd/system/mirte-wifi-watchdog.service
+sudo rm /lib/systemd/system/mirte-wifi-watchdog.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-wifi-watchdog.service /lib/systemd/system/
 
 sudo systemctl daemon-reload

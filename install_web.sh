@@ -37,7 +37,7 @@ sudo apt install -y nginx
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/
 
 # Add systemd service
-sudo rm /lib/systemd/system/mirte-web-interface.service
+sudo rm /lib/systemd/system/mirte-web-interface.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-web-interface.service /lib/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl stop mirte-web-interface || /bin/true
