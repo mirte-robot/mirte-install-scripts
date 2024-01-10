@@ -15,7 +15,7 @@ sudo update-locale LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
 # Install vcstool
 cp repos.yaml $MIRTE_SRC_DIR
 cp download_repos.sh $MIRTE_SRC_DIR
-cd $MIRTE_SRC_DIR
+cd $MIRTE_SRC_DIR || exit
 ./download_repos.sh
 
 # Install dependecnies to be able to run python3.8
@@ -26,37 +26,37 @@ sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
 
 # Install telemetrix
-cd $MIRTE_SRC_DIR/mirte-telemetrix-aio
+cd $MIRTE_SRC_DIR/mirte-telemetrix-aio || exit
 pip3 install .
-cd $MIRTE_SRC_DIR/mirte-tmx-pico-aio
+cd $MIRTE_SRC_DIR/mirte-tmx-pico-aio || exit
 pip3 install .
 
 # Install Telemtrix4Arduino project
 # TODO: building STM sometimes fails (and/or hangs)
-cd $MIRTE_SRC_DIR/mirte-install-scripts
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 mkdir -p /home/mirte/Arduino/libraries
 mkdir -p /home/mirte/arduino_project/Telemetrix4Arduino
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/libraries/Telemetrix4Arduino
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino/examples/Telemetrix4Arduino/Telemetrix4Arduino.ino /home/mirte/arduino_project/Telemetrix4Arduino
 
 # Install arduino firmata upload script
-cd $MIRTE_SRC_DIR/mirte-install-scripts
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 ./install_arduino.sh
 
 # Install Mirte Python package
-cd $MIRTE_SRC_DIR/mirte-python
+cd $MIRTE_SRC_DIR/mirte-python || exit
 pip3 install .
 
 # Install Mirte Interface
-cd $MIRTE_SRC_DIR/mirte-install-scripts
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 ./install_web.sh
 
 # Install Jupyter Notebook
-cd $MIRTE_SRC_DIR/mirte-install-scripts
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 ./install_jupyter_ros.sh
 
 # Install Mirte ROS packages
-cd $MIRTE_SRC_DIR/mirte-install-scripts
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 ./install_ROS.sh
 
 # Install numpy
@@ -69,16 +69,16 @@ if [ "$(uname -a | grep sunxi)" != "" ]; then
 fi
 
 # Install Mirte documentation
-cd $MIRTE_SRC_DIR/mirte-documentation
+cd $MIRTE_SRC_DIR/mirte-documentation || exit
 sudo apt install -y python3.8-venv libenchant-dev
 python3 -m venv docs-env
 source docs-env/bin/activate
 pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
 pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
 mkdir -p _modules/catkin_ws/src
-cd _modules
+cd _modules || exit
 ln -s $MIRTE_SRC_DIR/mirte-python .
-cd mirte-python
+cd mirte-python || exit
 pip install .
 source /opt/ros/noetic/setup.bash
 source /home/mirte/mirte_ws/devel/setup.bash
