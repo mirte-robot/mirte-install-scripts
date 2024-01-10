@@ -3,6 +3,11 @@ set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
+# disable ipv6, as not all package repositories are available over ipv6
+sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
+Acquire::ForceIPv4 "true";
+EOF
+
 # Update
 sudo apt update
 
@@ -20,7 +25,7 @@ cd $MIRTE_SRC_DIR || exit
 
 # Install dependecnies to be able to run python3.8
 sudo apt install -y python3.8 python3-pip python3-setuptools
-
+pip3 install setuptools --upgrade
 # Set piwheels as pip repo
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
@@ -92,3 +97,6 @@ deactivate
 sudo apt install -y overlayroot
 # Currently only instaling, not enabled
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
+
+# remove force ipv4
+sudo rm /etc/apt/apt.conf.d/99force-ipv4 || true

@@ -15,8 +15,8 @@ sudo apt-get install kitware-archive-keyring
 
 counter=100
 until sudo apt-get install cmake || [ $counter -lt 1 ]; do
-    sleep 1
-    ((counter--))
+	sleep 1
+	((counter--))
 done
 
 # Install ROS Noetic
