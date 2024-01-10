@@ -12,11 +12,11 @@ echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://ap
 sudo apt-get update
 sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
 sudo apt-get install kitware-archive-keyring
-until sudo apt-get install cmake-data; do
+
+counter=100
+until sudo apt-get install cmake || [ $counter -lt 1 ]; do
     sleep 1
-done
-until sudo apt-get install cmake; do
-    sleep 1
+    ((counter--))
 done
 
 # Install ROS Noetic
