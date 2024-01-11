@@ -58,7 +58,7 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
 
 # Install Jupyter Notebook
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
-./install_jupyter_ros.sh
+./install_jupyter_ros.sh || true # jupyter install fails on orange pi zero 1
 
 # Install Mirte ROS packages
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit
