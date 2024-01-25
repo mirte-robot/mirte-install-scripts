@@ -9,7 +9,7 @@ sudo apt install -y python3 python3-venv python3-dev git libffi-dev
 # Due to a build error on numpy we need to install numpy and
 # pandas globally and us it in the virtual environment
 # TODO: check if (micro/mino)mamba/conda could fix this
-cd /home/mirte || exit
+cd /home/mirte || exit 1
 sudo apt install -y python3-numpy python3-pandas
 python3 -m venv jupyter --system-site-packages
 source /home/mirte/jupyter/bin/activate

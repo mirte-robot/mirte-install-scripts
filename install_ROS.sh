@@ -13,12 +13,8 @@ sudo apt-get update
 sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
 sudo apt-get install kitware-archive-keyring
 
-counter=100
-until sudo apt-get install cmake || [ $counter -lt 1 ]; do
-	sleep 1
-	((counter--))
-done
-
+sudo apt update
+sudo apt install cmake -y
 # Install ROS Noetic
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
@@ -41,7 +37,7 @@ sudo pip3 install pyzbar
 
 # Install Mirte ROS package
 mkdir -p /home/mirte/mirte_ws/src
-cd /home/mirte/mirte_ws/src || exit
+cd /home/mirte/mirte_ws/src || exit 1
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
 cd ..
 rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
@@ -72,7 +68,7 @@ sudo pip3 install pillow adafruit-circuitpython-ssd1306==2.12.1
 # Install aio dependencies
 sudo pip3 install janus async-generator nest-asyncio
 git clone https://github.com/locusrobotics/aiorospy.git
-cd aiorospy/aiorospy || exit
+cd aiorospy/aiorospy || exit 1
 sudo pip3 install .
 cd ../..
 rm -rf aiorospy
