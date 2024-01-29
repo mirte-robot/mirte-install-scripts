@@ -67,7 +67,9 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 # Install numpy
 pip3 install numpy
 
-
+# Install bluetooth
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+./install_bt.sh
 
 # Install Mirte documentation
 cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
