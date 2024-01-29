@@ -56,9 +56,11 @@ pip3 install .
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_web.sh
 
-# Install Jupyter Notebook
-cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_jupyter_ros.sh || true # jupyter install fails on orange pi zero 1
+if [[ ${type:=""} != "mirte_orangepizero" ]]; then
+	# Install Jupyter Notebook
+	cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+	./install_jupyter_ros.sh || true # jupyter install fails on orange pi zero 1
+fi
 
 # Install Mirte ROS packages
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
