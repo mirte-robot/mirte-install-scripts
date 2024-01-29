@@ -67,11 +67,7 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 # Install numpy
 pip3 install numpy
 
-sudo apt install -y bluez joystick
-if [ "$(uname -a | grep sunxi)" != "" ]; then
-	# currently only supporting cheap USB dongles on OrangePi
-	./install_fake_bt.sh
-fi
+
 
 # Install Mirte documentation
 cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
