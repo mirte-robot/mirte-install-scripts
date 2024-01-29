@@ -69,4 +69,4 @@ git clone https://github.com/locusrobotics/aiorospy.git
 cd aiorospy/aiorospy || exit 1
 sudo pip3 install .
 cd ../..
-rm -rf aiorospy
+sudo rm -rf aiorospy
