@@ -7,12 +7,10 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 # https://gitlab.kitware.com/cmake/cmake/-/issues/20568
 # So we need to install a newer version of Cmake
 # https://apt.kitware.com/
-wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-sudo apt-get update
-sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
-sudo apt-get install kitware-archive-keyring
-
+wget https://apt.kitware.com/kitware-archive.sh
+chmod +x kitware-archive.sh
+sudo ./kitware-archive.sh
+rm kitware-archive.sh
 sudo apt update
 sudo apt install cmake -y
 # Install ROS Noetic

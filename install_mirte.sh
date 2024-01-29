@@ -80,8 +80,6 @@ pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versi
 pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
 mkdir -p _modules/catkin_ws/src
 cd _modules || exit 1
-ls
-pwd
 ln -s $MIRTE_SRC_DIR/mirte-python . || true
 cd mirte-python || exit 1
 pip install . || true
