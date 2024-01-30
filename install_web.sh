@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -xe
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 # Update
@@ -16,12 +16,12 @@ nodeenv --node=16.2.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
 
 # Install frontend
-cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit
+cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
 npm install .
 npm run build
 
 # Install backend
-cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit
+cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
 
 # Install wetty
@@ -37,7 +37,7 @@ sudo apt install -y nginx
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/
 
 # Add systemd service
-sudo rm /lib/systemd/system/mirte-web-interface.service
+sudo rm /lib/systemd/system/mirte-web-interface.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-web-interface.service /lib/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl stop mirte-web-interface || /bin/true

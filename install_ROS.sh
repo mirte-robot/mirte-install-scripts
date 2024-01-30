@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -xe
 #TODO: get this as a parameter
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
@@ -7,14 +7,12 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 # https://gitlab.kitware.com/cmake/cmake/-/issues/20568
 # So we need to install a newer version of Cmake
 # https://apt.kitware.com/
-wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-sudo apt-get update
-sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
-sudo apt-get install kitware-archive-keyring
-sudo apt-get install cmake-data=3.20.5-0kitware1ubuntu20.04.1
-sudo apt-get install cmake=3.20.5-0kitware1ubuntu20.04.1
-
+wget https://apt.kitware.com/kitware-archive.sh
+chmod +x kitware-archive.sh
+sudo ./kitware-archive.sh
+rm kitware-archive.sh
+sudo apt update
+sudo apt install cmake -y
 # Install ROS Noetic
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
@@ -37,7 +35,7 @@ sudo pip3 install pyzbar
 
 # Install Mirte ROS package
 mkdir -p /home/mirte/mirte_ws/src
-cd /home/mirte/mirte_ws/src || exit
+cd /home/mirte/mirte_ws/src || exit 1
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
 cd ..
 rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
@@ -50,7 +48,7 @@ source /home/mirte/mirte_ws/devel/setup.bash
 #sudo pip3 install twisted pyOpenSSL autobahn tornado pymongo
 
 # Add systemd service to start ROS nodes
-sudo rm /lib/systemd/system/mirte-ros.service
+sudo rm /lib/systemd/system/mirte-ros.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service /lib/systemd/system/
 
 sudo systemctl daemon-reload
@@ -68,7 +66,7 @@ sudo pip3 install pillow adafruit-circuitpython-ssd1306==2.12.1
 # Install aio dependencies
 sudo pip3 install janus async-generator nest-asyncio
 git clone https://github.com/locusrobotics/aiorospy.git
-cd aiorospy/aiorospy || exit
+cd aiorospy/aiorospy || exit 1
 sudo pip3 install .
 cd ../..
-rm -rf aiorospy
+sudo rm -rf aiorospy
