@@ -91,6 +91,10 @@ cd ../../
 make html || true
 deactivate
 
+# install audio support to use with mirte-pioneer pcb and orange pi zero 2
+sudo apt install pulseaudio libasound2-dev
+pip3 install simpleaudio
+
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
 # Currently only instaling, not enabled
