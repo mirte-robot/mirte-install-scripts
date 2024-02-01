@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 # Add mirte user with sudo rights
