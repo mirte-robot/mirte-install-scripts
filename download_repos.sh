@@ -7,6 +7,7 @@ sudo apt-get update
 sudo apt-get install -y python3-vcstool
 
 # Download all Mirte repositories
+ls -alh
 vcs import --workers 1 <repos.yaml #TODO: get yaml file as parameter
 
 # TODO: set remote to gitlab when checkout from local
