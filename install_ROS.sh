@@ -43,6 +43,33 @@ catkin build
 grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.bashrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.bashrc
 source /home/mirte/mirte_ws/devel/setup.bash
 
+# install lidar and depth camera
+cd /home/mirte/mirte_ws/src || exit 1
+git clone https://github.com/Slamtec/rplidar_ros.git
+git clone https://github.com/orbbec/ros_astra_camera.git
+cd ../../
+mkdir temp
+cd temp || exit 1
+sudo apt install -y libudev-dev
+git clone https://github.com/libuvc/libuvc.git
+cd libuvc
+mkdir build && cd build
+cmake .. && make -j4
+sudo make install
+sudo ldconfig
+cd ../../../
+sudo rm -rf temp
+cd /home/mirte/mirte_ws/ || exit 1
+rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
+catkin build
+source ./devel/setup.bash
+roscd astra_camera
+./scripts/create_udev_rules
+sudo udevadm control --reload && sudo  udevadm trigger
+roscd rplidar_ros
+./scripts/create_udev_rules.sh
+
+
 # install missing python dependencies rosbridge
 #sudo apt install -y libffi-dev libjpeg-dev zlib1g-dev
 #sudo pip3 install twisted pyOpenSSL autobahn tornado pymongo
