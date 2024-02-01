@@ -1,8 +1,5 @@
 #!/bin/bash
-
-cp repos.yaml "$MIRTE_SRC_DIR"
-cp download_repos.sh "$MIRTE_SRC_DIR"
-cd "$MIRTE_SRC_DIR" || exit
+set -xe
 # Install vcstool
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -

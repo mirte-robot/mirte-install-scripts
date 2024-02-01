@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -xe
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 # Install dependencies
