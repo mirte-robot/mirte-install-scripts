@@ -40,9 +40,9 @@ fi
 cp repos.yaml $MIRTE_SRC_DIR
 cp download_repos.sh $MIRTE_SRC_DIR || true
 cd $MIRTE_SRC_DIR || exit 1
-./download_repos.sh
+. ./download_repos.sh
 
-# Install dependecnies to be able to run python3.8
+# Install dependencies to be able to run python3.8
 sudo apt install -y python3.8 python3-pip python3-setuptools
 pip3 install setuptools --upgrade
 # Set piwheels as pip repo
@@ -112,6 +112,16 @@ if ! $PARALLEL; then
 	wait
 fi
 
+if $INSTALL_VSCODE; then
+	{
+		. ./install_vscode.sh || exit 1
+		echo "done VSCode"
+	} 2>&1 | sed -u 's/^/vscode::: /' &
+fi
+if ! $PARALLEL; then
+	wait
+fi
+
 if $INSTALL_DOCS; then
 
 	# Install Mirte documentation
@@ -156,10 +166,6 @@ fi
 pip3 install numpy
 
 . ./install_bt.sh || exit 1
-. ./install_pico.sh || exit 1
-
-
-. ./install_vscode.sh || exit 1
 
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
