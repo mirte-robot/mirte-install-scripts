@@ -125,6 +125,7 @@ fi
 
 if $INSTALL_VSCODE; then
 	{
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 		. ./install_vscode.sh || exit 1
 		echo "done VSCode"
 	} 2>&1 | sed -u 's/^/vscode::: /' &
@@ -137,6 +138,7 @@ if $INSTALL_DOCS; then
 
 	# Install Mirte documentation
 	{
+		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 		. ./install_docs.sh || true # docs building is a bit flaky
 		echo "done docs"
 	} 2>&1 | sed -u 's/^/docs::: /' &
