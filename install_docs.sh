@@ -1,14 +1,14 @@
 #!/bin/bash
 
 cd $MIRTE_SRC_DIR/mirte-documentation || exit
-$UPDATE || sudo apt install -y python3.8-venv libenchant-dev
-$UPDATE || python3 -m venv docs-env
+sudo apt install -y python3.8-venv libenchant-dev
+python3 -m venv docs-env
 source docs-env/bin/activate
 pip install -r requirements.txt
-$UPDATE || mkdir -p _modules/catkin_ws/src
+mkdir -p _modules/catkin_ws/src
 cd _modules || exit
 ls
-$UPDATE || ln -s $MIRTE_SRC_DIR/mirte-python .
+ln -s $MIRTE_SRC_DIR/mirte-python .
 ls
 cd mirte-python || exit
 pip install .

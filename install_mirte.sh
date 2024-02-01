@@ -2,7 +2,6 @@
 set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
-export UPDATE=false
 . $MIRTE_SRC_DIR/settings.sh || (
 	export INSTALL_DOCS=true
 	export INSTALL_ROS=true

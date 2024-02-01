@@ -3,7 +3,7 @@ set -xe
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 # install basic python tools
-$UPDATE || sudo apt install -y python3 python3-venv python3-dev git libffi-dev
+sudo apt install -y python3 python3-venv python3-dev git libffi-dev
 
 # create and activate virtualenv
 # Due to a build error on numpy we need to install numpy and

@@ -6,7 +6,7 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 sudo apt update
 
 # Install nodeenv
-$UPDATE || sudo apt install -y python3-pip python3-setuptools python3-wheel
+sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
 # Install nodeenv
