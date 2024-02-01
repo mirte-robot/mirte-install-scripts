@@ -168,8 +168,6 @@ if $INSTALL_ROS; then
 		. ./install_ROS.sh
 		echo "done ROS"
 	} 2>&1 | sed -u 's/^/ROS::: /' &
-fi
-if ! $PARALLEL; then
 	wait_all
 fi
 # Install overlayfs and make sd card read only (software)
