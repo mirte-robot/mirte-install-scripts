@@ -16,6 +16,19 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 	export PARALLEL=true
 
 )
+
+wait_all() {
+while [ "$(jobs -p | wc -l)" -gt 0 ]; do # wait for all backgrounded jobs to finish
+        state=0
+		wait -n || state=$? # wait for next job to finish. "||" is required to not trigger set -e
+		if [[ $state -ne 0 ]]; then
+            pkill -P $$ || true # kill all child processes
+			exit 1 # exit with error
+		fi
+	done
+}
+
+
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
 Acquire::ForceIPv4 "true";
@@ -33,7 +46,7 @@ sudo apt install -y locales python3.8 python3-pip python3-setuptools
 	echo "done locale"
 } 2>&1 | sed -u 's/^/locales::: /' &
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 # Install vcstool
 cp repos.yaml $MIRTE_SRC_DIR
@@ -59,7 +72,7 @@ if $INSTALL_ROS; then
 	} 2>&1 | sed -u 's/^/telemetrix::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 if $INSTALL_ARDUINO; then
 	{
@@ -70,7 +83,7 @@ if $INSTALL_ARDUINO; then
 	} 2>&1 | sed -u 's/^/arduino::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 if $INSTALL_PYTHON; then
 
@@ -82,7 +95,7 @@ if $INSTALL_PYTHON; then
 	} 2>&1 | sed -u 's/^/mirte-python::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 if $INSTALL_WEB; then
 
@@ -94,7 +107,7 @@ if $INSTALL_WEB; then
 	} 2>&1 | sed -u 's/^/web::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 if $INSTALL_JUPYTER; then
 
@@ -108,7 +121,7 @@ if $INSTALL_JUPYTER; then
 	} 2>&1 | sed -u 's/^/jupyter_ros::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 
 if $INSTALL_VSCODE; then
@@ -118,7 +131,7 @@ if $INSTALL_VSCODE; then
 	} 2>&1 | sed -u 's/^/vscode::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 
 if $INSTALL_DOCS; then
@@ -130,7 +143,7 @@ if $INSTALL_DOCS; then
 	} 2>&1 | sed -u 's/^/docs::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 if $INSTALL_PROVISIONING; then
 
@@ -143,18 +156,20 @@ if $INSTALL_PROVISIONING; then
 	} 2>&1 | sed -u 's/^/provisioning::: /' &
 fi
 if ! $PARALLEL; then
-	wait
+	wait_all
 fi
 
 if $INSTALL_ROS; then
-	wait # rosdep does wait for other apt scripts to finish, then it just fails installing. If we wait for the others to finish, there won't be parralel apt scripts running.
+	wait_all # rosdep doesnt wait for other apt scripts to finish, then it just fails installing. If we wait for the others to finish, there won't be parralel apt scripts running.
 	{
 		# Install Mirte ROS packages
 		cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 		. ./install_ROS.sh
 		echo "done ROS"
 	} 2>&1 | sed -u 's/^/ROS::: /' &
-	wait
+fi
+if ! $PARALLEL; then
+	wait_all
 fi
 # Install overlayfs and make sd card read only (software)
 # sudo apt install -y overlayroot
@@ -183,7 +198,7 @@ sudo du -sh /var/cache/apt/archives
 sudo apt clean
 
 echo "Waiting"
-time wait # wait on all the backgrounded stuff
+time wait_all # wait on all the backgrounded stuff
 echo "Done installing"
 # cd /home/mirte/
 date >install_date.txt
