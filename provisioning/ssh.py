@@ -21,5 +21,5 @@ def start(mount_point, loop):
         file.writelines(new_keys)
 
 
-def stop():
+async def stop():
     print("stop ssh")

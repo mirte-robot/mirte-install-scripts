@@ -52,7 +52,7 @@ def access_points(configuration, loop):
 stopped = False
 
 
-def stop():
+async def stop():
     global stopped
     stopped = True
 
@@ -114,8 +114,7 @@ def set_password(new_password, prev_set_password):
     ):  # when changing as the mirte user, there are some checks, when changing as root, no checks
         return
     print(f'Changing password to "{new_password}"')
-    print(f'echo "{new_password}\n{new_password}" | sudo passwd mirte')
-    o = os.system(f'echo "{new_password}\n{new_password}" | sudo passwd mirte')
+    o = os.system(f'sudo chpasswd mirte:{new_password}')
     print(o)
 
 

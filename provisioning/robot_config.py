@@ -64,7 +64,7 @@ class MyEventHandler(FileSystemEventHandler):
         self.catch_all_handler(event)
 
 
-def stop():
+async def stop():
     observer.stop()
     observer.join()
 
