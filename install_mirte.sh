@@ -18,16 +18,15 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 )
 
 wait_all() {
-while [ "$(jobs -p | wc -l)" -gt 0 ]; do # wait for all backgrounded jobs to finish
-        state=0
+	while [ "$(jobs -p | wc -l)" -gt 0 ]; do # wait for all backgrounded jobs to finish
+		state=0
 		wait -n || state=$? # wait for next job to finish. "||" is required to not trigger set -e
 		if [[ $state -ne 0 ]]; then
-            pkill -P $$ || true # kill all child processes
-			exit 1 # exit with error
+			pkill -P $$ || true # kill all child processes
+			exit 1              # exit with error
 		fi
 	done
 }
-
 
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
