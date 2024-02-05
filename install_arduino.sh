@@ -59,7 +59,6 @@ echo -e "mirte_mirte\nmirte_mirte" | sudo passwd root
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/run-avrdude /usr/bin
 sudo bash -c 'echo "mirte ALL = (root) NOPASSWD: /usr/local/bin/arduino-cli" >> /etc/sudoers'
 
-
 # Install picotool for the Raspberry Pi Pico
 sudo apt install build-essential pkg-config libusb-1.0-0-dev cmake -y
 cd /tmp/ || exit 1
@@ -78,9 +77,10 @@ cd /tmp || exit 1
 rm -rf pico-sdk
 rm -rf picotool
 
-#  Download latest uf2 release
-curl -s https://api.github.com/repos/mirte-robot/telemetrix4rpipico/releases/latest \
-| grep ".*uf2" \
-| cut -d : -f 2,3 \
-| tr -d \" \
-| wget -qi -
+#  Download latest uf2 release, resulting in Telemetrix4RpiPico.uf2
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+curl -s https://api.github.com/repos/mirte-robot/telemetrix4rpipico/releases/latest |
+	grep ".*uf2" |
+	cut -d : -f 2,3 |
+	tr -d \" |
+	wget -qi -
