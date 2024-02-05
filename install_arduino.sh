@@ -63,6 +63,7 @@ sudo bash -c 'echo "mirte ALL = (root) NOPASSWD: /usr/local/bin/arduino-cli" >> 
 sudo apt install build-essential pkg-config libusb-1.0-0-dev cmake -y
 cd /tmp/ || exit 1
 git clone https://github.com/raspberrypi/pico-sdk.git # somehow needed for picotool
+export PICO_SDK_PATH=/tmp/pico-sdk
 git clone https://github.com/raspberrypi/picotool.git
 cd picotool || exit 1
 sudo cp udev/99-picotool.rules /etc/udev/rules.d/
