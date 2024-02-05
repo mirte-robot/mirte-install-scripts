@@ -40,8 +40,23 @@ if test "$1" == "upload_uno"; then
 	arduino-cli -v upload -p /dev/ttyACM0 --fqbn arduino:avr:uno /home/mirte/arduino_project/$2
 fi
 
+if test "$1" == "upload_pico"; then
+	MIRTE_SRC_DIR=/usr/local/src/mirte
+	sudo picotool load -f $MIRTE_SRC_DIR/mirte-install-scripts/Telemetrix4RpiPico.uf2
+	if $? -ne 0; then
+		echo "Failed to upload to Pico"
+		echo "Please check the connection and try again"
+		echo "Or unplug the Pico, press the BOOTSEL button and plug it in again"
+		exit 1
+	fi
+	sudo picotool reboot
+fi
+
 # Start ROS again
 if test "$1" == "upload" && test "$2" == "Telemetrix4Arduino" && [[ $ROS_RUNNING == "1" ]]; then
 	sudo service mirte-ros start
 	echo "STARTING ROS"
+else
+	echo "NOT STARTING ROS"
+	echo "Start it yourself with 'sudo service mirte-ros start'"
 fi
