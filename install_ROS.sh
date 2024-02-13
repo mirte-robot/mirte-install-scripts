@@ -65,10 +65,9 @@ catkin build
 source ./devel/setup.bash
 roscd astra_camera
 ./scripts/create_udev_rules
-sudo udevadm control --reload && sudo  udevadm trigger
+sudo udevadm control --reload && sudo udevadm trigger
 roscd rplidar_ros
 ./scripts/create_udev_rules.sh
-
 
 # install missing python dependencies rosbridge
 #sudo apt install -y libffi-dev libjpeg-dev zlib1g-dev
