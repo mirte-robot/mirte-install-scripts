@@ -81,7 +81,7 @@ rm -rf picotool
 #  Download latest uf2 release, resulting in Telemetrix4RpiPico.uf2
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 curl -s https://api.github.com/repos/mirte-robot/telemetrix4rpipico/releases/latest |
-	grep ".*uf2" |
+	grep ".*/Telemetrix4RpiPico.uf2" |
 	cut -d : -f 2,3 |
 	tr -d \" |
 	wget -qi -
