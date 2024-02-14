@@ -1,0 +1,12 @@
+[Unit]
+Description=Mirte-shutdown
+After=mirte-ros.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/usr/local/src/mirte/mirte-install-scripts/services/shutdown_mirte.bash
+TimeoutSec=30
+[Install]
+WantedBy=multi-user.target
+WantedBy=mirte-ros.service
