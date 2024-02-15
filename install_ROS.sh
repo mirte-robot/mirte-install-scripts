@@ -19,6 +19,7 @@ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo ap
 sudo apt update
 sudo apt install -y ros-noetic-ros-base python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential python3-catkin-tools python3-osrf-pycommon
 grep -qxF "source /opt/ros/noetic/setup.bash" /home/mirte/.bashrc || echo "source /opt/ros/noetic/setup.bash" >>/home/mirte/.bashrc
+grep -qxF "source /opt/ros/noetic/setup.zsh" /home/mirte/.zshrc || echo "source /opt/ros/noetic/setup.zsh" >>/home/mirte/.zshrc
 source /opt/ros/noetic/setup.bash
 sudo rosdep init
 rosdep update
@@ -41,6 +42,8 @@ cd ..
 rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
 catkin build
 grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.bashrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.bashrc
+grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.zshrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.zshrc
+
 source /home/mirte/mirte_ws/devel/setup.bash
 
 # install lidar and depth camera
