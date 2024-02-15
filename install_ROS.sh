@@ -42,7 +42,7 @@ cd ..
 rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
 catkin build
 grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.bashrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.bashrc
-grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.zshrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.zshrc
+grep -qxF "source /home/mirte/mirte_ws/devel/setup.zsh" /home/mirte/.zshrc || echo "source /home/mirte/mirte_ws/devel/setup.zsh" >>/home/mirte/.zshrc
 
 source /home/mirte/mirte_ws/devel/setup.bash
 
