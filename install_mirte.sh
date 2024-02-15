@@ -50,7 +50,7 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 
 # Install Mirte Python package
 cd $MIRTE_SRC_DIR/mirte-python || exit 1
-pip3 install .
+# pip3 install .
 
 # Install Mirte Interface
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
