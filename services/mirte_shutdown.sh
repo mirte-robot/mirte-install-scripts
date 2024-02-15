@@ -3,10 +3,10 @@ set -xe
 # Don't turn off the relay if the system is rebooting
 # TODO: does not work if ros is not running
 if ! systemctl list-jobs | grep -q -e "reboot.target.*start"; then
-    echo "not rebooting"
+	echo "not rebooting"
 else
-   printf "Rebooting\n"
-    exit
+	printf "Rebooting\n"
+	exit
 fi
 
 touch /home/mirte/shutdown
