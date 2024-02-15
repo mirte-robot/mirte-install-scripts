@@ -46,7 +46,7 @@ ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino/examples/Telemetrix4Arduino/Teleme
 
 # Install arduino firmata upload script
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_arduino.sh
+./install_arduino.sh || true
 
 # Install Mirte Python package
 cd $MIRTE_SRC_DIR/mirte-python || exit 1
@@ -73,23 +73,27 @@ pip3 install numpy
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_bt.sh
 
-# Install Mirte documentation
-cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
-sudo apt install -y python3.8-venv libenchant-dev
-python3 -m venv docs-env
-source docs-env/bin/activate
-pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
-pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
-mkdir -p _modules/catkin_ws/src
-cd _modules || exit 1
-ln -s $MIRTE_SRC_DIR/mirte-python . || true
-cd mirte-python || exit 1
-pip install . || true
-source /opt/ros/noetic/setup.bash
-source /home/mirte/mirte_ws/devel/setup.bash
-cd ../../
-make html || true
-deactivate
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+./mirte_master.sh
+
+
+# # Install Mirte documentation
+# cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
+# sudo apt install -y python3.8-venv libenchant-dev
+# python3 -m venv docs-env
+# source docs-env/bin/activate
+# pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
+# pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
+# mkdir -p _modules/catkin_ws/src
+# cd _modules || exit 1
+# ln -s $MIRTE_SRC_DIR/mirte-python . || true
+# cd mirte-python || exit 1
+# pip install . || true
+# source /opt/ros/noetic/setup.bash
+# source /home/mirte/mirte_ws/devel/setup.bash
+# cd ../../
+# make html || true
+# deactivate
 
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
