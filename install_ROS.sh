@@ -50,6 +50,7 @@ source /home/mirte/mirte_ws/devel/setup.bash
 cd /home/mirte/mirte_ws/src || exit 1
 git clone https://github.com/Slamtec/rplidar_ros.git
 git clone https://github.com/orbbec/ros_astra_camera.git
+git clone https://github.com/arendjan/ridgeback.git
 cd ../../
 mkdir temp
 cd temp || exit 1

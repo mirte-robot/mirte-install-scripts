@@ -76,7 +76,6 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./mirte_master.sh
 
-
 # # Install Mirte documentation
 # cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
 # sudo apt install -y python3.8-venv libenchant-dev
