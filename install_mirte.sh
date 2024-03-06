@@ -74,7 +74,7 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_bt.sh
 
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./mirte_master.sh
+./install_mirte_master.sh
 
 # # Install Mirte documentation
 # cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
