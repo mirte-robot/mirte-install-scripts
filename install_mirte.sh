@@ -94,6 +94,8 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 # make html || true
 # deactivate
 
+./install_vscode.sh
+
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
 pip3 install simpleaudio pyttsx3
