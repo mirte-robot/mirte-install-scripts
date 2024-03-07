@@ -13,6 +13,7 @@ EOT'
 fi
 
 cd $MIRTE_SRC_DIR/mirte-install-scripts/mirte-master/usb_switch/
+sudo apt install libgpiod-dev -y
 mkdir build
 cd build
 cmake ..

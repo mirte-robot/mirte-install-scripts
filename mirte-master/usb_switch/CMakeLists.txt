@@ -5,4 +5,3 @@ add_compile_options(-lgpiodcxx)
 
 add_executable(${PROJECT_NAME} usb_switch.cpp)
 target_link_libraries(${PROJECT_NAME} gpiodcxx)
- 
