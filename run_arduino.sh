@@ -7,9 +7,11 @@ ROS_RUNNING=$(ps aux | grep -c "[r]osmaster")
 COMMAND=$1
 PROJECT=$2
 # Stop ROS when uploading new code
-if test "$COMMAND" == "upload" && [[ $ROS_RUNNING == "1" ]]; then
+STOPPED_ROS=false
+if [[ $COMMAND == upload* ]] && [[ $ROS_RUNNING == "1" ]]; then # test for any upload... command
 	echo "STOPPING ROS"
 	sudo service mirte-ros stop || /bin/true
+	STOPPED_ROS=true
 fi
 
 # Different build scripts
@@ -42,9 +44,8 @@ upload() {
 	fi
 }
 
-if [[ $COMMAND == upload* ]]; then
+if [[ $COMMAND == upload* ]] && test "$1" != "upload_pico"; then
 	shopt -s nullglob
-
 	for PORT in "/dev/ttyUSB"*; do
 		echo "Uploading to $PORT"
 		upload $PORT
@@ -54,8 +55,26 @@ if [[ $COMMAND == upload* ]]; then
 		upload $PORT
 	done
 fi
+
+if test "$1" == "upload_pico"; then
+	MIRTE_SRC_DIR=/usr/local/src/mirte
+	# This will always upload telemetrix4rpipico.uf2, so no need to pass a file
+	sudo picotool load -f $MIRTE_SRC_DIR/mirte-install-scripts/Telemetrix4RpiPico.uf2
+	retVal=$?
+	if [ $retVal -ne 0 ]; then
+		echo "Failed to upload to Pico"
+		echo "Please check the connection and try again"
+		echo "Or unplug the Pico, press the BOOTSEL button and plug it in again"
+		exit 1
+	fi
+	sudo picotool reboot # just to make sure, sometimes it does not reboot automatically
+fi
+
 # Start ROS again
-if test "$COMMAND" == "upload" && test "$PROJECT" == "Telemetrix4Arduino" && [[ $ROS_RUNNING == "1" ]]; then
+if $STOPPED_ROS; then
 	sudo service mirte-ros start
 	echo "STARTING ROS"
+else
+	echo "NOT STARTING ROS"
+	echo "Start it yourself with 'sudo service mirte-ros start'"
 fi
