@@ -11,12 +11,12 @@ wget https://apt.kitware.com/kitware-archive.sh
 chmod +x kitware-archive.sh
 sudo ./kitware-archive.sh
 rm kitware-archive.sh
-sudo apt update
+sudo apt update || true
 sudo apt install cmake -y
 # Install ROS Noetic
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-sudo apt update
+sudo apt update || true
 sudo apt install -y ros-noetic-ros-base python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential python3-catkin-tools python3-osrf-pycommon
 grep -qxF "source /opt/ros/noetic/setup.bash" /home/mirte/.bashrc || echo "source /opt/ros/noetic/setup.bash" >>/home/mirte/.bashrc
 grep -qxF "source /opt/ros/noetic/setup.zsh" /home/mirte/.zshrc || echo "source /opt/ros/noetic/setup.zsh" >>/home/mirte/.zshrc
