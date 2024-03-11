@@ -50,7 +50,7 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 
 # Install Mirte Python package
 cd $MIRTE_SRC_DIR/mirte-python || exit 1
-# pip3 install .
+pip3 install .
 
 # Install Mirte Interface
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
@@ -77,28 +77,32 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_mirte_master.sh
 
 # # Install Mirte documentation
-# cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
-# sudo apt install -y python3.8-venv libenchant-dev
-# python3 -m venv docs-env
-# source docs-env/bin/activate
-# pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
-# pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
-# mkdir -p _modules/catkin_ws/src
-# cd _modules || exit 1
-# ln -s $MIRTE_SRC_DIR/mirte-python . || true
-# cd mirte-python || exit 1
-# pip install . || true
-# source /opt/ros/noetic/setup.bash
-# source /home/mirte/mirte_ws/devel/setup.bash
-# cd ../../
-# make html || true
-# deactivate
+cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
+sudo apt install -y python3.8-venv libenchant-dev
+python3 -m venv docs-env
+source docs-env/bin/activate
+pip install docutils==0.16.0 sphinx-tabs==3.2.0 #TODO: use files to freeze versions
+pip install wheel sphinx sphinx-prompt sphinx-rtd-theme sphinxcontrib-spelling sphinxcontrib-napoleon
+mkdir -p _modules/catkin_ws/src
+cd _modules || exit 1
+ln -s $MIRTE_SRC_DIR/mirte-python . || true
+cd mirte-python || exit 1
+pip install . || true
+source /opt/ros/noetic/setup.bash
+source /home/mirte/mirte_ws/devel/setup.bash
+cd ../../
+make html || true
+deactivate
 
 ./install_vscode.sh
 
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
 pip3 install simpleaudio pyttsx3
+
+# set default password for root to ...
+sed -i '/^root:/d' /etc/shadow
+echo 'root:$6$iPpuScKGQTiuJk9r$cBXX/s.8UBp0bvrshHRhw/tHcmU3.beHBfCyJgP8Qhjx2CEO5.dyyvKips6loYQocSTgS/qEYxPrOQd/.qVi70:19793:0:99999:7:::' | sudo tee -a /etc/shadow
 
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
