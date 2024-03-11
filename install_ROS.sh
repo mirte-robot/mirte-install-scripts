@@ -39,12 +39,6 @@ mkdir -p /home/mirte/mirte_ws/src
 cd /home/mirte/mirte_ws/src || exit 1
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
 cd ..
-rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
-catkin build
-grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.bashrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.bashrc
-grep -qxF "source /home/mirte/mirte_ws/devel/setup.zsh" /home/mirte/.zshrc || echo "source /home/mirte/mirte_ws/devel/setup.zsh" >>/home/mirte/.zshrc
-
-source /home/mirte/mirte_ws/devel/setup.bash
 
 # install lidar and depth camera
 cd /home/mirte/mirte_ws/src || exit 1
@@ -72,6 +66,13 @@ roscd astra_camera
 sudo udevadm control --reload && sudo udevadm trigger
 roscd rplidar_ros
 ./scripts/create_udev_rules.sh
+
+rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
+catkin build
+grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.bashrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.bashrc
+grep -qxF "source /home/mirte/mirte_ws/devel/setup.zsh" /home/mirte/.zshrc || echo "source /home/mirte/mirte_ws/devel/setup.zsh" >>/home/mirte/.zshrc
+
+source /home/mirte/mirte_ws/devel/setup.bash
 
 # install missing python dependencies rosbridge
 #sudo apt install -y libffi-dev libjpeg-dev zlib1g-dev
