@@ -102,7 +102,7 @@ sudo apt install pulseaudio libasound2-dev libespeak1 -y
 pip3 install simpleaudio pyttsx3
 
 # set default password for root to ...
-sed -i '/^root:/d' /etc/shadow
+sudo sed -i '/^root:/d' /etc/shadow
 echo 'root:$6$iPpuScKGQTiuJk9r$cBXX/s.8UBp0bvrshHRhw/tHcmU3.beHBfCyJgP8Qhjx2CEO5.dyyvKips6loYQocSTgS/qEYxPrOQd/.qVi70:19793:0:99999:7:::' | sudo tee -a /etc/shadow
 
 # Install overlayfs and make sd card read only (software)
