@@ -94,6 +94,7 @@ cd ../../
 make html || true
 deactivate
 
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_vscode.sh
 
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
