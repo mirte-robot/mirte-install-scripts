@@ -1,3 +1,5 @@
 build/
 ev3-usb.sh
 ui/
+mirte-master/usb_switch/usb_switch.cpp
+*.uf2

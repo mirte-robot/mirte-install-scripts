@@ -31,14 +31,6 @@ void stop_handler(int s) {
 }
 
 int main(void) {
-  gpio_pin pin("GPIO0_D4");
-
-  pins.push_back(pin);
-  // ::gpiod::chip chip(pin.chip);
-  sleep(5);
-  pin.gpio_line.request(
-      {"usb_switch", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
-
   struct sigaction sigIntHandler;
 
   sigIntHandler.sa_handler = stop_handler;
@@ -47,6 +39,15 @@ int main(void) {
 
   sigaction(SIGINT, &sigIntHandler, NULL);
   sigaction(SIGTERM, &sigIntHandler, NULL);
+
+  gpio_pin pin("GPIO4_C3");
+
+  pins.push_back(pin);
+  pin.gpio_line.request(
+      {"usb_switch", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+  pin.gpio_line.set_value(0); // Force off before turning on.
+  sleep(1);
+  pin.gpio_line.set_value(1);
   pause();
 }
 
@@ -57,7 +58,6 @@ gpio_pin::gpio_pin(std::string pin_name) {
   this->block = pin_name[6];
   this->block_line = (int)(pin_name[7] - '0');
   this->line = 8 * (this->block - 'A') + this->block_line;
-  // std::cout << "cn" << this
   this->chip = ::gpiod::chip(this->chip_name);
   this->gpio_line = chip.get_line(this->line);
   std::cout << "new pin" << pin_name << std::endl;
