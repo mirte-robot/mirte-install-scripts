@@ -81,8 +81,10 @@ rm -rf picotool
 #  Download latest uf2 release, resulting in Telemetrix4RpiPico.uf2
 # TODO:  Downlaods from arendjan/telemetrix4rpipico, as it isn't released yet on the official repo
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-curl -s https://api.github.com/repos/arendjan/telemetrix4rpipico/releases/latest |
-	grep ".*/Telemetrix4RpiPico.uf2" |
-	cut -d : -f 2,3 |
-	tr -d \" |
-	wget -qi -
+# curl -s https://api.github.com/repos/arendjan/telemetrix4rpipico/releases/latest |
+# 	grep ".*/Telemetrix4RpiPico.uf2" |
+# 	cut -d : -f 2,3 |
+# 	tr -d \" |
+# 	wget -qi -
+
+wget https://mirte.arend-jan.com/files/telemetrix/modules2/Telemetrix4RpiPico.uf2
