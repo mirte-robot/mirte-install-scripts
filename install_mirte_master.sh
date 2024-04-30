@@ -30,7 +30,6 @@ sudo systemctl stop mirte-shutdown.service || /bin/true
 sudo systemctl start mirte-shutdown.service
 sudo systemctl enable mirte-shutdown.service
 
-
 # create a gpio group and add mirte to it. This is needed to access the gpio ports, otherwise only sudo is allowed.
 sudo groupadd gpiod
 sudo usermod -a -G gpiod mirte
