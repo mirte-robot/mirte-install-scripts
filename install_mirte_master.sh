@@ -24,6 +24,13 @@ sudo systemctl stop mirte-usb-switch.service || /bin/true
 sudo systemctl start mirte-usb-switch.service
 sudo systemctl enable mirte-usb-switch.service
 
+sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-shutdown.service /lib/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl stop mirte-shutdown.service || /bin/true
+sudo systemctl start mirte-shutdown.service
+sudo systemctl enable mirte-shutdown.service
+
+
 # create a gpio group and add mirte to it. This is needed to access the gpio ports, otherwise only sudo is allowed.
 sudo groupadd gpiod
 sudo usermod -a -G gpiod mirte
