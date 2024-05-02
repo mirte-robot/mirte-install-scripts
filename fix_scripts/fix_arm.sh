@@ -14,7 +14,6 @@ sleep 10
 python3 examples/mirte_master_set_ranges_volt.py
 sleep 10
 python3 examples/mirte_master_check_home.py </dev/tty # ttyp required as this script is piped
-sleep 10
 cd ~
 rm -rf ~/arm_temp
 cd ~/mirte_ws/src/mirte-ros-packages/
