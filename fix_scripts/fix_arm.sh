@@ -9,6 +9,7 @@ git clone -b modules https://github.com/arendjan/tmx-pico-aio.git
 cd tmx-pico-aio
 pip install .
 pip install aioconsole
+python3 examples/mirte_master_reset_offset.py
 sleep 10
 python3 examples/mirte_master_set_ranges_volt.py
 sleep 10
