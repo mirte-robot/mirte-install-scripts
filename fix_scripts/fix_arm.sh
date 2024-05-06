@@ -1,5 +1,6 @@
 #!/bin/bash
 set -xe
+rm -rf ~/arm_temp || true
 mkdir ~/arm_temp
 cd ~/arm_temp
 sudo systemctl stop mirte-ros
