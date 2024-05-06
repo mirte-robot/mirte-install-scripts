@@ -4,12 +4,11 @@ rm -rf ~/arm_temp || true
 mkdir ~/arm_temp
 cd ~/arm_temp
 sudo systemctl stop mirte-ros
-wget https://mirte.arend-jan.com/files/telemetrix/modules2/Telemetrix4RpiPico.uf2
+wget https://mirte.arend-jan.com/files/telemetrix/release/Telemetrix4RpiPico.uf2
+sudo picotool info Telemetrix4RpiPico.uf2
 sudo picotool load -f Telemetrix4RpiPico.uf2
-# git clone -b modules https://github.com/arendjan/tmx-pico-aio.git
 cd /usr/local/src/mirte/mirte-tmx-pico-aio
 git pull
-# cd tmx-pico-aio
 pip install .
 pip install aioconsole
 python3 examples/mirte_master_reset_offset.py
