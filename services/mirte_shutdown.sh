@@ -9,7 +9,7 @@ set -xe
 # 	exit
 # fi
 
-# touch /home/mirte/shutdown
+touch /home/mirte/shutdown
 source /home/mirte/mirte_ws/devel/setup.bash
 rosservice call /mirte/shutdown "data: false"
 # touch /home/mirte/shutdown_done

@@ -5,6 +5,7 @@ After=mirte-ros.service
 [Service]
 Type=oneshot
 RemainAfterExit=true
+ExecStart=/usr/local/src/mirte/mirte-install-scripts/services/mirte_boot.sh
 ExecStop=/usr/local/src/mirte/mirte-install-scripts/services/mirte_shutdown.sh
 TimeoutSec=30
 [Install]

@@ -28,6 +28,8 @@ catkin build
 
 cd /usr/local/src/mirte/mirte-install-scripts/
 git pull
+sudo ln -s /usr/local/src/mirte/mirte-install-scripts/mirte-shutdown.service /etc/systemd/system/mirte-shutdown.service || true
+sudo systemctl enable --now mirte-shutdown
 sudo systemctl daemon-reload
 sudo systemctl start mirte-ros
 sudo touch /forcefsck
