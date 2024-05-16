@@ -10,5 +10,5 @@ fi
 touch /home/mirte/.shutdown
 source /home/mirte/mirte_ws/devel/setup.bash
 # TODO: does not work if ros is not running
-rosservice call /mirte/set_middle_image "type: 'text', value: 'Shutting down...'"
-sleep 5
+rosservice call /mirte/set_middle_image "{ type: 'text', value: 'Shutting down...'}"
+sleep 2
