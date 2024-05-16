@@ -2,11 +2,13 @@
 
 set -xe
 # check if file /home/mirte/shutdown exists
-if [ -f /home/mirte/shutdown ]; then
+if [ -f /home/mirte/.shutdown ]; then
 	# check if file /home/mirte/shutdown_done exists
 	echo "correct shutdown"
-	rm /home/mirte/shutdown
+	rm /home/mirte/.shutdown
 else
 	echo "incorrect shutdown"
-	touch /home/mirte/shutdown_incorrect
+	touch /home/mirte/.shutdown_incorrect
+    # append date to shutdown_incorrect file
+    date >> /home/mirte/.shutdown_incorrect
 fi
