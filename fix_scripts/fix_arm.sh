@@ -22,4 +22,3 @@ cd ~/mirte_ws/src/mirte-ros-packages/
 git pull
 catkin build
 sudo systemctl start mirte-ros
-

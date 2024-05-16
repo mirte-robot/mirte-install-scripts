@@ -19,10 +19,14 @@ git pull
 pip install .
 pip install aioconsole
 cd ~/mirte_ws/src/mirte-ros-packages/
+git stash # save students changes
 git pull
+git stash pop # apply students changes
+git status | grep -c "Merge conflict" || echo "RESOLVE MERGE CONFLICTS BEFORE REBOOT!!!"
 catkin build
 
 cd /usr/local/src/mirte/mirte-install-scripts/
 git pull
 sudo systemctl daemon-reload
 sudo systemctl start mirte-ros
+sudo touch /forcefsck
