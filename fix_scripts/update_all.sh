@@ -31,3 +31,5 @@ git pull
 sudo systemctl daemon-reload
 sudo systemctl start mirte-ros
 sudo touch /forcefsck
+
+sync
