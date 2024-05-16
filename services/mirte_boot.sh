@@ -9,6 +9,6 @@ if [ -f /home/mirte/.shutdown ]; then
 else
 	echo "incorrect shutdown"
 	touch /home/mirte/.shutdown_incorrect
-    # append date to shutdown_incorrect file
-    date >> /home/mirte/.shutdown_incorrect
+	# append date to shutdown_incorrect file
+	date >>/home/mirte/.shutdown_incorrect
 fi
