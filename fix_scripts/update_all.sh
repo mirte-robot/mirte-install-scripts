@@ -21,8 +21,9 @@ pip install aioconsole
 cd ~/mirte_ws/src/mirte-ros-packages/
 git stash # save students changes
 git pull
-git stash pop # apply students changes
-git status | grep -c "Merge conflict" || echo "RESOLVE MERGE CONFLICTS BEFORE REBOOT!!!"
+git stash pop || true # apply students changes
+git status
+echo "Resolve any merge conflicts before reboot!!!" # resolve merge conflicts before reboot
 catkin build
 
 cd /usr/local/src/mirte/mirte-install-scripts/
