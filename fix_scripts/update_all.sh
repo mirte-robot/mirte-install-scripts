@@ -37,4 +37,4 @@ sudo touch /forcefsck
 
 sync
 # find any merge conflicts by looking for '<<<' in the code
-grep -r '<<<' ./mirte_ws/src/mirte-ros-packages && echo "merge conflicts in mirte-ros-packages" || echo "no merge conflict"
+grep -r '<<<' ~/mirte_ws/src/mirte-ros-packages && echo "merge conflicts in mirte-ros-packages" || echo "no merge conflict"
