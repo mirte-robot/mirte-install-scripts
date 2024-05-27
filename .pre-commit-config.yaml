@@ -16,7 +16,7 @@ repos:
             pass_filenames: false
             name: cmake-format
           - id: shell-format
-            entry: bash -c 'shopt -s globstar; shfmt -s -w **/**.sh'
+            entry: bash -c 'shopt -s globstar; /home/arendjan/go/bin/shfmt -s -w **/**.sh'
             language: system
             types: [shell]
             pass_filenames: false

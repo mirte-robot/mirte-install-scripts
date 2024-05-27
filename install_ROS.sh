@@ -43,7 +43,7 @@ cd ..
 # install lidar and depth camera
 cd /home/mirte/mirte_ws/src || exit 1
 git clone https://github.com/Slamtec/rplidar_ros.git
-git clone https://github.com/orbbec/ros_astra_camera.git
+git clone https://github.com/arendjan/ros_astra_camera.git -b fix-image-transport # compressed images
 git clone https://github.com/arendjan/ridgeback.git
 cd ../../
 mkdir temp
