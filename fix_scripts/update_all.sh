@@ -35,6 +35,7 @@ sudo systemctl daemon-reload
 sudo systemctl start mirte-ros
 sudo touch /forcefsck
 
+cd ~
 mkdir uboot_fix/
 cd uboot_fix/
 # update u-boot to fix audio jack issue
