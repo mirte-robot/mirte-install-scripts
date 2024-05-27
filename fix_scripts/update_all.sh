@@ -35,6 +35,14 @@ sudo systemctl daemon-reload
 sudo systemctl start mirte-ros
 sudo touch /forcefsck
 
+mkdir uboot_fix/
+cd uboot_fix/
+# update u-boot to fix audio jack issue
+wget https://mirte.arend-jan.com/files/fixes/uboot/linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+sudo apt install ./linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+sudo bash -c 'source /usr/lib/u-boot/platform_install.sh; write_uboot_platform_mtd $DIR /dev/mtdblock0'
+cd ../
+rm -rf uboot_fix/
 sync
 # find any merge conflicts by looking for '<<<' in the code
 grep -r '<<<' ~/mirte_ws/src/mirte-ros-packages && echo "merge conflicts in mirte-ros-packages" || echo "no merge conflict"
