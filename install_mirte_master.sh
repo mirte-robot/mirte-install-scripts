@@ -40,3 +40,12 @@ pip install gpiod==1.5.4 # python3.8 version
 # chatgpt node stuff for @chris-pek
 pip install gtts playsound openai==0.28.0 sounddevice scipy SpeechRecognition soundfile transformers datasets pyyaml pydub Elevenlabs
 pip install numpy==1.23.1 # python3.8 fix
+
+mkdir ~/uboot_fix/
+cd ~/uboot_fix/
+# audio fix uboot
+wget https://mirte.arend-jan.com/files/fixes/uboot/linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+sudo apt install ./linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+rm linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+cd ../
+rm -rf uboot_fix/
