@@ -6,7 +6,7 @@ echo $ip
 if [ "$(echo $ip | wc -w)" -ne 1 ]; then
 echo "multiple, wont use the ip from hostname"
 echo $ip
-echo hostname -I
+hostname -I
 else 
 export ROS_IP="$ip"
 export ROS_MASTER_URI="http://$ip:11311/"
