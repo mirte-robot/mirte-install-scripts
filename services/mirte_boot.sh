@@ -12,3 +12,4 @@ else
 	# append date to shutdown_incorrect file
 	date >>/home/mirte/.shutdown_incorrect
 fi
+"$(dirname "$0")/mirte_master_check.sh" &
