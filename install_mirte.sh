@@ -109,7 +109,7 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
-pip3 install simpleaudio pyttsx3
+pip3 install simpleaudio pyttsx3 || true # simpleaudio uses an old python install system. TODO: replace or update
 
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
