@@ -6,7 +6,9 @@ List of services:
 - mirte-jupyter:
   - starts jupyter, not on by default
 - mirte-ros
-  - starts ROS
+  - starts ROS using mirte_ros.sh
+    - this tries to guess the IP of the robot by using hostname -I and uses this as ROS_IP
+    - 
 - mirte-shutdown
   - Only for Mirte-master
   - Will run mirte_boot.sh and mirte_shutdown.sh

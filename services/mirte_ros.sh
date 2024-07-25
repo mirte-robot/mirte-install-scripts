@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# by default use minimal launch file, but allow to override to minimal_master
+LAUNCH_FILE="${1:-minimal}"
 source /home/mirte/mirte_ws/devel/setup.bash
 
 ip=$(hostname -I | awk '{print $1}') #just get the first ip addr
@@ -14,4 +17,4 @@ else
 fi
 # If the robot user wants to add their own config:
 # source /home/mirte/.bashrc
-roslaunch mirte_bringup minimal_master.launch
+roslaunch mirte_bringup $LAUNCH_FILE.launch
