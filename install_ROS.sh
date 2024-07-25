@@ -40,34 +40,33 @@ cd /home/mirte/mirte_ws/src || exit 1
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
 cd ..
 
-
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
-    # install lidar and depth camera
-    cd /home/mirte/mirte_ws/src || exit 1
-    git clone https://github.com/Slamtec/rplidar_ros.git
-    git clone https://github.com/arendjan/ros_astra_camera.git -b fix-image-transport # compressed images
-    git clone https://github.com/arendjan/ridgeback.git
-    cd ../../
-    mkdir temp
-    cd temp || exit 1
-    sudo apt install -y libudev-dev
-    git clone https://github.com/libuvc/libuvc.git
-    cd libuvc
-    mkdir build && cd build
-    cmake .. && make -j4
-    sudo make install
-    sudo ldconfig
-    cd ../../../
-    sudo rm -rf temp
-    cd /home/mirte/mirte_ws/ || exit 1
-    rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
-    catkin build
-    source ./devel/setup.bash
-    roscd astra_camera
-    ./scripts/create_udev_rules
-    sudo udevadm control --reload && sudo udevadm trigger
-    roscd rplidar_ros
-    ./scripts/create_udev_rules.sh
+	# install lidar and depth camera
+	cd /home/mirte/mirte_ws/src || exit 1
+	git clone https://github.com/Slamtec/rplidar_ros.git
+	git clone https://github.com/arendjan/ros_astra_camera.git -b fix-image-transport # compressed images
+	git clone https://github.com/arendjan/ridgeback.git
+	cd ../../
+	mkdir temp
+	cd temp || exit 1
+	sudo apt install -y libudev-dev
+	git clone https://github.com/libuvc/libuvc.git
+	cd libuvc
+	mkdir build && cd build
+	cmake .. && make -j4
+	sudo make install
+	sudo ldconfig
+	cd ../../../
+	sudo rm -rf temp
+	cd /home/mirte/mirte_ws/ || exit 1
+	rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
+	catkin build
+	source ./devel/setup.bash
+	roscd astra_camera
+	./scripts/create_udev_rules
+	sudo udevadm control --reload && sudo udevadm trigger
+	roscd rplidar_ros
+	./scripts/create_udev_rules.sh
 fi
 
 rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
@@ -84,7 +83,7 @@ source /home/mirte/mirte_ws/devel/setup.bash
 # Add systemd service to start ROS nodes
 ROS_SERVICE_NAME=mirte-ros
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then # master version should start a different launch file
-    ROS_SERVICE_NAME=mirte-master-ros
+	ROS_SERVICE_NAME=mirte-master-ros
 fi
 sudo rm /lib/systemd/system/$ROS_SERVICE_NAME.service || true
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/$ROS_SERVICE_NAME.service /lib/systemd/system/

@@ -3,7 +3,7 @@ set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 . $MIRTE_SRC_DIR/settings.sh || true # read settings, like MIRTE_TYPE
-MIRTE_TYPE="${MIRTE_TYPE:-default}" # default, mirte-master
+MIRTE_TYPE="${MIRTE_TYPE:-default}"  # default, mirte-master
 
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
@@ -75,11 +75,9 @@ pip3 install numpy
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_bt.sh
 
-
 # if building for mirte-master:
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
-	
-	
+
 	# set default password for root to ...
 	sudo sed -i '/^root:/d' /etc/shadow
 	echo 'root:$6$iPpuScKGQTiuJk9r$cBXX/s.8UBp0bvrshHRhw/tHcmU3.beHBfCyJgP8Qhjx2CEO5.dyyvKips6loYQocSTgS/qEYxPrOQd/.qVi70:19793:0:99999:7:::' | sudo tee -a /etc/shadow
@@ -112,7 +110,6 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
 pip3 install simpleaudio pyttsx3
-
 
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
