@@ -1,0 +1,17 @@
+[Unit]
+Description=Mirte ROS
+After=network.target
+After=ssh.service
+After=network-online.target
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+Restart=always
+RestartSec=5s
+User=mirte 
+ExecStart=/bin/bash -c "source /home/mirte/mirte_ws/devel/setup.bash && roslaunch mirte_bringup minimal_master.launch"
+
+[Install]
+WantedBy=multi-user.target

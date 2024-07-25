@@ -32,18 +32,25 @@ sudo ln -s /usr/local/src/mirte/mirte-install-scripts/services/mirte-shutdown.se
 sudo touch /home/mirte/.shutdown
 sudo systemctl enable --now mirte-shutdown
 sudo systemctl daemon-reload
+
+# uboot function
+uboot() {
+	cd ~
+	mkdir uboot_fix/
+	cd uboot_fix/
+	# update u-boot to fix audio jack issue
+	wget https://mirte.arend-jan.com/files/fixes/uboot/linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+	sudo apt install ./linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
+	sudo bash -c 'source /usr/lib/u-boot/platform_install.sh; write_uboot_platform_mtd $DIR /dev/mtdblock0'
+	cd ../
+	rm -rf uboot_fix/
+}
+
+# if linux-u-boot-orangepi3b-edge is not installed, install it
+apt -qq list linux-u-boot-orangepi3b-edge | grep 24 || uboot
+
 sudo systemctl start mirte-ros
 sudo touch /forcefsck
-
-cd ~
-mkdir uboot_fix/
-cd uboot_fix/
-# update u-boot to fix audio jack issue
-wget https://mirte.arend-jan.com/files/fixes/uboot/linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
-sudo apt install ./linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
-sudo bash -c 'source /usr/lib/u-boot/platform_install.sh; write_uboot_platform_mtd $DIR /dev/mtdblock0'
-cd ../
-rm -rf uboot_fix/
 sync
 # find any merge conflicts by looking for '<<<' in the code
 grep -r '<<<' ~/mirte_ws/src/mirte-ros-packages && echo "merge conflicts in mirte-ros-packages" || echo "no merge conflict"
