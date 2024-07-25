@@ -69,7 +69,8 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	./scripts/create_udev_rules.sh
 fi
 
-rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
+# -r is for continue on error, mirte-ros-packages references astra_camera which is not installed on default images.
+rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic -r
 catkin build
 grep -qxF "source /home/mirte/mirte_ws/devel/setup.bash" /home/mirte/.bashrc || echo "source /home/mirte/mirte_ws/devel/setup.bash" >>/home/mirte/.bashrc
 grep -qxF "source /home/mirte/mirte_ws/devel/setup.zsh" /home/mirte/.zshrc || echo "source /home/mirte/mirte_ws/devel/setup.zsh" >>/home/mirte/.zshrc
