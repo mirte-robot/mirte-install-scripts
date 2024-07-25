@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 . /opt/ros/noetic/setup.bash
 SECONDS=0
 WARN_LVL=0
@@ -10,7 +10,7 @@ while true; do
 	percentage=$(
 		(rostopic echo /mirte/power/power_watcher -n2 | grep percentage | tail -1) &
 		pid=$!
-		(sleep 5 && kill -HUP $pid) 2>/dev/null &
+		(sleep 5 && kill -9 $pid) 2>/dev/null &
 		watcher=$!
 		wait $pid 2>/dev/null && pkill -HUP -P $watcher
 	)
@@ -45,5 +45,5 @@ while true; do
 		date >/home/mirte/.shutdown_power
 		sudo shutdown now
 	fi
-	sleep 2
+	sleep 10
 done
