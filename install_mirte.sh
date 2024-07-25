@@ -44,7 +44,11 @@ mkdir -p /home/mirte/arduino_project/Telemetrix4Arduino
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino /home/mirte/Arduino/libraries/Telemetrix4Arduino
 ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino/examples/Telemetrix4Arduino/Telemetrix4Arduino.ino /home/mirte/arduino_project/Telemetrix4Arduino
 
-# Install arduino firmata upload script
+# Install Mirte ROS packages and update cmake
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+./install_ROS.sh
+
+# Install arduino, libs & uploader (nano, stm and pico), requires cmake update from ./install_ROS.sh
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_arduino.sh
 
@@ -61,10 +65,6 @@ if [[ ${type:=""} != "mirte_orangepizero" ]]; then
 	cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 	./install_jupyter_ros.sh || true # jupyter install fails on orange pi zero 1
 fi
-
-# Install Mirte ROS packages
-cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_ROS.sh
 
 # Install numpy
 pip3 install numpy

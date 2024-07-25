@@ -2,6 +2,8 @@
 set -xe
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
+# NOTE: on some builds cmake is very old, so we need to install a newer version, this is done by ./install_ROS.sh, which must be run before this script
+
 # Install dependencies
 sudo apt install -y git curl binutils libusb-1.0-0
 
@@ -55,7 +57,7 @@ sudo adduser mirte dialout
 # this has to be changed
 echo -e "mirte_mirte\nmirte_mirte" | sudo passwd root
 
-# Enable tuploading from remote IDE
+# Enable uploading from remote IDE
 sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/run-avrdude /usr/bin
 sudo bash -c 'echo "mirte ALL = (root) NOPASSWD: /usr/local/bin/arduino-cli" >> /etc/sudoers'
 
