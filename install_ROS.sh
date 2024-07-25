@@ -40,32 +40,35 @@ cd /home/mirte/mirte_ws/src || exit 1
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
 cd ..
 
-# install lidar and depth camera
-cd /home/mirte/mirte_ws/src || exit 1
-git clone https://github.com/Slamtec/rplidar_ros.git
-git clone https://github.com/arendjan/ros_astra_camera.git -b fix-image-transport # compressed images
-git clone https://github.com/arendjan/ridgeback.git
-cd ../../
-mkdir temp
-cd temp || exit 1
-sudo apt install -y libudev-dev
-git clone https://github.com/libuvc/libuvc.git
-cd libuvc
-mkdir build && cd build
-cmake .. && make -j4
-sudo make install
-sudo ldconfig
-cd ../../../
-sudo rm -rf temp
-cd /home/mirte/mirte_ws/ || exit 1
-rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
-catkin build
-source ./devel/setup.bash
-roscd astra_camera
-./scripts/create_udev_rules
-sudo udevadm control --reload && sudo udevadm trigger
-roscd rplidar_ros
-./scripts/create_udev_rules.sh
+
+if [[ $MIRTE_TYPE == "mirte-master" ]]; then
+    # install lidar and depth camera
+    cd /home/mirte/mirte_ws/src || exit 1
+    git clone https://github.com/Slamtec/rplidar_ros.git
+    git clone https://github.com/arendjan/ros_astra_camera.git -b fix-image-transport # compressed images
+    git clone https://github.com/arendjan/ridgeback.git
+    cd ../../
+    mkdir temp
+    cd temp || exit 1
+    sudo apt install -y libudev-dev
+    git clone https://github.com/libuvc/libuvc.git
+    cd libuvc
+    mkdir build && cd build
+    cmake .. && make -j4
+    sudo make install
+    sudo ldconfig
+    cd ../../../
+    sudo rm -rf temp
+    cd /home/mirte/mirte_ws/ || exit 1
+    rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
+    catkin build
+    source ./devel/setup.bash
+    roscd astra_camera
+    ./scripts/create_udev_rules
+    sudo udevadm control --reload && sudo udevadm trigger
+    roscd rplidar_ros
+    ./scripts/create_udev_rules.sh
+fi
 
 rosdep install -y --from-paths src/ --ignore-src --rosdistro noetic
 catkin build
@@ -79,13 +82,17 @@ source /home/mirte/mirte_ws/devel/setup.bash
 #sudo pip3 install twisted pyOpenSSL autobahn tornado pymongo
 
 # Add systemd service to start ROS nodes
-sudo rm /lib/systemd/system/mirte-ros.service || true
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service /lib/systemd/system/
+ROS_SERVICE_NAME=mirte-ros
+if [[ $MIRTE_TYPE == "mirte-master" ]]; then # master version should start a different launch file
+    ROS_SERVICE_NAME=mirte-master-ros
+fi
+sudo rm /lib/systemd/system/$ROS_SERVICE_NAME.service || true
+sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/$ROS_SERVICE_NAME.service /lib/systemd/system/
 
 sudo systemctl daemon-reload
-sudo systemctl stop mirte-ros || /bin/true
-sudo systemctl start mirte-ros
-sudo systemctl enable mirte-ros
+sudo systemctl stop $ROS_SERVICE_NAME || /bin/true
+sudo systemctl start $ROS_SERVICE_NAME
+sudo systemctl enable $ROS_SERVICE_NAME
 
 sudo usermod -a -G video mirte
 

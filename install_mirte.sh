@@ -3,6 +3,8 @@ set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
+MIRTE_TYPE="${MIRTE_TYPE:-default}" # default, mirte-master
+
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
 Acquire::ForceIPv4 "true";
@@ -23,7 +25,7 @@ cp download_repos.sh $MIRTE_SRC_DIR || true
 cd $MIRTE_SRC_DIR || exit 1
 ./download_repos.sh
 
-# Install dependecnies to be able to run python3.8
+# Install dependencies to be able to run python3.8
 sudo apt install -y python3.8 python3-pip python3-setuptools
 pip3 install setuptools --upgrade
 # Set piwheels as pip repo
@@ -73,8 +75,18 @@ pip3 install numpy
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_bt.sh
 
-cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_mirte_master.sh
+
+# if building for mirte-master:
+if [[ $MIRTE_TYPE == "mirte-master" ]]; then
+	
+	
+	# set default password for root to ...
+	sudo sed -i '/^root:/d' /etc/shadow
+	echo 'root:$6$iPpuScKGQTiuJk9r$cBXX/s.8UBp0bvrshHRhw/tHcmU3.beHBfCyJgP8Qhjx2CEO5.dyyvKips6loYQocSTgS/qEYxPrOQd/.qVi70:19793:0:99999:7:::' | sudo tee -a /etc/shadow
+	# Install Mirte Master
+	cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+	./install_mirte_master.sh
+fi
 
 # # Install Mirte documentation
 cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
@@ -101,9 +113,6 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
 pip3 install simpleaudio pyttsx3
 
-# set default password for root to ...
-sudo sed -i '/^root:/d' /etc/shadow
-echo 'root:$6$iPpuScKGQTiuJk9r$cBXX/s.8UBp0bvrshHRhw/tHcmU3.beHBfCyJgP8Qhjx2CEO5.dyyvKips6loYQocSTgS/qEYxPrOQd/.qVi70:19793:0:99999:7:::' | sudo tee -a /etc/shadow
 
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot

@@ -11,7 +11,7 @@ StartLimitBurst=5
 Restart=always
 RestartSec=5s
 User=mirte 
-ExecStart=/bin/bash -c "source /home/mirte/mirte_ws/devel/setup.bash && roslaunch mirte_bringup minimal.launch"
+ExecStart=/bin/bash -c "source /home/mirte/mirte_ws/devel/setup.bash && roslaunch mirte_bringup minimal_master.launch"
 
 [Install]
 WantedBy=multi-user.target
