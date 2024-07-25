@@ -2,7 +2,7 @@
 set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
-
+. $MIRTE_SRC_DIR/settings.sh || true # read settings, like MIRTE_TYPE
 MIRTE_TYPE="${MIRTE_TYPE:-default}" # default, mirte-master
 
 # disable ipv6, as not all package repositories are available over ipv6
