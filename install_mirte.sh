@@ -2,6 +2,8 @@
 set -xe
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
+. $MIRTE_SRC_DIR/settings.sh || true # read settings, like MIRTE_TYPE
+MIRTE_TYPE="${MIRTE_TYPE:-default}"  # default, mirte-master
 
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
@@ -9,7 +11,7 @@ Acquire::ForceIPv4 "true";
 EOF
 
 # Update
-sudo apt update
+sudo apt update || true
 
 # Install locales
 sudo apt install -y locales
@@ -23,7 +25,7 @@ cp download_repos.sh $MIRTE_SRC_DIR || true
 cd $MIRTE_SRC_DIR || exit 1
 ./download_repos.sh
 
-# Install dependecnies to be able to run python3.8
+# Install dependencies to be able to run python3.8
 sudo apt install -y python3.8 python3-pip python3-setuptools
 pip3 install setuptools --upgrade
 # Set piwheels as pip repo
@@ -46,7 +48,7 @@ ln -s $MIRTE_SRC_DIR/mirte-telemetrix4arduino/examples/Telemetrix4Arduino/Teleme
 
 # Install arduino firmata upload script
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_arduino.sh
+./install_arduino.sh || true
 
 # Install Mirte Python package
 cd $MIRTE_SRC_DIR/mirte-python || exit 1
@@ -73,7 +75,18 @@ pip3 install numpy
 cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_bt.sh
 
-# Install Mirte documentation
+# if building for mirte-master:
+if [[ $MIRTE_TYPE == "mirte-master" ]]; then
+
+	# set default password for root to ...
+	sudo sed -i '/^root:/d' /etc/shadow
+	echo 'root:$6$iPpuScKGQTiuJk9r$cBXX/s.8UBp0bvrshHRhw/tHcmU3.beHBfCyJgP8Qhjx2CEO5.dyyvKips6loYQocSTgS/qEYxPrOQd/.qVi70:19793:0:99999:7:::' | sudo tee -a /etc/shadow
+	# Install Mirte Master
+	cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+	./install_mirte_master.sh
+fi
+
+# # Install Mirte documentation
 cd $MIRTE_SRC_DIR/mirte-documentation || exit 1
 sudo apt install -y python3.8-venv libenchant-dev
 python3 -m venv docs-env
@@ -91,11 +104,12 @@ cd ../../
 make html || true
 deactivate
 
+cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
 ./install_vscode.sh
 
 # install audio support to use with mirte-pioneer pcb and orange pi zero 2
 sudo apt install pulseaudio libasound2-dev libespeak1 -y
-pip3 install simpleaudio pyttsx3
+pip3 install simpleaudio pyttsx3 || true # simpleaudio uses an old python install system. TODO: replace or update
 
 # Install overlayfs and make sd card read only (software)
 sudo apt install -y overlayroot
