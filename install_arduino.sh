@@ -40,10 +40,11 @@ mkdir /home/mirte/arduino_project/Blink
 ln -s $MIRTE_SRC_DIR/mirte-install-scripts/Blink.ino /home/mirte/arduino_project/Blink
 
 # Already build all versions so only upload is needed
-./run_arduino.sh build Telemetrix4Arduino
-./run_arduino.sh build_nano Telemetrix4Arduino
-./run_arduino.sh build_nano_old Telemetrix4Arduino
-./run_arduino.sh build_uno Telemetrix4Arduino
+# TODO: somehow this takes ages, removed for now:
+# ./run_arduino.sh build Telemetrix4Arduino
+# ./run_arduino.sh build_nano Telemetrix4Arduino
+# ./run_arduino.sh build_nano_old Telemetrix4Arduino
+# ./run_arduino.sh build_uno Telemetrix4Arduino
 
 # Add mirte to dialout
 sudo adduser mirte dialout
