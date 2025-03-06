@@ -117,7 +117,7 @@ sudo apt install -y overlayroot
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
 
 # update time in /etc/fake-hwclock.data
-sudo fake-hwclock save 
+sudo fake-hwclock save
 
 # remove force ipv4
 sudo rm /etc/apt/apt.conf.d/99force-ipv4 || true

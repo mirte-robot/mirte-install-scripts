@@ -4,7 +4,7 @@
 LAUNCH_FILE="${1:-minimal}"
 
 # If the robot user wants to add their own config:
-source /home/mirte/.mirte_settings
+source /home/mirte/.mirte_settings.sh
 mkdir -p $ROS_LOG_DIR
 
 source /home/mirte/mirte_ws/install/setup.bash
