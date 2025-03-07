@@ -16,6 +16,10 @@ repositories:
     url: https://github.com/arendjan/mirte-ros-packages.git
     version: develop
     recursive: true
+  mirte-gazebo:
+    type: git
+    url: https://github.com/mirte-robot/mirte-gazebo.git
+    version: develop
   mirte-oled-images:
     type: git
     url: https://github.com/mirte-robot/mirte-oled-images.git
