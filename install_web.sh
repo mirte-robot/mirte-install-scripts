@@ -10,7 +10,7 @@ sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
 # Install nodeenv
-nodeenv --node=16.2.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
+nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 
 # Install web interface
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
