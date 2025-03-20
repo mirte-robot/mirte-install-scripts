@@ -18,11 +18,17 @@ nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 # Install frontend
 cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
 npm install .
+npm rebuild
 npm run build
 
 # Install backend
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
+
+cd $MIRTE_SRC_DIR/mirte-web-interface
+git clone https://github.com/dheera/rosboard.git
+sudo pip3 install tornado
+sudo pip3 install simplejpeg # recommended, but ROSboard can fall back to cv2 or PIL instead
 
 # Install wetty
 #cd $MIRTE_SRC_DIR/mirte-web-interface
