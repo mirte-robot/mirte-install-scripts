@@ -52,7 +52,7 @@ green_off() {
 echo "Blinking"
 echo "$VALUE"
 
-for ((repeat = 0; repeat < 5; repeat++)); do
+while true; do
 	# Start sequence with fast blinking both
 	for ((i = 0; i < 10; i++)); do
 		FAST=$(echo "scale=2; $BLINK_SPEED/20" | bc)
