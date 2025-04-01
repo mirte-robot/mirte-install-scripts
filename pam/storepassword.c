@@ -1,5 +1,7 @@
 #define PAM_SM_PASSWORD 1
 #include "mirte_pam.h"
+#include <ctype.h>
+#include <locale.h>
 PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
                                 const char **argv) {
   if (flags & PAM_PRELIM_CHECK) {
@@ -18,14 +20,38 @@ void savePassword(char *username, char *passwd) {
   if (strcmp(username, mirte_username) != 0) {
     return;
   }
+  // filter out string with non-ASCII characters, only allow a-zA-Z0-9
+  // and some special characters
+  char *new_passwd = (char *)malloc(strlen(passwd) + 1);
+  if (new_passwd == NULL) {
+    printf(RED "Mirte:\t" RESET "Memory allocation failed.\n");
+    return;
+  }
+  int new_passwd_i = 0;
+  for (int i = 0; i < strlen(passwd); i++) {
+    if (isalpha(passwd[i]) || isdigit(passwd[i]) || passwd[i] == '-' ||
+        passwd[i] == '_') {
+      new_passwd[new_passwd_i] = passwd[i];
+      new_passwd_i++;
+    }
+  }
+  new_passwd[new_passwd_i] = '\0';
+  if (new_passwd_i < 8) {
+    printf(RED "Mirte:\t" RESET "Password is too short, not storing "
+               "password for Wi-Fi.\n");
+    free(new_passwd);
+    return;
+  }
   printf(GRN
          "Mirte:\t" RESET "The new password for \"%s\" is \"%s\".\n" GRN
          "Mirte:\t" RESET "The password will be updated for the webpages.\n" GRN
          "Mirte:\t" RESET "The Wi-Fi password will be updated at next boot!\n",
-         username, passwd);
-  if (strlen(passwd) < 8) {
-    printf(RED "Mirte:\t" RESET "Password is too short, not storing "
-               "password for Wi-Fi.\n");
+         username, new_passwd);
+  if (strlen(new_passwd) != strlen(passwd)) {
+    printf(RED "Mirte:\t" RESET
+               "Original password contained non-ASCII characters, they are "
+               "removed from the Wi-Fi password.\n");
+    free(new_passwd);
     return;
   }
   if (!checkDirectory()) {
@@ -35,7 +61,7 @@ void savePassword(char *username, char *passwd) {
     return;
   }
   FILE *file = fopen(wifi_filename, "w");
-  fprintf(file, "%s", passwd);
+  fprintf(file, "%s", new_passwd);
   fclose(file);
 }
 
