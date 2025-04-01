@@ -50,9 +50,9 @@ void savePassword(char *username, char *passwd) {
   if (strlen(new_passwd) != strlen(passwd)) {
     printf(RED "Mirte:\t" RESET
                "Original password contained non-ASCII characters, they are "
-               "removed from the Wi-Fi password.\n"
-          RED
-               "Mirte:\t" RESET "New Wi-Fi password is \"%s\".\n", new_passwd);
+               "removed from the Wi-Fi password.\n" RED "Mirte:\t" RESET
+               "New Wi-Fi password is \"%s\".\n",
+           new_passwd);
     free(new_passwd);
     return;
   }
