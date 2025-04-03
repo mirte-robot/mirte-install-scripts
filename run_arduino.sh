@@ -88,7 +88,13 @@ elif [[ $COMMAND == upload* ]]; then
 		ERR=false
 		sudo picotool load -f $MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico.uf2 || ERR=true
 		sleep 1
-		sudo picotool reboot || true # just to make sure, sometimes it does not reboot automatically
+		sudo picotool verify -f ../mirte-telemetrix4rpipico/build/Telemetrix4RpiPico.uf2
+		
+		# if lsusb has pico boot, then run reboot
+		if lsusb | grep -q "Raspberry Pi RP2 Boot"; then
+			sudo picotool reboot
+		fi
+		
 		if $ERR; then
 			echo "Failed to upload to Pico using picotool, trying using uart"
 			upload_pico_uart
