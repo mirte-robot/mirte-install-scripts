@@ -151,7 +151,7 @@ else
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
 fi
 
-if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]] || ( $USE_MAC && [[ "$(cat /etc/hostname)" != "$MIRTE_SSID" ]] ); then
+if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]] || ($USE_MAC && [[ "$(cat /etc/hostname)" != "$MIRTE_SSID" ]]); then
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
 	# And add them to the hosts file

@@ -3,7 +3,6 @@
 #TODO: script should have format ./run.sh build|upload] mcu_type
 COMMAND=$1
 
-
 if [ -z "$COMMAND" ]; then
 	echo "Usage: $0 build_[mcu] | upload_[mcu]"
 	echo "Example: $0 build_nano"
@@ -97,7 +96,7 @@ elif [[ $COMMAND == upload* ]]; then
 		if lsusb | grep -q "Raspberry Pi RP2 Boot"; then
 			sudo picotool reboot
 		fi
-		
+
 		if $ERR; then
 			echo "Failed to upload to Pico using picotool, trying using uart"
 			upload_pico_uart
