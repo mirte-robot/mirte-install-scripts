@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -xe
+# set -x
 #TODO: script should have format ./run.sh build|upload] mcu_type
 COMMAND=$1
 
@@ -11,6 +11,8 @@ if [ -z "$COMMAND" ]; then
 fi
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
+PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico
+
 # Check if ROS is running
 ROS_RUNNING=1
 systemctl is-active mirte-ros | grep 'inactive' &>/dev/null
@@ -45,7 +47,7 @@ upload_pico_uart() {
 		sleep 1
 		# try to upload
 		ERR=false
-		pico_py_serial_flasher $port $MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico.elf || ERR=true
+		pico_py_serial_flasher $port $PICO_BUILD_LOCATION.elf || ERR=true
 		if $ERR; then
 			echo "Failed to upload to Pico using pico_py_serial_flash port $port"
 		else
@@ -86,9 +88,15 @@ elif [[ $COMMAND == upload* ]]; then
 		buildpico
 		# This will always upload telemetrix4rpipico.uf2, so no need to pass a file
 		ERR=false
-		sudo picotool load -f $MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico.uf2 || ERR=true
-		sleep 1
-		sudo picotool reboot || true # just to make sure, sometimes it does not reboot automatically
+		sudo picotool load -f $PICO_BUILD_LOCATION.uf2 || ERR=true
+		sleep 2
+		sudo picotool verify -f $PICO_BUILD_LOCATION.uf2 && ERR=false || ERR=true # if verifying is okay, then it's also good
+		sleep 2
+		# if lsusb has pico boot, then run reboot
+		if lsusb | grep -q "Raspberry Pi RP2 Boot"; then
+			sudo picotool reboot
+		fi
+
 		if $ERR; then
 			echo "Failed to upload to Pico using picotool, trying using uart"
 			upload_pico_uart

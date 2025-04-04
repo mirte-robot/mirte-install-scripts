@@ -89,7 +89,10 @@ sudo chmod 777 /etc/hostname
 # Fix for the aw859a (Orange Pi Zero2) driver. The wifi crashes when the bluetooth is
 # working. We might need to see if bluetooth can be enabled after wifi was started
 # correctly. For now, just disabling since we are not using it.
-sudo systemctl disable aw859a-bluetooth || true
+sudo systemctl disable aw859a-bluetooth || /bin/true
+
+# Disable armbian-led-state
+sudo systemctl disable armbian-led-state || /bin/true
 
 # Reboot after kernel panic
 # The OPi has a fairly unstable wifi driver which might

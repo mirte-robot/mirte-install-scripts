@@ -30,3 +30,4 @@ EOF
 sudo resize2fs "$DISK_AND_PART"
 
 touch /home/mirte/.overlay_expanded # create file to indicate that overlay is expanded, this is stored on the overlay
+sudo reboot now

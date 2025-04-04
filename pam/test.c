@@ -9,4 +9,6 @@ int main() {
   savePassword("mirte", "ww");
   printf("Mirte user test:\n");
   savePassword("mirte", "ww12345677");
+  printf("Mirte user test strange chars:\n");
+  savePassword("mirte", "ww12345677!@#$%^&*()_+");
 }
