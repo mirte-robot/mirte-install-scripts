@@ -79,7 +79,12 @@ function check_connection {
 
 		printf 'Connected to wifi connection:'
 		nmcli con show --active | grep wlan0
-		$MIRTE_SRC_DIR/mirte-install-scripts/blink.sh "$(hostname -I)" &
+                while [ -z "$(hostname -I)" ]; do
+                    echo "Waiting for IP address..."
+                    sleep 1
+                done
+                echo "Got IP: $(hostname -I)"
+		$MIRTE_SRC_DIR/mirte-install-scripts/blink.sh $(hostname -I) &
 		start_avahi
 	else
 		printf 'No connection found, starting AP with wifi connect\n'
