@@ -147,7 +147,7 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	cd /home/mirte/mirte_ws/src || exit 1
 	git clone https://github.com/Slamtec/rplidar_ros.git -b ros2 # FIXME-FUTURE: Can be installed in newer versions if V2.1.5 is released
 
-	git clone https://github.com/ArendJan/ros2_astra_camera.git -b fix-ros-jammy      # compressed images image transport fixes, fork of orbbec/... with also lazy nodes
+	git clone https://github.com/ArendJan/ros2_astra_camera.git -b fix-ros-jammy          # compressed images image transport fixes, fork of orbbec/... with also lazy nodes
 	git clone https://github.com/ArendJan/clearpath_mecanum_drive_controller.git -b devAJ # FIXME: Revert to main repo once PR is merged. Can be installed from apt? why build?
 	cd ../../
 	mkdir temp
