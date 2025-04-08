@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# wait for wlan0 to be up, with max 30 seconds
+TIMEOUT=30
+NEXT_WAIT_TIME=0
+until [ $NEXT_WAIT_TIME -eq $TIMEOUT ] || ip addr show "wlan0"; do
+	echo "waiting for wlan0"
+	sleep 1
+	let "NEXT_WAIT_TIME=NEXT_WAIT_TIME+1"
+done
+
 function start_avahi {
 	# Restart avahi-daemon, to clear all previous addresses and hosts
 	service avahi-daemon restart && sleep 1
