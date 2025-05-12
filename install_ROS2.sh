@@ -109,6 +109,9 @@ add_rc "# Enable Zenoh and multirobot in .mirte_settings.sh"
 
 add_rc "source /home/mirte/mirte_ws/install/setup.bash" "# sourced later on"
 
+# By default the ROS communication should only be localhost.
+add_mirte_settings "export ROS_LOCALHOST_ONLY=1"
+
 # shellcheck source=/dev/null
 source /home/mirte/mirte_ws/install/setup.bash
 
