@@ -147,7 +147,7 @@ sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf || true
 # This must be run every time on boot, since it should
 # be generated on first boot (so not when generating
 # the image in network_setup.sh)
-USE_MAC=true
+USE_MAC=false
 if ! ip addr show "wlan0" | grep -q ether; then
 	USE_MAC=false
 	echo "No MAC address found, using random ID"

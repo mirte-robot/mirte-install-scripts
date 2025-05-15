@@ -117,6 +117,7 @@ source /home/mirte/mirte_ws/install/setup.bash
 
 # Add systemd service to start ROS nodes
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then # master version should start a different launch file
+	add_mirte_settings "export ROS_LOCALHOST_ONLY=0"
 	# rename the service file to the correct name, otherwise systemctl will error with a "Failed to look up unit file state: Link has been severed" error
 	mv $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros-pioneer.service
 	mv $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-master-ros.service $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service
