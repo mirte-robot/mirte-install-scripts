@@ -15,11 +15,14 @@ source ./install/setup.bash
 colcon build --symlink-install --packages-select mirte_fastdds_discovery_setup astra_camera
 source /home/mirte/mirte_ws/install/setup.bash
 # add MIRTE_FASTDDS=true to .mirte_settings.sh
-echo "MIRTE_FASTDDS=true" >> /home/mirte/.mirte_settings.sh
+echo "MIRTE_FASTDDS=true" >>/home/mirte/.mirte_settings.sh
 
 cd /usr/local/src/mirte/mirte-install-scripts/
-git fetch --all
-git pull
+
+# overwrite file with new version
+download_url="https://raw.githubusercontent.com/mirte-robot/mirte-install-scripts/refs/heads/develop/services/mirte_ros.sh"
+curl -o /usr/local/src/mirte/mirte-install-scripts/services/mirte_ros.sh $download_url
+
 echo "rebooting in 10 seconds"
 sleep 10
 sudo reboot now
