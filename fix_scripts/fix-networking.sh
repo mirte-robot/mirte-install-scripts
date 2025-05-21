@@ -12,6 +12,7 @@ git fetch --all
 git pull
 cd /home/mirte/mirte_ws/
 source ./install/setup.bash
+rosdep install -y --from-paths src/ --ignore-src --rosdistro humble
 colcon build --symlink-install --packages-select mirte_fastdds_discovery_setup astra_camera
 source /home/mirte/mirte_ws/install/setup.bash
 # add MIRTE_FASTDDS=true to .mirte_settings.sh
