@@ -12,7 +12,7 @@ git fetch --all
 git pull
 cd /home/mirte/mirte_ws/
 source ./install/setup.bash
-rosdep install -y --from-paths src/ --ignore-src --rosdistro humble
+rosdep install -y --from-paths src/ --ignore-src --rosdistro humble -r
 source /home/mirte/mirte_ws/install/setup.bash
 colcon build --symlink-install --packages-up-to mirte_fastdds_discovery_setup astra_camera
 source /home/mirte/mirte_ws/install/setup.bash
@@ -28,3 +28,4 @@ curl -o /usr/local/src/mirte/mirte-install-scripts/services/mirte_ros.sh $downlo
 echo "rebooting in 10 seconds"
 sleep 10
 sudo reboot now
+#
