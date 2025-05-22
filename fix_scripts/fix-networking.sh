@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xe
 echo "Starting networking fix script"
+sudo systemctl stop mirte-shutdown
+sudo systemctl stop mirte-ros
 sudo apt update
 # sudo apt-get upgrade -y "ros-humble-
 cd /home/mirte/mirte_ws/src/mirte-ros-packages/
