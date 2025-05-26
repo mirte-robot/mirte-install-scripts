@@ -147,7 +147,7 @@ sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf || true
 # This must be run every time on boot, since it should
 # be generated on first boot (so not when generating
 # the image in network_setup.sh)
-USE_MAC=false
+USE_MAC=true
 if ! ip addr show "wlan0" | grep -q ether; then
 	USE_MAC=false
 	echo "No MAC address found, using random ID"
@@ -159,13 +159,17 @@ if $USE_MAC; then # when using mac for hostname.
 	echo "Generated SSID: $MIRTE_SSID"
 	# add to check: || [[ "$(cat /etc/hostname)" != "$MIRTE_SSID" ]]
 else
-	# This is the default SSID, when no MAC address is found
+	# When no MAC address is found, a random ID is generated
 	# This should be changed to a unique ID
 	UNIQUE_ID=$(tr -cd "1-9A-F" </dev/urandom | head -c 6)
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
 fi
 
-if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]] || ($USE_MAC && [[ "$(cat /etc/hostname)" != "$MIRTE_SSID" ]]); then
+# Set the SSID if it has not been set before OR
+# override when it should be teh MAC, except
+# when the user has set it manually (ie. everything
+# not starting with Mirte-, followed by 6 hex.
+if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]] || ($USE_MAC && [[ "$(cat /etc/hostname)" =~ ^Mirte-[1-9A-F]{6}$ ]]); then
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
 	# And add them to the hosts file
