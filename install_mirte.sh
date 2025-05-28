@@ -53,8 +53,10 @@ if [[ "$INSTALL_WEB" = true ]]; then
 fi
 
 # Install Jupyter Notebook
-#cd $MIRTE_SRC_DIR/mirte-install-scripts
-#./install_jupyter_ros.sh
+if [[ "$INSTALL_JUPYTER" = true ]]; then
+        cd $MIRTE_SRC_DIR/mirte-install-scripts
+        ./install_jupyter_ros.sh
+fi
 
 # Install numpy
 pip3 install numpy
