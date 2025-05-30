@@ -54,8 +54,8 @@ fi
 
 # Install Jupyter Notebook
 if [[ "$INSTALL_JUPYTER" = true ]]; then
-        cd $MIRTE_SRC_DIR/mirte-install-scripts
-        ./install_jupyter_ros.sh
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_jupyter_ros.sh
 fi
 
 # Install numpy
