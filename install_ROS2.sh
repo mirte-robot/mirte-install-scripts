@@ -72,10 +72,15 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 
 	echo "Using precompiled version of packages"
 	cd /home/mirte/mirte_ws/src/ || exit 1
-	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_master_base_control mirte_master_arm_control mirte_pioneer_control)
+	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_base_control mirte_master_arm_control mirte_pioneer_control)
 	packages=''
 	for i in "${ignore[@]}"; do
 		path=$(colcon list --packages-select $i -p)
+		# if path is empty, skip
+		if [[ -z $path ]]; then
+			echo "Package $i not found, skipping."
+			continue
+		fi
 		path=$(realpath "$path")
 		echo "Checking package $i at $path"
 		if [[ ! -d $path ]]; then
