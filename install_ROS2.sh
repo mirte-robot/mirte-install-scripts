@@ -151,12 +151,7 @@ sudo adduser mirte dialout
 sudo pip3 install colcon-clean colcon-lint
 
 # Add colcon top level workspace, this makes it possible to run colcon build from any folder, it will find the workspace and build it. Otherwise it will create a new workspace in the subdirectory.
-cd /tmp
-git clone https://github.com/rhaschke/colcon-top-level-workspace
-cd colcon-top-level-workspace
-pip install .
-cd ..
-rm -rf colcon-top-level-workspace
+
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	# TODO: need to check and edit the next part:
 	sudo apt install ros-$ROS_NAME-slam-toolbox -y
@@ -195,6 +190,12 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 
 fi
 
+cd /tmp
+git clone https://github.com/rhaschke/colcon-top-level-workspace
+cd colcon-top-level-workspace
+pip install .
+cd ..
+rm -rf colcon-top-level-workspace
 # zsh does not work nicely with ros2 autocomplete, so we need to add a function to fix it.
 # ROS 2 Foxy should have this fixed, but we are using ROS 2 Humble.
 # TODO: check for ROS2 jazzy
