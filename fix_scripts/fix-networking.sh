@@ -16,7 +16,7 @@ cd /home/mirte/mirte_ws/
 source ./install/setup.bash
 rosdep install -y --from-paths src/ --ignore-src --rosdistro humble -r
 source /home/mirte/mirte_ws/install/setup.bash
-colcon build --symlink-install --packages-up-to mirte_fastdds_discovery_setup astra_camera
+colcon build --symlink-install --packages-up-to mirte_fastdds_discovery_setup astra_camera mirte_bringup --cmake-args -DCMAKE_BUILD_TYPE=Release
 source /home/mirte/mirte_ws/install/setup.bash
 # add MIRTE_FASTDDS=true to .mirte_settings.sh
 echo "MIRTE_FASTDDS=true" >>/home/mirte/.mirte_settings.sh
