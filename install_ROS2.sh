@@ -111,7 +111,7 @@ cd /home/mirte/mirte_ws/src || exit 1
 # git clone https://github.com/AlexKaravaev/ros2_laser_scan_matcher
 # git clone https://github.com/AlexKaravaev/csm
 # git clone https://github.com/ldrobotSensorTeam/ldlidar_stl_ros2
-git clone https://github.com/RobotWebTools/web_video_server.git -b ros2
+# git clone https://github.com/RobotWebTools/web_video_server.git -b ros2
 cd .. || exit 1
 rosdep install -y --from-paths src/ --ignore-src --rosdistro $ROS_NAME
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
