@@ -62,7 +62,8 @@ arch=$(dpkg --print-architecture)
 ubuntu_version=$(lsb_release -cs)
 github_url=$(git config --get remote.origin.url | sed 's/\.git$//')
 fallback=true
-vcs import src < $MIRTE_SRC_DIR/mirte-ros-packages/sources.repos || true
+cd /home/mirte/mirte_ws/ || exit 1
+vcs import src <$MIRTE_SRC_DIR/mirte-ros-packages/sources.repos || true
 if [[ $branch == "develop" || $branch == "main" ]]; then
 	fallback=false
 
@@ -71,7 +72,7 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 
 	echo "Using precompiled version of packages"
 	cd /home/mirte/mirte_ws/src/ || exit 1
-	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_master_base_control mirte_master_arm_control mirte_pioneer_control )
+	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_master_base_control mirte_master_arm_control mirte_pioneer_control)
 	packages=''
 	for i in "${ignore[@]}"; do
 		path=$(colcon list --packages-select $i -p)
