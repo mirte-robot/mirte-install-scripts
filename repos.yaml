@@ -13,7 +13,7 @@ repositories:
     version: develop
   mirte-ros-packages:
     type: git
-    url: https://github.com/arendjan/mirte-ros-packages.git
+    url: https://github.com/mirte-robot/mirte-ros-packages.git
     version: develop
     recursive: true
   mirte-gazebo:
