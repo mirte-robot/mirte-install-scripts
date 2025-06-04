@@ -1,0 +1,13 @@
+40c40
+<     serial="$(grep ^BOARD_INFO_SERIAL_NUM= /sys/class/board-info/board0/uevent | cut -d = -f 2)"
+---
+>     serial="10" # original does not work anymore for newer kernels, needs 'random' value
+59,66d58
+< 
+< 
+<     tmpdir=$(mktemp -d)
+<     mount /dev/mmcblk0p1 $tmpdir
+<     if [ -f $tmpdir/ev3dev.txt ]; then
+<         cdc_only=$(grep -i "^cdc_only=\(true\|yes\|1\)" $tmpdir/ev3dev.txt | cut -b 10-)
+<     fi
+<     umount $tmpdir
