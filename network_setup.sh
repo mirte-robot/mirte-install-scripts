@@ -29,13 +29,6 @@ function start_acces_point {
 	sudo killall -9 blink.sh || /bin/true
 	echo "Killed all previous instances"
 
-	# It takes some time for NetworkManager to find all
-	# networks.
-	nmcli con down "$(cat /etc/hostname)"
-	iw dev wlan0 scan | grep SSID
-	nmcli device wifi list
-	echo "Rescanned networks"
-
 	# Start wifi-connect (this starts the AP, and uses dnsmasq
 	# as DHCP server
 	wifi-connect -o 8080 -p "$(cat /home/mirte/.wifi_pwd)" -s "$(cat /etc/hostname)" &
@@ -54,7 +47,6 @@ function start_acces_point {
 	# generate a random channel, can even change to 5Ghz if wanted, then check how to find a correct channel
 	nmcli c modify "$(cat /etc/hostname)" 802-11-wireless.band bg 802-11-wireless.channel "$(shuf -i 1-11 -n 1)"
 	nmcli con down "$(cat /etc/hostname)"
-	sleep 10
 	nmcli con up "$(cat /etc/hostname)"
 
 	# Start all avahi addresses and services

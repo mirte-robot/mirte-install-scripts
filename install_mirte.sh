@@ -62,8 +62,8 @@ fi
 pip3 install numpy
 
 # Install bluetooth
-cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_bt.sh
+#cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+#./install_bt.sh
 
 # if building for mirte-master:
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
