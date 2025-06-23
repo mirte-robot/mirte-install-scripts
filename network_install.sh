@@ -104,6 +104,16 @@ sudo update-initramfs -u
 # Disable armbian-led-state
 sudo systemctl disable armbian-led-state || /bin/true
 
+# set some network settings to have ROS2 working better https://autowarefoundation.github.io/autoware-documentation/main/installation/additional-settings-for-developers/network-configuration/dds-settings/#tune-system-wide-network-settings
+cat <<EOF >>/etc/sysctl.d/10-cyclone-max.conf
+# Increase the maximum receive buffer size for network packets
+net.core.rmem_max=10485760  # 10Mib, default is 208 KiB
+
+# IP fragmentation settings
+net.ipv4.ipfrag_time=3  # in seconds, default is 30 s
+net.ipv4.ipfrag_high_thresh=134217728  # 128 MiB, default is 256 KiB
+EOF
+sudo service procps force-reload
 # Reboot after kernel panic
 # The OPi has a fairly unstable wifi driver which might
 # panic the kernel (at boot). Instead of waiting an unkown
