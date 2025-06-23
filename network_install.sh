@@ -96,6 +96,10 @@ sudo chmod 777 /etc/hostname
 # working. We might need to see if bluetooth can be enabled after wifi was started
 # correctly. For now, just disabling since we are not using it.
 sudo systemctl disable aw859a-bluetooth || /bin/true
+sudo systemctl disable bluetooth || /bin/true
+sudo bash -c 'echo "install sprdbt_tty /bin/false" > /etc/modprobe.d/disable-sprdbt_tty.conf'
+sudo bash -c 'echo "blacklist sprdbt_tty" > /etc/modprobe.d/disable-sprdbt_tty.conf'
+sudo update-initramfs -u
 
 # Disable armbian-led-state
 sudo systemctl disable armbian-led-state || /bin/true

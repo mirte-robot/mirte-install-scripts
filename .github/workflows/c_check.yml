@@ -23,7 +23,7 @@ jobs:
     - uses: lukka/get-cmake@latest
     - name: Build pam module
       run: |
-        apt update && apt install libpam0g-dev -y
+        sudo apt update && sudo apt install libpam0g-dev -y
         ./install_pam.sh
         ./pam/build/myprogram
     - name: Build usb_switch
@@ -34,4 +34,3 @@ jobs:
         cd build
         cmake ..
         make -j
-      

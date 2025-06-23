@@ -1,10 +1,21 @@
 [Unit]
 Description=Mirte Wifi AP
-After=NetworkManager.service
-After=network-online.target
+Wants=multi-user.target
+After=multi-user.target
 
 [Service]
 KillMode=process
+# The orange pi (zero 2) has a flacky wifi chip. This means we have to wait
+# for this AP to start. The result below are better when we fully disable
+# bluetooth in the network_install.sh script.
+# This is probably related to: https://github.com/orangepi-xunlong/firmware/issues/1
+
+# Testing this setup:
+# sleep  0: 99/100 failed
+# sleep 10: 50/100 failed
+# sleep 20: 31/100 failed
+# sleep 30:  0/100 failed
+ExecStartPre=/bin/sleep 30
 ExecStart=/bin/bash -c "/usr/local/src/mirte/mirte-install-scripts/network_setup.sh"
 
 [Install]
