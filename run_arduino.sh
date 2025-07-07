@@ -14,10 +14,10 @@ MIRTE_SRC_DIR=/usr/local/src/mirte
 PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico
 
 # Check if ROS is running
-ROS_RUNNING=1
-systemctl is-active mirte-ros | grep 'inactive' &>/dev/null
+ROS_RUNNING=0
+systemctl is-active mirte-ros | grep 'active' &>/dev/null
 if [ $? == 0 ]; then
-	ROS_RUNNING=0
+	ROS_RUNNING=1
 fi
 echo "ROS_RUNNING: $ROS_RUNNING"
 PROJECT="mirte-telemetrix4arduino"
