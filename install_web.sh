@@ -62,6 +62,6 @@ sudo systemctl enable mirte-web-interface
 # install zerotier for better ros2 networking. User will need to manually join the network
 curl -s https://install.zerotier.com | sudo bash
 # remove zerotier identity as it otherwise will be the same for all devices using the same image
-sudo rm /var/lib/zerotier-one/identity.public
-sudo rm /var/lib/zerotier-one/identity.secret
+sudo rm /var/lib/zerotier-one/identity.public || true
+sudo rm /var/lib/zerotier-one/identity.secret || true
 # new identity should be generated on first boot

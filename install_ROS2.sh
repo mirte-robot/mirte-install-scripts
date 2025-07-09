@@ -15,8 +15,9 @@ source /etc/os-release
 sudo apt install software-properties-common -y
 sudo add-apt-repository universe -y
 sudo apt update && sudo apt install curl -y
-sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $UBUNTU_CODENAME main" | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
+ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
+curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo $VERSION_CODENAME)_all.deb"
+sudo apt install /tmp/ros2-apt-source.deb
 sudo apt update
 
 # select ros2 type based on UBUNTU_CODENAME
@@ -62,18 +63,32 @@ arch=$(dpkg --print-architecture)
 ubuntu_version=$(lsb_release -cs)
 github_url=$(git config --get remote.origin.url | sed 's/\.git$//')
 fallback=true
+cd /home/mirte/mirte_ws/ || exit 1
+vcs import src <$MIRTE_SRC_DIR/mirte-ros-packages/sources.repos || true
 if [[ $branch == "develop" || $branch == "main" ]]; then
 	fallback=false
 
 	# Install mirte ros packages with apt from github, since they take ages to compile and it's easier to update them.
 	# colcon ignore those packages
 
-	echo "Using precompiled version of mirte-ros-packages"
-	cd /home/mirte/mirte_ws/src/mirte-ros-packages || exit 1
-	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop) # mirte_control/mirte_master_base_control mirte_control/mirte_master_arm_control mirte_control/mirte_pioneer_control # TODO: this doesn't work with subfolders
+	echo "Using precompiled version of packages"
+	cd /home/mirte/mirte_ws/src/ || exit 1
+	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_base_control mirte_master_arm_control mirte_control usb_cam)
 	packages=''
 	for i in "${ignore[@]}"; do
-		touch $i/COLCON_IGNORE
+		path=$(colcon list --packages-select $i -p)
+		# if path is empty, skip
+		if [[ -z $path ]]; then
+			echo "Package $i not found, skipping."
+			continue
+		fi
+		path=$(realpath "$path")
+		echo "Checking package $i at $path"
+		if [[ ! -d $path ]]; then
+			echo "Package $i not found, skipping."
+			continue
+		fi
+		touch $path/COLCON_IGNORE
 		i_dash=$(echo $i | tr '_' '-')
 		packages="$packages ros-$ROS_NAME-$i_dash"
 	done
@@ -97,7 +112,7 @@ cd /home/mirte/mirte_ws/src || exit 1
 # git clone https://github.com/AlexKaravaev/ros2_laser_scan_matcher
 # git clone https://github.com/AlexKaravaev/csm
 # git clone https://github.com/ldrobotSensorTeam/ldlidar_stl_ros2
-git clone https://github.com/RobotWebTools/web_video_server.git -b ros2
+# git clone https://github.com/RobotWebTools/web_video_server.git -b ros2
 cd .. || exit 1
 rosdep install -y --from-paths src/ --ignore-src --rosdistro $ROS_NAME
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
@@ -109,11 +124,15 @@ add_rc "# Enable Zenoh and multirobot in .mirte_settings.sh"
 
 add_rc "source /home/mirte/mirte_ws/install/setup.bash" "# sourced later on"
 
+# By default the ROS communication should only be localhost.
+add_mirte_settings "export ROS_LOCALHOST_ONLY=1"
+
 # shellcheck source=/dev/null
 source /home/mirte/mirte_ws/install/setup.bash
 
 # Add systemd service to start ROS nodes
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then # master version should start a different launch file
+	add_mirte_settings "export ROS_LOCALHOST_ONLY=0"
 	# rename the service file to the correct name, otherwise systemctl will error with a "Failed to look up unit file state: Link has been severed" error
 	mv $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros-pioneer.service
 	mv $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-master-ros.service $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service
@@ -133,12 +152,7 @@ sudo adduser mirte dialout
 sudo pip3 install colcon-clean colcon-lint
 
 # Add colcon top level workspace, this makes it possible to run colcon build from any folder, it will find the workspace and build it. Otherwise it will create a new workspace in the subdirectory.
-cd /tmp
-git clone https://github.com/rhaschke/colcon-top-level-workspace
-cd colcon-top-level-workspace
-pip install .
-cd ..
-rm -rf colcon-top-level-workspace
+
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	# TODO: need to check and edit the next part:
 	sudo apt install ros-$ROS_NAME-slam-toolbox -y
@@ -147,21 +161,21 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	cd /home/mirte/mirte_ws/src || exit 1
 	git clone https://github.com/Slamtec/rplidar_ros.git -b ros2 # FIXME-FUTURE: Can be installed in newer versions if V2.1.5 is released
 
-	git clone https://github.com/ArendJan/ros2_astra_camera.git -b fix-ros-jammy      # compressed images image transport fixes, fork of orbbec/... with also lazy nodes
-	git clone https://github.com/clearpathrobotics/clearpath_mecanum_drive_controller # FIXME: Can be installed from apt? why build?
-	cd ../../
-	mkdir temp
-	cd temp || exit 1
-	sudo apt install -y libudev-dev libusb-1.0-0-dev nlohmann-json3-dev
-	# Install lubuvc-dev manually for newer version
-	git clone https://github.com/libuvc/libuvc.git
-	cd libuvc
-	mkdir build && cd build
-	cmake .. && make -j4
-	sudo make install
-	sudo ldconfig
-	cd ../../../
-	sudo rm -rf temp
+	# git clone https://github.com/ArendJan/ros2_astra_camera.git -b fix-ros-jammy      # compressed images image transport fixes, fork of orbbec/... with also lazy nodes
+	# git clone https://github.com/clearpathrobotics/clearpath_mecanum_drive_controller # FIXME: Can be installed from apt? why build?
+	# cd ../../
+	# mkdir temp
+	# cd temp || exit 1
+	# sudo apt install -y libudev-dev libusb-1.0-0-dev nlohmann-json3-dev
+	# # Install lubuvc-dev manually for newer version
+	# git clone https://github.com/libuvc/libuvc.git
+	# cd libuvc
+	# mkdir build && cd build
+	# cmake .. && make -j4
+	# sudo make install
+	# sudo ldconfig
+	# cd ../../../
+	# sudo rm -rf temp
 	cd /home/mirte/mirte_ws/ || exit 1
 	rosdep install -y --from-paths src/ --ignore-src --rosdistro $ROS_NAME
 	colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
@@ -177,6 +191,12 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 
 fi
 
+cd /tmp
+git clone https://github.com/rhaschke/colcon-top-level-workspace
+cd colcon-top-level-workspace
+pip install .
+cd ..
+rm -rf colcon-top-level-workspace
 # zsh does not work nicely with ros2 autocomplete, so we need to add a function to fix it.
 # ROS 2 Foxy should have this fixed, but we are using ROS 2 Humble.
 # TODO: check for ROS2 jazzy

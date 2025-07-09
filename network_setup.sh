@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# wait for wlan0 to be up, with max 30 seconds
+TIMEOUT=30
+NEXT_WAIT_TIME=0
+until [ $NEXT_WAIT_TIME -eq $TIMEOUT ] || ip addr show "wlan0"; do
+	echo "waiting for wlan0"
+	sleep 1
+	let "NEXT_WAIT_TIME=NEXT_WAIT_TIME+1"
+done
+
 function start_avahi {
 	# Restart avahi-daemon, to clear all previous addresses and hosts
 	service avahi-daemon restart && sleep 1
@@ -20,13 +29,6 @@ function start_acces_point {
 	sudo killall -9 blink.sh || /bin/true
 	echo "Killed all previous instances"
 
-	# It takes some time for NetworkManager to find all
-	# networks.
-	nmcli con down "$(cat /etc/hostname)"
-	iw dev wlan0 scan | grep SSID
-	nmcli device wifi list
-	echo "Rescanned networks"
-
 	# Start wifi-connect (this starts the AP, and uses dnsmasq
 	# as DHCP server
 	wifi-connect -o 8080 -p "$(cat /home/mirte/.wifi_pwd)" -s "$(cat /etc/hostname)" &
@@ -45,7 +47,6 @@ function start_acces_point {
 	# generate a random channel, can even change to 5Ghz if wanted, then check how to find a correct channel
 	nmcli c modify "$(cat /etc/hostname)" 802-11-wireless.band bg 802-11-wireless.channel "$(shuf -i 1-11 -n 1)"
 	nmcli con down "$(cat /etc/hostname)"
-	sleep 10
 	nmcli con up "$(cat /etc/hostname)"
 
 	# Start all avahi addresses and services
@@ -79,6 +80,11 @@ function check_connection {
 
 		printf 'Connected to wifi connection:'
 		nmcli con show --active | grep wlan0
+		while [ -z "$(hostname -I)" ]; do
+			echo "Waiting for IP address..."
+			sleep 1
+		done
+		echo "Got IP: $(hostname -I)"
 		$MIRTE_SRC_DIR/mirte-install-scripts/blink.sh "$(hostname -I)" &
 		start_avahi
 	else
@@ -133,18 +139,29 @@ sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf || true
 # This must be run every time on boot, since it should
 # be generated on first boot (so not when generating
 # the image in network_setup.sh)
-
-if false; then # when using mac for hostname.
+USE_MAC=true
+if ! ip addr show "wlan0" | grep -q ether; then
+	USE_MAC=false
+	echo "No MAC address found, using random ID"
+fi
+if $USE_MAC; then # when using mac for hostname.
 	mac=$(ip addr show "wlan0" | awk '/ether/{print $2}')
 	UNIQUE_ID=$(echo -n $mac | tr -cd "1-9A-Fa-f" | tail -c 6) # last 6 characters of mac address, without colons or 0s
 	MIRTE_SSID="Mirte-$(echo ${UNIQUE_ID^^})"
 	echo "Generated SSID: $MIRTE_SSID"
 	# add to check: || [[ "$(cat /etc/hostname)" != "$MIRTE_SSID" ]]
-fi
-
-if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]]; then
+else
+	# When no MAC address is found, a random ID is generated
+	# This should be changed to a unique ID
 	UNIQUE_ID=$(tr -cd "1-9A-F" </dev/urandom | head -c 6)
 	MIRTE_SSID=Mirte-$(echo ${UNIQUE_ID^^})
+fi
+
+# Set the SSID if it has not been set before OR
+# override when it should be teh MAC, except
+# when the user has set it manually (ie. everything
+# not starting with Mirte-, followed by 6 hex.
+if [ ! -f /etc/ssid ] || [[ $(cat /etc/hostname) == "Mirte-XXXXXX" ]] || ($USE_MAC && [[ "$(cat /etc/hostname)" =~ ^Mirte-[1-9A-F]{6}$ ]]); then
 	sudo bash -c 'echo '$MIRTE_SSID' > /etc/hostname'
 	sudo ln -s /etc/hostname /etc/ssid
 	# And add them to the hosts file
