@@ -5,7 +5,7 @@ repositories:
     version: develop
   mirte-telemetrix4arduino:
     type: git
-    url: https://github.com/mirte-robot/Telemetrix4Arduino.git
+    url: https://github.com/arendjan/Telemetrix4Arduino.git
     version: develop
   mirte-install-scripts:
     type: git
@@ -34,6 +34,6 @@ repositories:
     version: develop
   mirte-telemetrix4rpipico:
     type: git
-    url: https://github.com/mirte-robot/Telemetrix4RpiPico.git
+    url: https://github.com/arendjan/Telemetrix4RpiPico.git
     recursive: true
     version: develop
