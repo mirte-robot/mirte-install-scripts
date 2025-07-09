@@ -12,6 +12,8 @@ Restart=always
 RestartSec=5s
 User=mirte
 ExecStart=/usr/local/src/mirte/mirte-install-scripts/services/mirte_ros.sh
+TimeoutStopSec=5s
+#Need to be done due to bug https://github.com/RobotWebTools/rosbridge_suite/issues/1024
 
 [Install]
 WantedBy=multi-user.target

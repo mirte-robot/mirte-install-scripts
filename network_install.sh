@@ -23,10 +23,15 @@ sudo apt install -y network-manager
 # Install wifi-connect
 MY_ARCH=$(arch)
 if [[ "$MY_ARCH" == "armv7l" ]]; then MY_ARCH="rpi"; fi
-# TODO: This version is from Feb 20, 2023 maybe upgrade soon...
+# TODO: check with armv7 if it works and dynamically download the correct version
 # skip if amd64
 if [[ "$MY_ARCH" != "x86_64" ]]; then
-	wget "https://github.com/balena-os/wifi-connect/releases/download/v4.11.1/wifi-connect-v4.11.1-linux-$(echo "$MY_ARCH").zip"
+	if [[ "$MY_ARCH" == "aarch64" ]]; then
+		wget https://github.com/ArendJan/balena-os-wifi-connect/releases/download/fix-zerotier/wifi-connect-aarch64-unknown-linux-gnu.zip
+	fi
+	if [[ "$MY_ARCH" == "???" ]]; then
+		wget https://github.com/ArendJan/balena-os-wifi-connect/releases/download/fix-zerotier/wifi-connect-armv7-unknown-linux-gnueabihf.zip
+	fi
 	unzip wifi-connect*
 	sudo mv wifi-connect /usr/local/sbin
 	rm wifi-connect*
@@ -63,10 +68,11 @@ sudo apt install -y inotify-tools wireless-tools
 # Disable ssh root login
 sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
 
-# Install usb_ethernet script from EV3 (already downloaded with a fix)
-# wget https://raw.githubusercontent.com/ev3dev/ev3-systemd/ev3dev-buster/scripts/ev3-usb.sh -P $MIRTE_SRC_DIR/mirte-install-scripts
-# sudo chmod +x $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh
+# Install usb_ethernet script from EV3 (and apply the patch)
+wget https://raw.githubusercontent.com/ev3dev/ev3-systemd/ev3dev-buster/scripts/ev3-usb.sh -P $MIRTE_SRC_DIR/mirte-install-scripts
 sudo chown mirte:mirte $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh
+chmod +x $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh
+patch $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh -i $MIRTE_SRC_DIR/mirte-install-scripts/fix_scripts/ev3-usb.patch
 sudo bash -c 'echo "libcomposite" >> /etc/modules'
 # remove g_serial from modules to let the ev3-usb script enable usb ethernet on the orange pi zero 1 as well.
 sudo bash -c "sed -i '/g_serial/d' /etc/modules"
@@ -86,6 +92,28 @@ sudo chmod 777 /etc/hostname
 # Fix for wpa_supplicant error
 # sudo bash -c "echo 'match-device=driver:wlan0' >> /etc/NetworkManager/NetworkManager.conf"
 
+# Fix for the aw859a (Orange Pi Zero2) driver. The wifi crashes when the bluetooth is
+# working. We might need to see if bluetooth can be enabled after wifi was started
+# correctly. For now, just disabling since we are not using it.
+sudo systemctl disable aw859a-bluetooth || /bin/true
+sudo systemctl disable bluetooth || /bin/true
+sudo bash -c 'echo "install sprdbt_tty /bin/false" > /etc/modprobe.d/disable-sprdbt_tty.conf'
+sudo bash -c 'echo "blacklist sprdbt_tty" > /etc/modprobe.d/disable-sprdbt_tty.conf'
+sudo update-initramfs -u
+
+# Disable armbian-led-state
+sudo systemctl disable armbian-led-state || /bin/true
+
+# set some network settings to have ROS2 working better https://autowarefoundation.github.io/autoware-documentation/main/installation/additional-settings-for-developers/network-configuration/dds-settings/#tune-system-wide-network-settings
+cat <<EOF >>/etc/sysctl.d/10-cyclone-max.conf
+# Increase the maximum receive buffer size for network packets
+net.core.rmem_max=10485760  # 10Mib, default is 208 KiB
+
+# IP fragmentation settings
+net.ipv4.ipfrag_time=3  # in seconds, default is 30 s
+net.ipv4.ipfrag_high_thresh=134217728  # 128 MiB, default is 256 KiB
+EOF
+sudo service procps force-reload
 # Reboot after kernel panic
 # The OPi has a fairly unstable wifi driver which might
 # panic the kernel (at boot). Instead of waiting an unkown

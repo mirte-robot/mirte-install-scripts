@@ -53,15 +53,17 @@ if [[ "$INSTALL_WEB" = true ]]; then
 fi
 
 # Install Jupyter Notebook
-#cd $MIRTE_SRC_DIR/mirte-install-scripts
-#./install_jupyter_ros.sh
+if [[ "$INSTALL_JUPYTER" = true ]]; then
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_jupyter_ros.sh
+fi
 
 # Install numpy
 pip3 install numpy
 
 # Install bluetooth
-cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-./install_bt.sh
+#cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+#./install_bt.sh
 
 # if building for mirte-master:
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then

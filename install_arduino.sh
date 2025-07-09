@@ -9,6 +9,7 @@ sudo apt install -y git curl binutils libusb-1.0-0
 # install platformio
 curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
 python3 get-platformio.py
+rm get-platformio.py
 
 # Add platformio to path
 export PATH=$PATH:$HOME/.local/bin
