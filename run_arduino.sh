@@ -43,7 +43,7 @@ upload_pico_uart() {
 		port=$(realpath $port)
 		# send reboot command
 		stty 115200 -F $port
-		echo -ne '\x01\x25' >$port # 1 byte message, message id 0x25==reset_to_bootloader
+		echo -ne '\x01\x26' >$port # 1 byte message, message id 0x26==reset_to_bootloader
 		sleep 1
 		# try to upload
 		ERR=false
