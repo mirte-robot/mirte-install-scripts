@@ -32,7 +32,7 @@ fi
 
 sudo apt install -y ros-$ROS_NAME-ros-base ros-$ROS_NAME-zenoh-bridge-dds ros-$ROS_NAME-rmw-zenoh-cpp
 sudo apt install -y ros-$ROS_NAME-xacro
-sudo apt install -y ros-dev-tools
+sudo apt install -y ros-dev-tools ccache
 
 # shellcheck source=/dev/null
 source /opt/ros/$ROS_NAME/setup.bash
@@ -54,6 +54,16 @@ sudo pip3 install pyzbar mergedeep
 mkdir -p /home/mirte/mirte_ws/src
 cd /home/mirte/mirte_ws/src
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
+
+# Add colcon_defaults.yaml to the workspace, symlink and ccache
+cat <<EOF >>/home/mirte/mirte_ws/colcon_defaults.yaml
+# Default colcon build options for the Mirte workspace
+build:
+  symlink-install: true
+  mixin: 
+    - "ccache"
+EOF
+
 
 # if mirte-ros-packages is from main or develop, use the precompiled version, otherwise compile on-device
 cd $MIRTE_SRC_DIR/mirte-ros-packages
