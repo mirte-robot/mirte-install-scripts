@@ -30,22 +30,34 @@ jobs:
     strategy:
       matrix:
         type: [mirte, mirte-master]
+      fail-fast: false
     steps:
     - uses: actions/checkout@v4
     - shell: bash
       run: |
         echo $0
         sudo useradd -m -s /bin/bash mirte
+        # allow nopasswd sudo for mirte user
+        echo "mirte ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/mirte
+        sudo chmod 777 /home/runner/
         MIRTE_SRC_DIR=/usr/local/src/mirte
         sudo mkdir -p $MIRTE_SRC_DIR
-        sudo mkdir $MIRTE_SRC_DIR/mirte-install-scripts/
-        sudo cp -r ./* $MIRTE_SRC_DIR/mirte-install-scripts/
+        sudo chown mirte: $MIRTE_SRC_DIR
+        sudo chmod 755 $MIRTE_SRC_DIR
+        sudo -u mirte mkdir $MIRTE_SRC_DIR/mirte-install-scripts/
+        sudo -u mirte cp -r ./* $MIRTE_SRC_DIR/mirte-install-scripts/
         cd $MIRTE_SRC_DIR
-        sudo git clone https://github.com/arendjan/mirte-ros-packages.git mirte-ros-packages -b develop --recursive
+        sudo -u mirte git clone https://github.com/arendjan/mirte-ros-packages.git mirte-ros-packages -b develop --recursive
 
         sudo apt update
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
-        sudo sed -i '/systemctl/d' install_ROS2.sh # remove systemctl command as it is not available in the github runner/container
-        sudo apt install libunwind-dev -y
+        sudo -u mirte sed -i '/systemctl/d' install_ROS2.sh # remove systemctl command as it is not available in the github runner/container
+
+        # TODO: add deb proxy if wanted
+        # sudo apt install dbus libunwind-dev squid-deb-proxy-client -y
+        # mkdir -p /run/dbus
+        # dbus-daemon --system
+        # # sed -i 's/.*enable-dbus=.*/enable-dbus=no/' /etc/avahi/avahi-daemon.conf
+        # avahi-daemon -D &
         MIRTE_TYPE=${{ matrix.type }}
-        sudo /bin/bash -c "MIRTE_TYPE=${{ matrix.type }} source ./install_ROS2.sh"
+        sudo -u mirte /bin/bash -c "MIRTE_TYPE=${{ matrix.type }} source ./install_ROS2.sh"
