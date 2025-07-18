@@ -27,6 +27,7 @@ jobs:
 
   ros2-install:
     runs-on: ubuntu-22.04
+    container: ghcr.io/catthehacker/ubuntu:act-22.04
     strategy:
       matrix:
         type: [mirte, mirte-master]
@@ -39,7 +40,7 @@ jobs:
         sudo useradd -m -s /bin/bash mirte
         # allow nopasswd sudo for mirte user
         echo "mirte ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/mirte
-        sudo chmod 777 /home/runner/
+        sudo chmod 777 /home/runner/ || true
         MIRTE_SRC_DIR=/usr/local/src/mirte
         sudo mkdir -p $MIRTE_SRC_DIR
         sudo chown mirte: $MIRTE_SRC_DIR
