@@ -20,5 +20,3 @@ fi
 if [ "$(ros2 service list | grep "$service$")" ]; then
 	ros2 service call "$service" mirte_msgs/srv/SetOLEDText "{ text: 'Shutting down...'}"
 fi
-
-sleep 2

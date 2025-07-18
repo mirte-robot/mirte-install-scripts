@@ -16,6 +16,9 @@ sudo apt install software-properties-common -y
 sudo add-apt-repository universe -y
 sudo apt update && sudo apt install curl -y
 ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
+if [ -z "$ROS_APT_SOURCE_VERSION" ]; then
+	ROS_APT_SOURCE_VERSION="1.1.0"
+fi
 curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo $VERSION_CODENAME)_all.deb"
 sudo apt install /tmp/ros2-apt-source.deb
 sudo apt update
@@ -32,7 +35,7 @@ fi
 
 sudo apt install -y ros-$ROS_NAME-ros-base ros-$ROS_NAME-zenoh-bridge-dds ros-$ROS_NAME-rmw-zenoh-cpp
 sudo apt install -y ros-$ROS_NAME-xacro
-sudo apt install -y ros-dev-tools
+sudo apt install -y ros-dev-tools ccache
 
 # shellcheck source=/dev/null
 source /opt/ros/$ROS_NAME/setup.bash
@@ -54,6 +57,19 @@ sudo pip3 install pyzbar mergedeep
 mkdir -p /home/mirte/mirte_ws/src
 cd /home/mirte/mirte_ws/src
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
+
+sudo apt install python3-colcon-mixin -y
+colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+colcon mixin update default
+
+# Add colcon_defaults.yaml to the workspace, symlink and ccache
+cat <<EOF >>/home/mirte/mirte_ws/colcon_defaults.yaml
+# Default colcon build options for the Mirte workspace
+build:
+  symlink-install: true
+  mixin: 
+    - "ccache"
+EOF
 
 # if mirte-ros-packages is from main or develop, use the precompiled version, otherwise compile on-device
 cd $MIRTE_SRC_DIR/mirte-ros-packages
