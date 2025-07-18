@@ -55,6 +55,9 @@ mkdir -p /home/mirte/mirte_ws/src
 cd /home/mirte/mirte_ws/src
 ln -s $MIRTE_SRC_DIR/mirte-ros-packages .
 
+sudo apt install python3-colcon-mixin -y
+colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+
 # Add colcon_defaults.yaml to the workspace, symlink and ccache
 cat <<EOF >>/home/mirte/mirte_ws/colcon_defaults.yaml
 # Default colcon build options for the Mirte workspace
