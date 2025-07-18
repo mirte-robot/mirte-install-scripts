@@ -67,7 +67,6 @@ build:
     - "ccache"
 EOF
 
-
 # if mirte-ros-packages is from main or develop, use the precompiled version, otherwise compile on-device
 cd $MIRTE_SRC_DIR/mirte-ros-packages
 git submodule update --init --recursive
