@@ -106,7 +106,13 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 		fi
 		touch $path/COLCON_IGNORE
 		i_dash=$(echo $i | tr '_' '-')
-		packages="$packages ros-$ROS_NAME-$i_dash"
+		pkg_name="ros-$ROS_NAME-$i_dash"
+		# check if dbgsym package exists
+		if apt-cache madison "$pkg_name-dbgsym" | grep -vqz "Unable to locate package"; then
+			echo "Adding debug package $pkg_name-dbgsym"
+			packages="$packages $pkg_name-dbgsym"
+		fi
+		packages="$packages $pkg_name"
 	done
 	if [[ $branch == "develop" ]]; then
 		arch="${arch}_develop"
