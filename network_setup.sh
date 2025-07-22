@@ -1,4 +1,7 @@
 #!/bin/bash
+MIRTE_SRC_DIR=/usr/local/src/mirte
+
+$MIRTE_SRC_DIR/mirte-install-scripts/services/mirte_auto_dhcp_eth.sh || true
 
 # wait for wlan0 to be up, with max 30 seconds
 TIMEOUT=30
@@ -130,8 +133,6 @@ function file_empty() {
 	return 1 # false
 
 }
-
-MIRTE_SRC_DIR=/usr/local/src/mirte
 
 sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf || true
 
