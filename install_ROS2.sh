@@ -86,7 +86,9 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 
 	# Install mirte ros packages with apt from github, since they take ages to compile and it's easier to update them.
 	# colcon ignore those packages
-
+	if [[ $branch == "develop" ]]; then
+		arch="${arch}_develop"
+	fi
 	echo "Using precompiled version of packages"
 	echo "deb [trusted=yes] $github_url/raw/ros_mirte_${ROS_NAME}_${ubuntu_version}_${arch}/ ./" | sudo tee /etc/apt/sources.list.d/mirte-ros-packages.list
 	echo "yaml $github_url/raw/ros_mirte_${ROS_NAME}_${ubuntu_version}_${arch}/local.yaml ${ROS_NAME}" | sudo tee /etc/ros/rosdep/sources.list.d/mirte-ros-packages.list
@@ -120,9 +122,6 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 		fi
 		packages="$packages $pkg_name"
 	done
-	if [[ $branch == "develop" ]]; then
-		arch="${arch}_develop"
-	fi
 	sudo apt install -y -m $packages || fallback=false # TODO: disabled fallback for now as mirte-arm doesn't compile.
 fi
 
