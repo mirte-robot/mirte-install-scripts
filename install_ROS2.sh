@@ -112,7 +112,9 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 		i_dash=$(echo $i | tr '_' '-')
 		pkg_name="ros-$ROS_NAME-$i_dash"
 		# check if dbgsym package exists
-		if apt-cache madison "$pkg_name-dbgsym" | grep -vqz "Unable to locate package"; then
+		sudo apt-cache madison "$pkg_name-dbgsym"
+
+		if sudo apt-cache madison "$pkg_name-dbgsym" | grep -vqz "Unable to locate package"; then
 			echo "Adding debug package $pkg_name-dbgsym"
 			packages="$packages $pkg_name-dbgsym"
 		fi
