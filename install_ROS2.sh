@@ -175,7 +175,6 @@ sudo adduser mirte dialout
 # Some nice extra packages: clean can clean workspaces and packages. No need to do it by hand. lint can check for errors in the cmake/package code.
 sudo pip3 install colcon-clean colcon-lint
 
-
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	# TODO: need to check and edit the next part:
 	sudo apt install ros-$ROS_NAME-slam-toolbox -y
