@@ -86,8 +86,14 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 
 	# Install mirte ros packages with apt from github, since they take ages to compile and it's easier to update them.
 	# colcon ignore those packages
-
+	if [[ $branch == "develop" ]]; then
+		arch="${arch}_develop"
+	fi
 	echo "Using precompiled version of packages"
+	echo "deb [trusted=yes] $github_url/raw/ros_mirte_${ROS_NAME}_${ubuntu_version}_${arch}/ ./" | sudo tee /etc/apt/sources.list.d/mirte-ros-packages.list
+	echo "yaml $github_url/raw/ros_mirte_${ROS_NAME}_${ubuntu_version}_${arch}/local.yaml ${ROS_NAME}" | sudo tee /etc/ros/rosdep/sources.list.d/mirte-ros-packages.list
+	sudo apt update
+
 	cd /home/mirte/mirte_ws/src/ || exit 1
 	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_base_control mirte_master_arm_control mirte_control usb_cam)
 	packages=''
@@ -106,14 +112,16 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 		fi
 		touch $path/COLCON_IGNORE
 		i_dash=$(echo $i | tr '_' '-')
-		packages="$packages ros-$ROS_NAME-$i_dash"
+		pkg_name="ros-$ROS_NAME-$i_dash"
+		# check if dbgsym package exists
+		sudo apt-cache madison "$pkg_name-dbgsym"
+
+		if sudo apt-cache madison "$pkg_name-dbgsym" | grep -vqz "Unable to locate package"; then
+			echo "Adding debug package $pkg_name-dbgsym"
+			packages="$packages $pkg_name-dbgsym"
+		fi
+		packages="$packages $pkg_name"
 	done
-	if [[ $branch == "develop" ]]; then
-		arch="${arch}_develop"
-	fi
-	echo "deb [trusted=yes] $github_url/raw/ros_mirte_${ROS_NAME}_${ubuntu_version}_${arch}/ ./" | sudo tee /etc/apt/sources.list.d/mirte-ros-packages.list
-	echo "yaml $github_url/raw/ros_mirte_${ROS_NAME}_${ubuntu_version}_${arch}/local.yaml ${ROS_NAME}" | sudo tee /etc/ros/rosdep/sources.list.d/mirte-ros-packages.list
-	sudo apt update
 	sudo apt install -y -m $packages || fallback=false # TODO: disabled fallback for now as mirte-arm doesn't compile.
 fi
 
@@ -167,8 +175,6 @@ sudo adduser mirte dialout
 # Some nice extra packages: clean can clean workspaces and packages. No need to do it by hand. lint can check for errors in the cmake/package code.
 sudo pip3 install colcon-clean colcon-lint
 
-# Add colcon top level workspace, this makes it possible to run colcon build from any folder, it will find the workspace and build it. Otherwise it will create a new workspace in the subdirectory.
-
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	# TODO: need to check and edit the next part:
 	sudo apt install ros-$ROS_NAME-slam-toolbox -y
@@ -207,12 +213,9 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 
 fi
 
-cd /tmp
-git clone https://github.com/rhaschke/colcon-top-level-workspace
-cd colcon-top-level-workspace
-pip install .
-cd ..
-rm -rf colcon-top-level-workspace
+# Add colcon top level workspace, this makes it possible to run colcon build from any folder, it will find the workspace and build it. Otherwise it will create a new workspace in the subdirectory.
+pip install git+https://github.com/arendjan/colcon-top-level-workspace.git
+
 # zsh does not work nicely with ros2 autocomplete, so we need to add a function to fix it.
 # ROS 2 Foxy should have this fixed, but we are using ROS 2 Humble.
 # TODO: check for ROS2 jazzy

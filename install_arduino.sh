@@ -42,7 +42,7 @@ export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk
 add_rc "export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk"
 git clone https://github.com/raspberrypi/picotool.git --depth=1 # shallow clone to save space
 cd picotool || exit 1
-sudo cp udev/99-picotool.rules /etc/udev/rules.d/
+sudo cp udev/*.rules /etc/udev/rules.d/
 
 mkdir build
 cd build || exit 1
