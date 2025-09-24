@@ -26,7 +26,7 @@ cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
 
 cd $MIRTE_SRC_DIR/mirte-web-interface
-git clone https://github.com/dheera/rosboard.git
+git clone https://github.com/dheera/rosboard.git --single-branch
 sudo pip3 install tornado
 sudo pip3 install simplejpeg # recommended, but ROSboard can fall back to cv2 or PIL instead
 

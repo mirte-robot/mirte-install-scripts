@@ -34,13 +34,13 @@ sudo rm -rf v7* || true
 cd $MIRTE_SRC_DIR || exit 1
 mkdir pico/
 cd pico/ || exit 1
-git clone https://github.com/raspberrypi/pico-sdk.git --recursive --depth=1 # somehow needed for picotool
+git clone https://github.com/raspberrypi/pico-sdk.git --single-branch --recursive --depth=1 # somehow needed for picotool
 ls
 realpath pico-sdk
 ls
 export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk
 add_rc "export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk"
-git clone https://github.com/raspberrypi/picotool.git --depth=1 # shallow clone to save space
+git clone https://github.com/raspberrypi/picotool.git --single-branch --depth=1 # shallow clone to save space
 cd picotool || exit 1
 sudo cp udev/*.rules /etc/udev/rules.d/
 
@@ -59,7 +59,7 @@ pip install git+https://github.com/arendjan/pico-py-serial-flash.git@cli # uart 
 cd $MIRTE_SRC_DIR/mirte-install-scripts/
 # Already build all versions so only upload is needed *don't do for all, as it requires loads of space for the tools.
 # ./run_arduino.sh build Telemetrix4Arduino
-./run_arduino.sh upload_nano Telemetrix4Arduino # 'try to upload to the nano', to also install the upload tools.
+# ./run_arduino.sh upload_nano Telemetrix4Arduino # 'try to upload to the nano', to also install the upload tools.
 # ./run_arduino.sh build_nano_old Telemetrix4Arduino
 ./run_arduino.sh build_pico
 pio system prune -f
