@@ -9,7 +9,7 @@ if [ -z "$COMMAND" ]; then
 	exit 1
 fi
 
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 export INSTALL_ARDUINO_ALL=false
 source $MIRTE_SRC_DIR/settings.sh
 PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico

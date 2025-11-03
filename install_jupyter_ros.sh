@@ -1,6 +1,6 @@
 #!/bin/bash
 set -xe
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 # install basic python tools
 sudo apt install -y python3 python3-venv python3-dev git libffi-dev

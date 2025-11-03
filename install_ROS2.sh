@@ -6,7 +6,7 @@ set -xe
 # TODO: check above info, no issues yet (2024-12-11)
 
 #TODO: get this as a parameter
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 . tools.sh
 # shellcheck source=/dev/null
 source /etc/os-release

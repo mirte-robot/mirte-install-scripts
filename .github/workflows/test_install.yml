@@ -16,8 +16,9 @@ jobs:
       run: |
         mkdir -p /etc/udev/rules.d/ # just for testing, folder should just exist on the real image
         sudo useradd -m -s /bin/bash mirte 
-        MIRTE_SRC_DIR=/usr/local/src/mirte
-        sudo mkdir -p $MIRTE_SRC_DIR
+        pwd
+        export MIRTE_SRC_DIR=~/usr/local/src/mirte
+        mkdir -p $MIRTE_SRC_DIR
 
         echo "Matrix install_arduino_all=${{ matrix.install_arduino_all }}"
         if [ "${{ matrix.install_arduino_all }}" = "true" ]; then
@@ -40,7 +41,7 @@ jobs:
         sudo git clone https://github.com/mirte-robot/telemetrix4arduino.git mirte-telemetrix4arduino -b develop
         sudo git clone https://github.com/mirte-robot/telemetrix4rpipico.git mirte-telemetrix4rpipico -b develop --recursive
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
-        sudo ./install_arduino.sh
+        sudo -E ./install_arduino.sh
 
   ros2-install:
     runs-on: ubuntu-22.04
@@ -58,7 +59,7 @@ jobs:
         # allow nopasswd sudo for mirte user
         echo "mirte ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/mirte
         sudo chmod 777 /home/runner/ || true
-        MIRTE_SRC_DIR=/usr/local/src/mirte
+        export MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
         sudo mkdir -p $MIRTE_SRC_DIR
         sudo chown mirte: $MIRTE_SRC_DIR
         sudo chmod 755 $MIRTE_SRC_DIR
@@ -78,4 +79,4 @@ jobs:
         # # sed -i 's/.*enable-dbus=.*/enable-dbus=no/' /etc/avahi/avahi-daemon.conf
         # avahi-daemon -D &
         MIRTE_TYPE=${{ matrix.type }}
-        sudo -u mirte /bin/bash -c "MIRTE_TYPE=${{ matrix.type }} source ./install_ROS2.sh"
+        sudo -E -u mirte /bin/bash -c "MIRTE_TYPE=${{ matrix.type }} source ./install_ROS2.sh"
