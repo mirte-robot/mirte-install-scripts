@@ -79,4 +79,4 @@ jobs:
         # # sed -i 's/.*enable-dbus=.*/enable-dbus=no/' /etc/avahi/avahi-daemon.conf
         # avahi-daemon -D &
         MIRTE_TYPE=${{ matrix.type }}
-        sudo -E -u mirte /bin/bash -c "MIRTE_TYPE=${{ matrix.type }} source ./install_ROS2.sh"
+        sudo -u mirte /bin/bash -c "MIRTE_TYPE=${{ matrix.type }} source ./install_ROS2.sh"
