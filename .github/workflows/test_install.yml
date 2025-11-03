@@ -5,6 +5,10 @@ on: [push, pull_request]
 jobs:
   arduino-install:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        install_arduino_all: [true, false]
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v4
@@ -13,6 +17,19 @@ jobs:
         mkdir -p /etc/udev/rules.d/ # just for testing, folder should just exist on the real image
         sudo useradd -m -s /bin/bash mirte 
         MIRTE_SRC_DIR=/usr/local/src/mirte
+        sudo mkdir -p $MIRTE_SRC_DIR
+
+        echo "Matrix install_arduino_all=${{ matrix.install_arduino_all }}"
+        if [ "${{ matrix.install_arduino_all }}" = "true" ]; then
+          echo "Setting INSTALL_ARDUINO_ALL to true"
+          echo "export INSTALL_ARDUINO_ALL=true" > $MIRTE_SRC_DIR/settings.sh
+        else
+          echo "Setting INSTALL_ARDUINO_ALL to false"
+          echo "export INSTALL_ARDUINO_ALL=false" > $MIRTE_SRC_DIR/settings.sh
+        fi
+        echo "Contents of settings.sh:"
+        cat $MIRTE_SRC_DIR/settings.sh || echo "settings.sh does not exist yet"
+
         ls -ld /usr/local/
         ls -ld /usr/local/src/
         sudo mkdir -p $MIRTE_SRC_DIR

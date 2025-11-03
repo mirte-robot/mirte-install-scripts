@@ -1,7 +1,8 @@
 #!/bin/bash
 set -xe
 MIRTE_SRC_DIR=/usr/local/src/mirte
-
+export INSTALL_ARDUINO_ALL=false
+. $MIRTE_SRC_DIR/settings.sh
 . $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 # Install dependencies
 sudo apt install -y git curl binutils libusb-1.0-0
@@ -23,39 +24,67 @@ add_rc 'export PATH=$PATH:$HOME/.local/bin'
 
 curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
 
-# Install picotool for the Raspberry Pi Pico
-sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib build-essential pkg-config libusb-1.0-0-dev cmake -y
+if [ "$INSTALL_ARDUINO_ALL" = true ]; then
+	# Install picotool for the Raspberry Pi Pico
+	sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib build-essential pkg-config libusb-1.0-0-dev cmake -y
 
-# Remove newlib versions that are not compatible with the pico or pico2, otherwise it takes 2GB of space
-cd /usr/lib/arm-none-eabi/newlib/thumb || true
-sudo rm -rf v8-a* || true
-sudo rm -rf v7* || true
+	# Remove newlib versions that are not compatible with the pico or pico2, otherwise it takes 2GB of space
+	cd /usr/lib/arm-none-eabi/newlib/thumb || true
+	sudo rm -rf v8-a* || true
+	sudo rm -rf v7* || true
 
-cd $MIRTE_SRC_DIR || exit 1
-mkdir pico/
-cd pico/ || exit 1
-git clone https://github.com/raspberrypi/pico-sdk.git --single-branch --recursive --depth=1 # somehow needed for picotool
-ls
-realpath pico-sdk
-ls
-export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk
-add_rc "export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk"
-git clone https://github.com/raspberrypi/picotool.git --single-branch --depth=1 # shallow clone to save space
-cd picotool || exit 1
-sudo cp udev/*.rules /etc/udev/rules.d/
+	cd $MIRTE_SRC_DIR || exit 1
+	mkdir pico/
+	cd pico/ || exit 1
+	git clone https://github.com/raspberrypi/pico-sdk.git --single-branch --recursive --depth=1 # somehow needed for picotool
+	ls
+	realpath pico-sdk
+	ls
+	export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk
+	add_rc "export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk"
+	git clone https://github.com/raspberrypi/picotool.git --single-branch --depth=1 # shallow clone to save space
+	cd picotool || exit 1
+	sudo cp udev/*.rules /etc/udev/rules.d/
 
-mkdir build
-cd build || exit 1
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j
-sudo make install
+	mkdir build
+	cd build || exit 1
+	cmake .. -DCMAKE_BUILD_TYPE=Release
+	make -j
+	sudo make install
 
-cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
-git submodule update --init --recursive
+	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
+	git submodule update --init --recursive
 
-pip install -U "pip>=25" || true                                         # pico-py-serial-flash requires a newer version of pip, otherwise it'll be installed as UNKNOWN package
-pip install git+https://github.com/arendjan/pico-py-serial-flash.git@cli # uart flashing utility when using the pcb
+	pip install -U "pip>=25" || true                                         # pico-py-serial-flash requires a newer version of pip, otherwise it'll be installed as UNKNOWN package
+	pip install git+https://github.com/arendjan/pico-py-serial-flash.git@cli # uart flashing utility when using the pcb
+else
+	echo "Skipping installation of Pico tools"
+	echo "Only installing tools to upload to Pico with default uf2"
+	# download latest picotool for current arch linux
+	arch=$(uname -m)
+	curl -s https://api.github.com/repos/raspberrypi/pico-sdk-tools/releases/latest | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep "picotool-.*-$arch-lin.tar.gz" | wget -i - -O /tmp/picotool-latest-$arch-lin.tar.gz
+	# unzip only picotool/picotool file to /usr/local/bin/picotool
+	cd /usr/local/bin || exit 1
+	sudo tar -xzvf /tmp/picotool-latest-$arch-lin.tar.gz picotool/picotool --strip-components=1
+	sudo chmod +x ./picotool
 
+	# download last uf2 from telemetrix pico repo
+	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
+	mkdir -p build || true
+	cd build || exit 1
+	REPO=$(git config --get remote.origin.url | sed 's/https:\/\/github.com\///' | sed 's/\.git//')
+	BRANCH=$(git rev-parse --abbrev-ref HEAD)
+	curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"$BRANCH\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.uf2$' | wget -i - -O Telemetrix4RpiPico.uf2
+	# if not found, try to get from main branch
+	if [ ! -f Telemetrix4RpiPico.uf2 ]; then
+		curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"main\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.uf2$' | wget -i - -O Telemetrix4RpiPico.uf2
+		echo "Downloaded Telemetrix4RpiPico.uf2 from main branch"
+	fi
+	if [ ! -f Telemetrix4RpiPico.uf2 ]; then
+		echo "Failed to download Telemetrix4RpiPico.uf2"
+		exit 1
+	fi
+fi
 cd $MIRTE_SRC_DIR/mirte-install-scripts/
 # Already build all versions so only upload is needed *don't do for all, as it requires loads of space for the tools.
 # ./run_arduino.sh build Telemetrix4Arduino
