@@ -20,7 +20,9 @@ cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
 npm install .
 npm rebuild
 npm run build
-
+df -h
+rm -rf node_modules || true
+df -h
 # Install backend
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
