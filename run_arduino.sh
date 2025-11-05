@@ -11,7 +11,7 @@ fi
 
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 export INSTALL_ARDUINO_ALL=${INSTALL_ARDUINO_ALL:-false}
-source $MIRTE_SRC_DIR/settings.sh
+source $MIRTE_SRC_DIR/settings.sh || true
 PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico
 
 # Check if ROS is running
