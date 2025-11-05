@@ -90,7 +90,7 @@ jobs:
         sudo useradd -m -s /bin/bash mirte
         # allow root from user
         echo "mirte ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/mirte
-        export MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
+        export MIRTE_SRC_DIR=/test/mirte
         sudo mkdir -p $MIRTE_SRC_DIR
         sudo chown mirte: $MIRTE_SRC_DIR
         sudo chmod 755 $MIRTE_SRC_DIR
@@ -98,10 +98,8 @@ jobs:
         sudo -u mirte cp -r ./* $MIRTE_SRC_DIR/mirte-install-scripts/
         cd $MIRTE_SRC_DIR
         sudo -u mirte git clone https://github.com/mirte-robot/mirte-web-interface.git mirte-web-interface -b develop
-        SYSTEMCTL_LOCATION=$(which systemctl)
-        rm -f $SYSTEMCTL_LOCATION
-        touch $SYSTEMCTL_LOCATION
-        chmod +x $SYSTEMCTL_LOCATION
-        sudo systemctl daemon-reload
+        # remove all lines with systemctl as not available in github runner
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
-        ./install_web.sh
+        sudo -u mirte sed -i '/sudo systemctl/d' install_web.sh
+        cd $MIRTE_SRC_DIR/mirte-install-scripts/
+        sudo -u mirte /bin/bash -c "MIRTE_SRC_DIR=$MIRTE_SRC_DIR ./install_web.sh"
