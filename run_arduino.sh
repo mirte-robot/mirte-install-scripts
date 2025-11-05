@@ -10,7 +10,7 @@ if [ -z "$COMMAND" ]; then
 fi
 
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
-export INSTALL_ARDUINO_ALL=false
+export INSTALL_ARDUINO_ALL=${INSTALL_ARDUINO_ALL:-false}
 source $MIRTE_SRC_DIR/settings.sh
 PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico
 
@@ -33,7 +33,7 @@ cd $MIRTE_SRC_DIR/$PROJECT || exit 1
 
 buildpico() {
 	if [ "$INSTALL_ARDUINO_ALL" != true ]; then
-		echo "Using prebuilt uf2, change INSTALL_ARDUINO_ALL to true to build from source"
+		echo "Using prebuilt uf2, set INSTALL_ARDUINO_ALL to true to build from source"
 		return
 	fi
 	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
