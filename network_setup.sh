@@ -1,9 +1,6 @@
 #!/bin/bash
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
-# beide crasht regelmatig, wpa3 en deze
-# wpa1 disablen dunno of dat uitmaakt
-
 ($MIRTE_SRC_DIR/mirte-install-scripts/services/mirte_auto_dhcp_eth.sh || true) &
 
 # wait for wlan0 to be up, with max 30 seconds
