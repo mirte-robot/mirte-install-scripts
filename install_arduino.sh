@@ -24,7 +24,7 @@ add_rc 'export PATH=$PATH:$HOME/.local/bin'
 
 curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
 
-if [ "$INSTALL_ARDUINO_ALL" = true ]; then
+if [ "$INSTALL_ARDUINO_ALL" = "true" ]; then
 	# Install picotool for the Raspberry Pi Pico
 	sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib build-essential pkg-config libusb-1.0-0-dev cmake -y
 
