@@ -1,6 +1,6 @@
 #!/bin/bash
 set -xe
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 # Update
 sudo apt update || true
@@ -20,20 +20,21 @@ cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
 npm install .
 npm rebuild
 npm run build
+rm -rf node_modules || true
 
 # Install backend
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
+deactivate_node
 
 cd $MIRTE_SRC_DIR/mirte-web-interface
-git clone https://github.com/dheera/rosboard.git
+git clone https://github.com/dheera/rosboard.git --single-branch
 sudo pip3 install tornado
 sudo pip3 install simplejpeg # recommended, but ROSboard can fall back to cv2 or PIL instead
 
 # Install wetty
 #cd $MIRTE_SRC_DIR/mirte-web-interface
 #npm -g install wetty
-deactivate_node
 
 # Install strace for linetrace functionality
 sudo apt install -y strace

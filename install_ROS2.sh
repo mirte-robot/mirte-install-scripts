@@ -6,7 +6,7 @@ set -xe
 # TODO: check above info, no issues yet (2024-12-11)
 
 #TODO: get this as a parameter
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 . tools.sh
 # shellcheck source=/dev/null
 source /etc/os-release
@@ -181,7 +181,7 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 
 	# install lidar and depth camera
 	cd /home/mirte/mirte_ws/src || exit 1
-	git clone https://github.com/Slamtec/rplidar_ros.git -b ros2 # FIXME-FUTURE: Can be installed in newer versions if V2.1.5 is released
+	git clone https://github.com/Slamtec/rplidar_ros.git --single-branch -b ros2 # FIXME-FUTURE: Can be installed in newer versions if V2.1.5 is released
 
 	# git clone https://github.com/ArendJan/ros2_astra_camera.git -b fix-ros-jammy      # compressed images image transport fixes, fork of orbbec/... with also lazy nodes
 	# git clone https://github.com/clearpathrobotics/clearpath_mecanum_drive_controller # FIXME: Can be installed from apt? why build?

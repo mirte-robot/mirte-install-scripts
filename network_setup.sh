@@ -1,5 +1,5 @@
 #!/bin/bash
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 ($MIRTE_SRC_DIR/mirte-install-scripts/services/mirte_auto_dhcp_eth.sh || true) &
 

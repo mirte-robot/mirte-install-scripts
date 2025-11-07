@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 . $MIRTE_SRC_DIR/settings.sh || true # read settings, like MIRTE_TYPE
 MIRTE_TYPE="${MIRTE_TYPE:-default}"  # default, mirte-master
 

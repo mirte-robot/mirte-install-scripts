@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 # Add mirte user with sudo rights
 #TODO: user without homedir (create homedir for user)
 sudo useradd -m -G sudo,audio -s /bin/bash mirte
