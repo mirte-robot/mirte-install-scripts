@@ -34,6 +34,9 @@ def start(mount_point, loop):
         set_password(
             configuration["password"], prev_configuration["password"]
         )  # todo: do only when not already done
+    install_system(configuration=configuration)
+    set_mirte_type(configuration=configuration)
+    # todo: if usb is installed with bootable and img, nuke first part of this disk and reboot
     write_back_configuration(configuration, config_file)
     store_prev_config(configuration, prev_config_file)
 
@@ -110,7 +113,7 @@ def set_password(new_password, prev_set_password):
         # No need to update it and possibly the user edited it already by using the passwd command
         return
     if (
-        len(new_password) < 1
+        len(new_password) < 8
     ):  # when changing as the mirte user, there are some checks, when changing as root, no checks
         return
     print(f'Changing password to "{new_password}"')
@@ -134,3 +137,77 @@ def store_prev_config(configuration, prev_config_file):
     config_text = yaml.dump(configuration)
     with open(prev_config_file, "w") as file:
         file.writelines(config_text)
+
+
+def install_system(configuration):
+    # For installing the current os to emmc/nvme/sdcard
+    if "install" not in configuration:
+        return
+    install_cfg = configuration["install"] # emmc, sd, emmc_os_only
+
+    # current installation type
+    current_install = ''
+    # determine current installation type
+    # eMMC installation has /dev/mmcblk0 as root device
+    with open('/proc/mounts', 'r') as f:
+        for line in f:
+            if line.startswith('/dev/mmcblk0 '):
+                current_install = 'emmc'
+                break
+            elif line.startswith('/dev/mmcblk1'):
+                current_install = 'sd'
+                break
+            elif line.startswith('/dev/nvme'):
+                current_install = 'nvme'
+                break
+    if install_cfg == "emmc":
+        if current_install == "emmc":
+            print("Already installed to eMMC, no action needed")
+            return
+        # Install to eMMC
+        pass
+    elif install_cfg == "sd":
+        if current_install == "sd":
+            print("Already installed to SD card, no action needed")
+            return
+        # Install to SD card
+        pass
+    elif install_cfg == "emmc_os_only":
+        if current_install == "emmc":
+            print("Already installed to eMMC, no action needed")
+            return
+        
+        # Install to eMMC, but only the OS
+        pass
+    elif install_cfg == "nvme":
+        if current_install == "nvme":
+            print("Already installed to NVMe, no action needed")
+            return
+        # Install to NVMe
+        pass
+    # TODO: after copying, update armbianenv on /boot/ to set uuid of rootfs to the new device
+
+def set_mirte_type(configuration):
+    if "type" not in configuration:
+        return
+    mirte_type = configuration["type"]
+    # type should be either mirte or mirte_master
+    if mirte_type not in ["mirte", "mirte_master"]:
+        print(f"Unknown Mirte type: {mirte_type}, should be either mirte or mirte_master")
+        return
+    print(f"Setting Mirte type to {mirte_type}")
+    # open mirte-ros service file and set the type
+    service_file = "/etc/systemd/system/mirte-ros.service"
+    if not os.path.isfile(service_file):
+        print("No mirte-ros service file found, cannot set type")
+        return
+    # replace ExecStart=/usr/local/src/mirte/mirte-install-scripts/services/mirte_ros.sh <type> with new type
+    with open(service_file, "r") as file:
+        lines = file.readlines()
+    with open(service_file, "w") as file:
+        for line in lines:
+            if line.startswith("ExecStart="):
+                parts = line.strip().split(" ")
+                parts[-1] = mirte_type
+                line = " ".join(parts) + "\n"
+            file.writelines(line)

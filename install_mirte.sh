@@ -33,13 +33,17 @@ sudo apt install -y python3 python3-pip python3-setuptools python3.10-venv
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
 
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_arduino.sh
+if [[ "$INSTALL_ARDUINO" = true ]]; then
+	# Install Arduino and PlatformIO
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_arduino.sh
+fi
 
 # Install Mirte ROS2 packages
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_ROS2.sh
-
+if [[ "$INSTALL_ROS2" = true ]]; then
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_ROS2.sh
+fi
 # Install Mirte Python package
 if [[ "$INSTALL_PYTHON" = true ]]; then
 	cd $MIRTE_SRC_DIR/mirte-python

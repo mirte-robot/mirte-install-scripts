@@ -6,27 +6,39 @@ import time
 
 observer = None
 
-tmx_config_path = "/usr/local/src/mirte/mirte-ros-packages/mirte_telemetrix/config/mirte_user_config.yaml"
-sd_config_path = "/mnt/mirte/robot_config.yaml"
+config_files = [
+    "mirte_user_config.yaml",
+    "mirte_master_config.yaml",
+    # TODO: add pid config?
+]
+
+tmx_config_path = "/usr/local/src/mirte/mirte-ros-packages/mirte_bringup/telemetrix_config/"
+# sd_config_path = "/mnt/mirte/"
 
 
 def start(mount_point, loop):
     global observer, sd_config_path
     sd_config_path = f"{mount_point}/robot_config.yaml"
-    if not os.path.isfile(tmx_config_path):
+    if not os.path.isdir(tmx_config_path):
         print("No telemetrix configuration, stopping config provisioning")
         return
-    if not os.path.isfile(sd_config_path):
-        print("No configuration on extra partition, copying existing to it.")
-        copy(tmx_config_path, sd_config_path)
-
-    # Assuming the sd configuration is the 'latest', as it is either copied from tmx/config or it is updated by the user when offline, so always copy the sd config to the user_config
-    copy(sd_config_path, tmx_config_path)
-    observer = Observer()
-    event_handler = MyEventHandler()
-    observer.schedule(event_handler, tmx_config_path)
-    observer.schedule(event_handler, sd_config_path)
-    observer.start()
+    for config_file in config_files:
+        tmx_config_path_file = os.path.join(tmx_config_path, config_file)
+        sd_config_path_file = os.path.join(
+            os.path.dirname(sd_config_path), config_file
+        )
+        if not os.path.isfile(sd_config_path_file):
+            print(
+                f"No {config_file} on extra partition, copying existing to it."
+            )
+            copy(tmx_config_path_file, sd_config_path_file)
+        # Assuming the sd configuration is the 'latest', as it is either copied from tmx/config or it is updated by the user when offline, so always copy the sd config to the user_config
+        copy(sd_config_path, tmx_config_path)
+        observer = Observer()
+        event_handler = MyEventHandler()
+        observer.schedule(event_handler, tmx_config_path)
+        observer.schedule(event_handler, sd_config_path)
+        observer.start()
 
 
 last_copy = time.time()
