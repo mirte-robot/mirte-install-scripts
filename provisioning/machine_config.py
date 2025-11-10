@@ -3,6 +3,9 @@ import os
 from deepdiff import DeepDiff
 import nmcli
 import asyncio
+needs_mount = True
+
+
 
 prev_config_file = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "store/machine_config.yaml"
@@ -10,7 +13,6 @@ prev_config_file = os.path.join(
 print(prev_config_file)
 
 hostname = "Mirte-XXXXX"
-
 
 def start(mount_point, loop):
     config_file = f"{mount_point}/machine_config.yaml"

@@ -15,7 +15,7 @@ config_files = [
 tmx_config_path = "/usr/local/src/mirte/mirte-ros-packages/mirte_bringup/telemetrix_config/"
 # sd_config_path = "/mnt/mirte/"
 
-
+needs_mount = True
 def start(mount_point, loop):
     global observer, sd_config_path
     sd_config_path = f"{mount_point}/robot_config.yaml"
@@ -77,8 +77,10 @@ class MyEventHandler(FileSystemEventHandler):
 
 
 async def stop():
-    observer.stop()
-    observer.join()
+    global observer
+    if observer is not None:
+        observer.stop()
+        observer.join()
 
 
 def copy(fr, to):

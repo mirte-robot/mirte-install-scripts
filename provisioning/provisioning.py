@@ -13,8 +13,9 @@ mount_point = "/mnt/mirte/"
 import robot_config
 import machine_config
 import ssh
+import mounter
 
-modules = [robot_config, machine_config, ssh]
+modules = [robot_config, machine_config, ssh, ]
 
 
 async def stop(event_loop):
@@ -30,10 +31,15 @@ async def stop(event_loop):
 
 if __name__ == "__main__":
     event_loop = asyncio.get_event_loop()
-
+    mounted = True
+    if not mounter.mount(mount_point):
+        print("Could not mount extra partition, not provisioning configs")
+        mounted = False
     for module in modules:
+        
         try:
-            module.start(mount_point, event_loop)
+            if mounted or not module.needs_mount:
+                module.start(mount_point, event_loop)
         except Exception as e:
             print(e)
             print(traceback.format_exc())

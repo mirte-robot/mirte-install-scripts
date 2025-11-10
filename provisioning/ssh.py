@@ -2,13 +2,19 @@ import os
 
 auth_keys_path = "/home/mirte/.ssh/authorized_keys"
 
-
+needs_mount = True
 def start(mount_point, loop):
     config_file = f"{mount_point}/authorized_keys"
     if not os.path.isfile(config_file):
         print("No authorized keys configuration")
         return
     existing_keys = []
+    # if not exists, create the .ssh folder and the authorized_keys file
+    if not os.path.isdir(os.path.dirname(auth_keys_path)):
+        os.makedirs(os.path.dirname(auth_keys_path), mode=0o700)
+    if not os.path.isfile(auth_keys_path):
+        open(auth_keys_path, "a").close()
+        os.chmod(auth_keys_path, 0o600)
     with open(config_file, "r") as file:
         new_keys = file.readlines()
     if os.path.isfile(auth_keys_path):
