@@ -49,7 +49,7 @@ upload_pico_uart() {
 		# send reboot command
 		stty 115200 -F $port
 		echo -ne '\x01\x26' >$port # 1 byte message, message id 0x26==reset_to_bootloader
-		sleep 1
+		sleep 3
 		# try to upload
 		ERR=false
 		pico_py_serial_flasher $port $PICO_BUILD_LOCATION.elf || ERR=true
