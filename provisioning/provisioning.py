@@ -15,8 +15,8 @@ import machine_config
 import ssh
 import mounter
 
-modules = [robot_config, machine_config, ssh, ]
-
+module_types = [robot_config.RobotConfig, machine_config.MachineConfig, ssh.SSHConfig]
+modules = []
 
 async def stop(event_loop):
     for module in modules:
@@ -35,11 +35,17 @@ if __name__ == "__main__":
     if not mounter.mount(mount_point):
         print("Could not mount extra partition, not provisioning configs")
         mounted = False
+    for module in module_types:
+        if(module.needs_mount and not mounted):
+            print(f"Skipping module {module} as mount is required but not available")
+            continue
+        modules.append(module(mount_point, event_loop))
+
     for module in modules:
         
         try:
-            if mounted or not module.needs_mount:
-                module.start(mount_point, event_loop)
+            # if mounted or not module.needs_mount:
+            module.start(mount_point, event_loop)
         except Exception as e:
             print(e)
             print(traceback.format_exc())
