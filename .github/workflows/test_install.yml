@@ -103,3 +103,4 @@ jobs:
         sudo -u mirte sed -i '/sudo systemctl/d' install_web.sh
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
         sudo -u mirte /bin/bash -c "MIRTE_SRC_DIR=$MIRTE_SRC_DIR ./install_web.sh"
+        sudo -u mirte /bin/bash -c "MIRTE_SRC_DIR=$MIRTE_SRC_DIR ./install_vscode.sh"
