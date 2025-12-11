@@ -4,16 +4,20 @@ MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 # VScode in 2 parts:
 # - vscode remote server, when using the ssh plugin from another computer
+#   preloading as the robot (and computer) might not have internet access later
 # - 'vscode' website
 
 # First part:
-cd $MIRTE_SRC_DIR || exit
-mkdir vscode
-cd vscode || exit
-wget https://gist.githubusercontent.com/b01/0a16b6645ab7921b0910603dfb85e4fb/raw/ea48d972a176b90b3956de59eb7a43da9be86ec5/download-vs-code-server.sh
-chmod +x download-vs-code-server.sh
-sudo -u mirte $MIRTE_SRC_DIR/vscode/download-vs-code-server.sh
-
+# Broken for now, also the newer version from his repo: https://github.com/b01/dl-vscode-server
+if false; then
+	cd $MIRTE_SRC_DIR || exit
+	mkdir vscode
+	cd vscode || exit
+	wget https://raw.githubusercontent.com/b01/dl-vscode-server/main/download-vs-code-server.sh
+	# wget https://gist.githubusercontent.com/b01/0a16b6645ab7921b0910603dfb85e4fb/raw/ea48d972a176b90b3956de59eb7a43da9be86ec5/download-vs-code-server.sh
+	chmod +x download-vs-code-server.sh
+	sudo -u mirte $MIRTE_SRC_DIR/vscode/download-vs-code-server.sh "linux"
+fi
 # Second part:
 cd $MIRTE_SRC_DIR/vscode || exit
 sudo -u mirte bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
