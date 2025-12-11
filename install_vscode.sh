@@ -11,7 +11,7 @@ MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 # Broken for now, also the newer version from his repo: https://github.com/b01/dl-vscode-server
 if false; then
 	cd $MIRTE_SRC_DIR || exit
-	mkdir vscode
+	mkdir vscode || true
 	cd vscode || exit
 	wget https://raw.githubusercontent.com/b01/dl-vscode-server/main/download-vs-code-server.sh
 	# wget https://gist.githubusercontent.com/b01/0a16b6645ab7921b0910603dfb85e4fb/raw/ea48d972a176b90b3956de59eb7a43da9be86ec5/download-vs-code-server.sh
@@ -19,6 +19,7 @@ if false; then
 	sudo -u mirte $MIRTE_SRC_DIR/vscode/download-vs-code-server.sh "linux"
 fi
 # Second part:
+mkdir -p $MIRTE_SRC_DIR/vscode || true
 cd $MIRTE_SRC_DIR/vscode || exit
 sudo -u mirte bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
 sudo -u mirte bash -c "mkdir -p ~/.config/code-server && cp $MIRTE_SRC_DIR/mirte-install-scripts/config/code_server_config.yaml ~/.config/code-server/config.yaml" || true
