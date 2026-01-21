@@ -8,20 +8,44 @@ import yaml
 
 
 # Install OS to eMMC/NVMe/SD card based on configuration
+
 # Not just copying the OS_partition, but the whole disk image or dd from current rootfs to target device
 # then remove overlay and settings partitions if needed as uboot lives somewhere as well
 
+# 1st boot:
+# copy current disk to target device
+# update armbianEnv.txt on target boot partition to set rootfs uuid to new device
+# enable armbian-resize-filesystem.service in target device
+# remove overlay and settings partitions from target device if needed
+# remove OS partitions from source device if needed (for sd installs)
+
+# 2nd boot:
+# resize filesystem on target device to fill disk
+# move partitions if needed on original source device
+# clean up overlayfs on source device
+# reboot system for clean overlayfs
+
+# 3rd boot:
+# done
 
 
 
 
 def get_root_part():
+    ro_dev = None
+    has_overlay = False
     with open('/proc/mounts', 'r') as f:
         for line in f:
             if line.startswith('/dev/'):
                 parts = line.split(' ')
                 if parts[1] == '/':
                     return parts[0]
+            if line.startswith('overlayroot /'):
+                has_overlay = True
+            if ' /media/root-ro ' in line:
+                ro_dev = line.split(' ')[0]
+    if ro_dev is not None and has_overlay:
+        return ro_dev
     return None
 
 def install_system(configuration):
@@ -57,6 +81,7 @@ def install_system(configuration):
     print(f"Current installation type: {current_install}, requested: {install_cfg}")
     if current_install == install_cfg:
         print("Already installed to requested device, no action needed")
+        cleanup_sd(configuration)
         return
     if install_cfg == "emmc":
         target_dev = "/dev/mmcblk0"
@@ -106,7 +131,7 @@ def install_system(configuration):
     # ).stdout.decode().strip()
     # print(f"Size to copy: {size_to_copy} bytes")
 
-    if False:
+    if True:
         subprocess.run(f"dd if={source_location} of={target_dev} bs=4M status=progress", shell=True, check=True)
     # partprobe to inform kernel of partition table changes
     subprocess.run(["partprobe", target_dev], check=True)
@@ -174,6 +199,8 @@ def install_system(configuration):
             # return
         else:
             subprocess.run(["parted", target_dev, "rm", mirte_root_part_num], check=True)
+            subprocess.run("partprobe", check=True)
+            subprocess.run("sleep 2", shell=True, check=True)
     if remove_settings:
         print("Removing settings partition")
         part_list = subprocess.run(
@@ -183,24 +210,29 @@ def install_system(configuration):
             stderr=subprocess.PIPE,
         ).stdout.decode().strip().split("\n")
         mirte_settings_part_num = None
+        print("settings part list:", part_list)
         for line in part_list:
             if "MIRTE" in line :
                 tokens = line.split()
+                print("settings part tokens:", tokens)
                 # mirte must be the only part of this name
                 for token in tokens:
-                    if token.startswith("MIRTE") and token != "MIRTE":
+                    if token != "MIRTE":
                         continue 
+                print("Found MIRTE settings partition:", line)
                 mirte_settings_part_num = tokens[0][-1] # last character is partition number
                 break
         if mirte_settings_part_num is None:
             print("No MIRTE settings partition found, cannot remove settings partition")
             # return
         else:
-            subprocess.run(["parted", target_dev, "rm", mirte_settings_part_num], check=True)
-    
+            subprocess.run(["echo", "-e", f"rm\n{mirte_settings_part_num}\nYes\nquit", "|", "parted", "---pretend-input-tty", target_dev ], check=True, shell=True)
+            subprocess.run("partprobe", check=True)
+            subprocess.run("sleep 2", shell=True, check=True)
     # TODO: check if move is neede for armbian_root partition to begin of disk
-
+    reboot = False
     if configuration.get("remove_os_from_sd", False): # 'sd': install medium
+        reboot = True
         # remove armbi_root from source_location
         if current_install == "sd":
             print("Removing OS partitions from SD card")
@@ -227,9 +259,81 @@ def install_system(configuration):
                 subprocess.run(f"dd if=/dev/zero of={source_dev}p{armbian_root_part_num} bs=4M status=progress count=100", shell=True, check=True)
                 print("Removed OS partitions from SD card")
                 # TODO: next boot: move other partitions if needed
-                subprocess.run("echo b >/proc/sysrq-trigger", shell=True, check=True)
+                # subprocess.run("echo b >/proc/sysrq-trigger", shell=True, check=True)
         
     
     print("Installation complete, please reboot the system to boot from the new device.")
     # reboot system
+    if reboot:
+        print("Rebooting system to apply changes...")
+        subprocess.run("echo b >/proc/sysrq-trigger", check=True, shell=True)
+    else:
+        print("Shutting down system to allow manual reboot...") # when only install (without sd remove), do not reboot as it will keep looping.
+        subprocess.run("sudo shutdown now", check=True, shell=True)
     # subprocess.run(["reboot"], check=True)
+
+
+
+def cleanup_sd(configuration):
+    # if install is emmc and remove_os_from_sd is true, then move settings and overlay partitions on sd to begin of disk
+    install_cfg = configuration["install"] # emmc, nvme,sd
+    remove_overlay = configuration.get("remove_os_from_sd", False)
+    if install_cfg != "emmc" or not remove_overlay:
+        return
+    # if file /home/mirte/.skip_sd_cleanup exists, then skip cleanup
+    if os.path.isfile("/home/mirte/.skip_sd_cleanup"):
+        print("Skipping SD card cleanup as /home/mirte/.skip_sd_cleanup exists")
+        return
+    # create file /home/mirte/.skip_sd_cleanup to avoid repeated cleanup attempts
+    with open("/home/mirte/.skip_sd_cleanup", "w") as f:
+        f.write("skip sd cleanup\n")
+    sd_dev = "/dev/mmcblk1"
+    print("Cleaning up SD card partitions...")
+    part_list = subprocess.run(
+        ["lsblk", "-o", "NAME,LABEL", "-nr", sd_dev],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).stdout.decode().strip().split("\n")
+    overlay_part_num = None
+    settings_part_num = None
+    for line in part_list:
+        if "mirte_root" in line:
+            tokens = line.split()
+            overlay_part_num = tokens[0][-1]  # last character is partition number
+        if "MIRTE" in line :
+            tokens = line.split()
+            # mirte must be the only part of this name
+            for token in tokens:
+                if token.startswith("MIRTE") and token != "MIRTE":
+                    continue 
+            settings_part_num = tokens[0][-1] # last character is partition number
+    if overlay_part_num is None and settings_part_num is None:
+        print("No overlay or settings partitions found on SD card, nothing to clean up")
+        return
+    # move partitions to begin of disk
+    try:
+        print("Moving partitions to begin of disk...")
+        # use parted to move partitions
+        if overlay_part_num is not None:
+            print(f"Moving overlay partition {overlay_part_num} to begin of disk")
+            subprocess.run(["parted", sd_dev, "move", overlay_part_num, "1MiB"], check=True)
+        if settings_part_num is not None:
+            print(f"Moving settings partition {settings_part_num} to follow overlay partition")
+            start_pos = "1MiB"
+            if overlay_part_num is not None:
+                # get end of overlay partition
+                end_pos = subprocess.run(
+                    f"parted {sd_dev} unit MiB print | grep {overlay_part_num} | awk '{{print $3}}' | sed 's/MiB//'",
+                    shell=True,
+                    check=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                ).stdout.decode().strip()
+                start_pos = f"{int(float(end_pos)) + 1}MiB"
+            subprocess.run(["parted", sd_dev, "move", settings_part_num, start_pos], check=True)
+        print("Partitions moved successfully.")
+        # inform kernel of partition table changes
+        subprocess.run(["partprobe", sd_dev], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to move partitions: {e.stderr.decode().strip()}")

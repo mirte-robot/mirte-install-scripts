@@ -1,6 +1,6 @@
 
 
-def mount(mount_point, wanted_label="MIRTE_SETTI"):
+def mount(mount_point, wanted_label="MIRTE"):
     import subprocess
     # list all partitions
     # list all unmounted partitions and get the labels

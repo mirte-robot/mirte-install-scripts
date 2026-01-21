@@ -3,7 +3,9 @@ access_points: []
 password: ""
 type: mirte
 install: emmc # or sd, nvme
-remove_overlay_partition: True # remove from target device
-remove_settings_partition: True # remove from target device
+remove_overlay_partition: true # remove from target device
+remove_settings_partition: true # remove from target device
 image_file: "" # optional, if empty, dd from current rootfs to target device
-remove_os_from_sd: False # only for emmc installs, remove overlay and settings from sdcard if present
+remove_os_from_sd: false # only for emmc installs, remove os from sdcard
+
+cleanup_overlay: false
