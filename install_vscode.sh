@@ -9,14 +9,15 @@ MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 # First part:
 # Broken for now, also the newer version from his repo: https://github.com/b01/dl-vscode-server
-if false; then
+if true; then
 	cd $MIRTE_SRC_DIR || exit
 	mkdir vscode || true
 	cd vscode || exit
-	wget https://raw.githubusercontent.com/b01/dl-vscode-server/main/download-vs-code-server.sh
-	# wget https://gist.githubusercontent.com/b01/0a16b6645ab7921b0910603dfb85e4fb/raw/ea48d972a176b90b3956de59eb7a43da9be86ec5/download-vs-code-server.sh
-	chmod +x download-vs-code-server.sh
-	sudo -u mirte $MIRTE_SRC_DIR/vscode/download-vs-code-server.sh "linux"
+	ARCH="x64"
+	if [[ "$(uname -m)" == "aarch64" ]]; then
+		ARCH="arm64"
+	fi
+	curl -L https://raw.githubusercontent.com/b01/dl-vscode-server/main/download-vs-code.sh | bash -s -- "linux" $ARCH
 fi
 # Second part:
 mkdir -p $MIRTE_SRC_DIR/vscode || true
