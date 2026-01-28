@@ -17,7 +17,7 @@ if true; then
 	if [[ "$(uname -m)" == "aarch64" ]]; then
 		ARCH="arm64"
 	fi
-	curl -L https://raw.githubusercontent.com/b01/dl-vscode-server/main/download-vs-code.sh | bash -s -- "linux" $ARCH
+	curl -L https://raw.githubusercontent.com/b01/dl-vscode-server/refs/tags/1.0.1/download-vs-code.sh | bash -s -- "linux" $ARCH
 fi
 # Second part:
 mkdir -p $MIRTE_SRC_DIR/vscode || true
