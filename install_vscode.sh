@@ -7,18 +7,16 @@ MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 #   preloading as the robot (and computer) might not have internet access later
 # - 'vscode' website
 
-# First part:
-# Broken for now, also the newer version from his repo: https://github.com/b01/dl-vscode-server
-if true; then
-	cd $MIRTE_SRC_DIR || exit
-	mkdir vscode || true
-	cd vscode || exit
-	ARCH="x64"
-	if [[ "$(uname -m)" == "aarch64" ]]; then
-		ARCH="arm64"
-	fi
-	curl -L https://raw.githubusercontent.com/b01/dl-vscode-server/refs/tags/1.0.1/download-vs-code.sh | bash -s -- "linux" $ARCH
+# First part: https://github.com/b01/dl-vscode-server
+cd $MIRTE_SRC_DIR || exit
+mkdir vscode || true
+cd vscode || exit
+ARCH="x64"
+if [[ "$(uname -m)" == "aarch64" ]]; then
+	ARCH="arm64"
 fi
+curl -L https://raw.githubusercontent.com/b01/dl-vscode-server/refs/tags/1.0.1/download-vs-code.sh | bash -s -- "linux" $ARCH
+
 # Second part:
 mkdir -p $MIRTE_SRC_DIR/vscode || true
 cd $MIRTE_SRC_DIR/vscode || exit
