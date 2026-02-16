@@ -1,6 +1,6 @@
 #!/bin/bash
 set -xe
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 # install basic python tools
 sudo apt install -y python3 python3-venv python3-dev git libffi-dev
@@ -19,7 +19,7 @@ sudo apt install -y libjpeg-dev zlib1g-dev
 pip3 install wheel
 pip3 install markupsafe==2.0.1 pyzmq==24 zipp==3.1.0 \
 	ipython==8.7.0 ipykernel==6.17.1 ipywidgets==7.7.2 \
-	jupyter-client==7.4.8 jupyter-core==5.1.0 \
+	typeguard==4.4.2 jupyter-client==7.4.8 jupyter-core==5.1.0 \
 	nbclient==0.7.2 nbconvert==7.2.6 nbformat==5.7.0 \
 	qtconsole==5.4.0 traitlets==5.6.0 \
 	notebook==6.5.2 bqplot==0.12.18 pyyaml \

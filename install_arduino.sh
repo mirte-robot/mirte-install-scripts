@@ -1,89 +1,101 @@
 #!/bin/bash
 set -xe
-MIRTE_SRC_DIR=/usr/local/src/mirte
-
-# NOTE: on some builds cmake is very old, so we need to install a newer version, this is done by ./install_ROS.sh, which must be run before this script
-
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
+export INSTALL_ARDUINO_ALL=false
+. $MIRTE_SRC_DIR/settings.sh
+. $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 # Install dependencies
 sudo apt install -y git curl binutils libusb-1.0-0
 
-# Install arduino-cli
-# We need to install version 0.13.0. From version 0.14.0 on a check is done on the hash of the packages,
-# while the community version of the STM (see below) needs insecure packages.
-curl https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sudo BINDIR=/usr/local/bin sh -s 0.13.0
+# install platformio
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
+python3 get-platformio.py
+rm get-platformio.py
 
-# Install arduino avr support (for nano)
-arduino-cli -v core update-index --additional-urls https://raw.githubusercontent.com/koendv/stm32duino-raspberrypi/master/BoardManagerFiles/package_stm_index.json
-arduino-cli -v core install arduino:avr
+# Add platformio to path
+export PATH=$PATH:$HOME/.local/bin
+mkdir -p ~/.local/bin || true
+ln -s ~/.platformio/penv/bin/platformio ~/.local/bin/platformio
+ln -s ~/.platformio/penv/bin/pio ~/.local/bin/pio
+ln -s ~/.platformio/penv/bin/piodebuggdb ~/.local/bin/piodebuggdb
+pio --version
 
-# Install STM32 support. Currently not supported by stm32duino (see https://github.com/stm32duino/Arduino_Core_STM32/issues/708), but there is already
-# a community version (https://github.com/koendv/stm32duino-raspberrypi). TODO: go back to stm32duino as soon as it is merged into stm32duino.
-arduino-cli -v core install STM32:stm32 --additional-urls https://github.com/koendv/stm32duino-raspberrypi/blob/v1.3.2-4/BoardManagerFiles/package_stm_index.json
-#arduino-cli -v core install STM32:stm32 --additional-urls https://github.com/zoef-robot/stm32duino-raspberrypi/master/BoardManagerFiles/package_stm_index.json
+add_rc 'export PATH=$PATH:$HOME/.local/bin'
 
-# Fix for community STM32 (TODO: make version independant)
-sed -i 's/dfu-util\.sh/dfu-util\/dfu-util/g' /home/mirte/.arduino15/packages/STM32/tools/STM32Tools/1.4.0/tools/linux/maple_upload
-ln -s /home/mirte/.arduino15/packages/STM32/tools/STM32Tools/1.4.0/tools/linux/maple_upload /home/mirte/.arduino15/packages/STM32/tools/STM32Tools/1.4.0/tools/linux/maple_upload.sh
-sudo cp /home/mirte/.arduino15/packages/STM32/tools/STM32Tools/1.4.0/tools/linux/45-maple.rules /etc/udev/rules.d/45-maple.rules
-# Retartsing should only be done when not in qemu
-#sudo service udev restart
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
 
-# Install libraries needed by FirmataExpress
-arduino-cli lib install "NewPing"
-arduino-cli lib install "Stepper"
-arduino-cli lib install "Servo"
-arduino-cli lib install "DHTNEW"
+if [ "$INSTALL_ARDUINO_ALL" = "true" ]; then
+	# Install picotool for the Raspberry Pi Pico
+	sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib build-essential pkg-config libusb-1.0-0-dev cmake -y
 
-# Install our own arduino libraries
-ln -s $MIRTE_SRC_DIR/mirte-arduino-libraries/OpticalEncoder /home/mirte/Arduino/libraries
+	# Remove newlib versions that are not compatible with the pico or pico2, otherwise it takes 2GB of space
+	cd /usr/lib/arm-none-eabi/newlib/thumb || true
+	sudo rm -rf v8-a* || true
+	sudo rm -rf v7* || true
 
-# Install Blink example code
-mkdir /home/mirte/arduino_project/Blink
-ln -s $MIRTE_SRC_DIR/mirte-install-scripts/Blink.ino /home/mirte/arduino_project/Blink
+	cd $MIRTE_SRC_DIR || exit 1
+	mkdir pico/
+	cd pico/ || exit 1
+	git clone https://github.com/raspberrypi/pico-sdk.git --single-branch --recursive --depth=1 # somehow needed for picotool
+	ls
+	realpath pico-sdk
+	ls
+	export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk
+	add_rc "export PICO_SDK_PATH=$MIRTE_SRC_DIR/pico/pico-sdk"
 
-# Already build all versions so only upload is needed
-./run_arduino.sh build Telemetrix4Arduino
-./run_arduino.sh build_nano Telemetrix4Arduino
-./run_arduino.sh build_nano_old Telemetrix4Arduino
-./run_arduino.sh build_uno Telemetrix4Arduino
+	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
+	git submodule update --init --recursive
 
+else
+	echo "Skipping installation of Pico tools"
+	echo "Only installing tools to upload to Pico with default uf2"
+	# download latest picotool for current arch linux
+	arch=$(uname -m)
+	curl -s https://api.github.com/repos/raspberrypi/pico-sdk-tools/releases/latest | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep "picotool-.*-$arch-lin.tar.gz" | wget -i - -O /tmp/picotool-latest-$arch-lin.tar.gz
+	# Check that the file was downloaded and is a valid tar.gz
+	if [ ! -s /tmp/picotool-latest-$arch-lin.tar.gz ]; then
+		echo "Error: Failed to download picotool tarball for architecture $arch."
+		exit 1
+	fi
+	if ! gzip -t /tmp/picotool-latest-$arch-lin.tar.gz 2>/dev/null; then
+		echo "Error: Downloaded picotool tarball is not a valid gzip file."
+		exit 1
+	fi
+	# unzip only picotool/picotool file to /usr/local/bin/picotool
+	cd /usr/local/bin || exit 1
+	sudo tar -xzvf /tmp/picotool-latest-$arch-lin.tar.gz picotool/picotool --strip-components=1
+	sudo chmod +x ./picotool
+
+	# uploader when using uart (mirte pioneer pcb)
+	pip install -U "pip>=25" || true                                         # pico-py-serial-flash requires a newer version of pip, otherwise it'll be installed as UNKNOWN package
+	pip install git+https://github.com/arendjan/pico-py-serial-flash.git@cli # uart flashing utility when using the pcb
+
+	# download last uf2 from telemetrix pico repo
+	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
+	mkdir -p build || true
+	cd build || exit 1
+	REPO=$(git config --get remote.origin.url | sed 's/https:\/\/github.com\///' | sed 's/\.git//')
+	BRANCH=$(git rev-parse --abbrev-ref HEAD)
+	curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"$BRANCH\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.uf2$' | wget -i - -O Telemetrix4RpiPico.uf2
+	#also download elf file
+	curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"$BRANCH\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.elf$' | wget -i - -O Telemetrix4RpiPico.elf
+	# if not found, try to get from main branch
+	if [ ! -f Telemetrix4RpiPico.uf2 ]; then
+		curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"main\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.uf2$' | wget -i - -O Telemetrix4RpiPico.uf2
+		curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"main\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.elf$' | wget -i - -O Telemetrix4RpiPico.elf
+		echo "Downloaded Telemetrix4RpiPico.uf2 from main branch"
+	fi
+	if [ ! -f Telemetrix4RpiPico.uf2 ]; then
+		echo "Failed to download Telemetrix4RpiPico.uf2"
+		exit 1
+	fi
+fi
+cd $MIRTE_SRC_DIR/mirte-install-scripts/
+# Already build all versions so only upload is needed *don't do for all, as it requires loads of space for the tools.
+# ./run_arduino.sh build Telemetrix4Arduino
+# ./run_arduino.sh upload_nano Telemetrix4Arduino # 'try to upload to the nano', to also install the upload tools.
+# ./run_arduino.sh build_nano_old Telemetrix4Arduino
+./run_arduino.sh build_pico
+pio system prune -f
 # Add mirte to dialout
 sudo adduser mirte dialout
-
-# By default, armbian has ssh login for root enabled with password 1234.
-# The password need to be set to mirte_mirte so users can use the
-# Arduino IDE remotely.
-# TODO: when the Arduino IDE also supports ssh for non-root-users
-# this has to be changed
-echo -e "mirte_mirte\nmirte_mirte" | sudo passwd root
-
-# Enable uploading from remote IDE
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/run-avrdude /usr/bin
-sudo bash -c 'echo "mirte ALL = (root) NOPASSWD: /usr/local/bin/arduino-cli" >> /etc/sudoers'
-
-# Install picotool for the Raspberry Pi Pico
-sudo apt install build-essential pkg-config libusb-1.0-0-dev cmake -y
-cd /tmp/ || exit 1
-git clone https://github.com/raspberrypi/pico-sdk.git # somehow needed for picotool
-export PICO_SDK_PATH=/tmp/pico-sdk
-git clone https://github.com/raspberrypi/picotool.git
-cd picotool || exit 1
-sudo cp udev/99-picotool.rules /etc/udev/rules.d/
-
-mkdir build
-cd build || exit 1
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j
-sudo make install
-
-cd /tmp || exit 1
-rm -rf pico-sdk
-rm -rf picotool
-
-#  Download latest uf2 release, resulting in Telemetrix4RpiPico.uf2
-cd $MIRTE_SRC_DIR/mirte-install-scripts || exit 1
-curl -s https://api.github.com/repos/mirte-robot/telemetrix4rpipico/releases/latest |
-	grep ".*/Telemetrix4RpiPico.uf2" |
-	cut -d : -f 2,3 |
-	tr -d \" |
-	wget -qi -

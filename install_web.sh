@@ -1,16 +1,16 @@
 #!/bin/bash
 set -xe
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 # Update
-sudo apt update
+sudo apt update || true
 
 # Install nodeenv
 sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
 # Install nodeenv
-nodeenv --node=16.2.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
+nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 
 # Install web interface
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
@@ -18,25 +18,39 @@ nodeenv --node=16.2.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 # Install frontend
 cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
 npm install .
+npm rebuild
 npm run build
+rm -rf node_modules || true
 
 # Install backend
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
+deactivate_node
+
+cd $MIRTE_SRC_DIR/mirte-web-interface
+git clone https://github.com/dheera/rosboard.git --single-branch
+sudo pip3 install tornado
+sudo pip3 install simplejpeg # recommended, but ROSboard can fall back to cv2 or PIL instead
 
 # Install wetty
 #cd $MIRTE_SRC_DIR/mirte-web-interface
 #npm -g install wetty
-deactivate_node
 
 # Install strace for linetrace functionality
 sudo apt install -y strace
-# For rpi4 non-armbian version we need to give ptrace the right permissions
-sudo sed -i 's/kernel.yama.ptrace_scope = 1/kernel.yama.ptrace_scope = 0/g' /etc/sysctl.d/10-ptrace.conf
+sudo apt install xxd
 
 # Install nginx (as reverse proxy to all services)
-sudo apt install -y nginx
-sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/
+sudo apt install -y nginx libnginx-mod-http-auth-pam
+sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/sites-available/mirte.conf
+sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx_login.conf /etc/nginx/nginx_login.conf
+sudo ln /etc/nginx/sites-available/mirte.conf /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default # otherwise this will catch :80 by default
+
+# give nginx access to the passwords file for login
+sudo usermod -aG shadow www-data
+
+sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/sites/401.html /var/www/html/
 
 # Add systemd service
 sudo rm /lib/systemd/system/mirte-web-interface.service || true
@@ -45,3 +59,10 @@ sudo systemctl daemon-reload
 sudo systemctl stop mirte-web-interface || /bin/true
 sudo systemctl start mirte-web-interface
 sudo systemctl enable mirte-web-interface
+
+# install zerotier for better ros2 networking. User will need to manually join the network
+curl -s https://install.zerotier.com | sudo bash
+# remove zerotier identity as it otherwise will be the same for all devices using the same image
+sudo rm /var/lib/zerotier-one/identity.public || true
+sudo rm /var/lib/zerotier-one/identity.secret || true
+# new identity should be generated on first boot

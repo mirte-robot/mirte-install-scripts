@@ -1,0 +1,4 @@
+build/
+ui/
+*.uf2
+ev3-usb.sh
