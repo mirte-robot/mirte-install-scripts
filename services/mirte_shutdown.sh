@@ -8,15 +8,19 @@ if ! systemctl list-jobs | grep -q -E 'shutdown.target.*start'; then
 fi
 
 source /home/mirte/.bashrc
-source /home/mirte/.mirte_settings
+source /home/mirte/.mirte_settings.sh
 source /home/mirte/mirte_ws/install/setup.bash
 touch /home/mirte/.shutdown
 service=/io/oled/oled/set_text
+shutdown_service=/io/power/power_watcher/shutdown
 if [ "$MIRTE_USE_MULTIROBOT" = "true" ]; then
 	mirte_space=$(cat /etc/hostname | tr '[:upper:]' '[:lower:]' | tr '-' '_')
 	service="/$mirte_space$service"
+	shutdown_service="/$mirte_space$shutdown_service"
 fi
 
+ros2 service list || true # make sure ros2 daemon is running
 if [ "$(ros2 service list | grep "$service$")" ]; then
 	ros2 service call "$service" mirte_msgs/srv/SetOLEDText "{ text: 'Shutting down...'}"
+	ros2 service call "$shutdown_service" std_srvs/srv/SetBool "{ data: true }"
 fi
