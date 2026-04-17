@@ -7,6 +7,13 @@ if ! systemctl list-jobs | grep -q -E 'shutdown.target.*start'; then
 	exit
 fi
 
+REBOOT=false
+# if rebooting, then dont shutdown the robot
+if systemctl list-jobs | grep -q -E 'reboot.target.*start'; then
+	echo "reboot target active"
+	REBOOT=true
+fi
+
 source /home/mirte/.bashrc
 source /home/mirte/.mirte_settings.sh
 source /home/mirte/mirte_ws/install/setup.bash
@@ -20,7 +27,11 @@ if [ "$MIRTE_USE_MULTIROBOT" = "true" ]; then
 fi
 
 ros2 service list || true # make sure ros2 daemon is running
-if [ "$(ros2 service list | grep "$service$")" ]; then
+if [ "$(ros2 service list | grep "$service$")" ] && [ "$REBOOT" = "false" ]; then
 	ros2 service call "$service" mirte_msgs/srv/SetOLEDText "{ text: 'Shutting down...'}"
 	ros2 service call "$shutdown_service" std_srvs/srv/SetBool "{ data: true }"
+fi
+
+if [ "$(ros2 service list | grep "$service$")" ] && [ "$REBOOT" = "true" ]; then
+	ros2 service call "$service" mirte_msgs/srv/SetOLEDText "{ text: 'Rebooting...'}"
 fi
