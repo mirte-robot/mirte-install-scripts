@@ -210,6 +210,9 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then
 	cd ../../rplidar_ros
 	chmod +x ./scripts/create_udev_rules.sh || true
 	./scripts/create_udev_rules.sh || true
+	cd /home/mirte/mirte_ws/ || exit 1
+	cd src/orbbecsdk_ros2/ || true
+	sudo ./orbbec_camera/scripts/install_udev_rules.sh || true
 
 fi
 
