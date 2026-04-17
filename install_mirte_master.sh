@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 if [[ ${type:=""} != "mirte_orangepi3b" ]]; then
 	# Fix for wrong sound card

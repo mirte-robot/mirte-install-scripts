@@ -2,7 +2,6 @@
 # set -x
 #TODO: script should have format ./run.sh build|upload] mcu_type
 COMMAND=$1
-
 if [ -z "$COMMAND" ]; then
 	echo "Usage: $0 build_[mcu] | upload_[mcu]"
 	echo "Example: $0 build_nano"
@@ -10,7 +9,9 @@ if [ -z "$COMMAND" ]; then
 	exit 1
 fi
 
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
+export INSTALL_ARDUINO_ALL=${INSTALL_ARDUINO_ALL:-false}
+source $MIRTE_SRC_DIR/settings.sh || true
 PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4RpiPico
 
 # Check if ROS is running
@@ -31,6 +32,10 @@ fi
 cd $MIRTE_SRC_DIR/$PROJECT || exit 1
 
 buildpico() {
+	if [ "$INSTALL_ARDUINO_ALL" != true ]; then
+		echo "Using prebuilt uf2, set INSTALL_ARDUINO_ALL to true to build from source"
+		return
+	fi
 	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
 	# shellcheck disable=SC2164
 	mkdir -p build && cd build
@@ -44,7 +49,7 @@ upload_pico_uart() {
 		# send reboot command
 		stty 115200 -F $port
 		echo -ne '\x01\x26' >$port # 1 byte message, message id 0x26==reset_to_bootloader
-		sleep 1
+		sleep 3
 		# try to upload
 		ERR=false
 		pico_py_serial_flasher $port $PICO_BUILD_LOCATION.elf || ERR=true

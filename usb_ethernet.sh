@@ -3,7 +3,7 @@
 # This script creates USB gadgets usign ConfigFS for both Linux/MacOS and Windows
 # The Linux and MacOS version will connect to usb0, whil Windows will connect
 # to usb1. Both networks then are shown on the host.
-MIRTE_SRC_DIR=/usr/local/src/mirte
+MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 sudo killall -9 dnsmasq
 sudo $MIRTE_SRC_DIR/mirte-install-scripts/ev3-usb.sh down "$(ls /sys/class/udc | tail -n1)" || true
