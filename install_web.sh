@@ -66,3 +66,4 @@ curl -s https://install.zerotier.com | sudo bash
 sudo rm /var/lib/zerotier-one/identity.public || true
 sudo rm /var/lib/zerotier-one/identity.secret || true
 # new identity should be generated on first boot
+sudo systemctl disable --now zerotier-one.service
