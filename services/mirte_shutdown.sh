@@ -27,6 +27,13 @@ if [ "$MIRTE_USE_MULTIROBOT" = "true" ]; then
 fi
 
 ros2 service list || true # make sure ros2 daemon is running
+ros2 service list || true # make sure ros2 daemon is running
+
+stop_service="/stop"
+if [ "$(ros2 service list | grep "$stop_service$")" ]; then
+	ros2 service call "$stop_service" std_srvs/srv/Empty "{}"
+fi
+
 if [ "$(ros2 service list | grep "$service$")" ] && [ "$REBOOT" = "false" ]; then
 	ros2 service call "$service" mirte_msgs/srv/SetOLEDText "{ text: 'Shutting down...'}"
 	ros2 service call "$shutdown_service" std_srvs/srv/SetBool "{ data: true }"
