@@ -29,15 +29,15 @@ class MachineConfig(provisioning_module.ProvisionModule):
 
     def start(self, mount_point, loop):
         self.stopped = False
-        config_file = f"{mount_point}/machine_config.yaml"
-        if not os.path.isfile(config_file):
+        self.config_file = f"{mount_point}/machine_config.yaml"
+        if not os.path.isfile(self.config_file):
             print("No machine_config configuration, stopping config provisioning")
-            self.write_back_configuration({}, config_file)
+            self.write_back_configuration({}, self.config_file)
             return
         with open("/etc/hostname", "r") as file:
             old_name = file.readlines()[0].strip()
             self.hostname = old_name
-        with open(config_file, "r") as file:
+        with open(self.config_file, "r") as file:
             configuration = yaml.safe_load(file)
         with open(prev_config_file, "r") as file:
             prev_configuration = yaml.safe_load(
@@ -55,11 +55,16 @@ class MachineConfig(provisioning_module.ProvisionModule):
         self.set_passwords(configuration, prev_configuration)
         # machine_config_copy_image.install_system(configuration=configuration)
         self.set_mirte_type(configuration=configuration)
-        machine_config_cleanup_overlay.cleanup_overlayfs(configuration)
+        self.start_cleanup_overlay(configuration=configuration)
+        machine_config_cleanup_overlay.cleanup_overlayfs(configuration, self.overwrite_main_config)
         # todo: if usb is installed with bootable and img, nuke first part of this disk and reboot
-        self.write_back_configuration(configuration, config_file)
+        self.write_back_configuration(configuration, self.config_file)
         self.store_prev_config(configuration, prev_config_file)
 
+    def start_cleanup_overlay(self, configuration):
+        def overwrite_cleanup_overlay_config(configuration, overwrite_key):
+            self.overwrite_main_config(configuration, self.config_file, overwrite_key)
+        machine_config_cleanup_overlay.cleanup_overlayfs(configuration, overwrite_cleanup_overlay_config)
     def stop(self):
         if hasattr(self, 'ap_config'):
             self.ap_config.stop()
@@ -124,6 +129,18 @@ class MachineConfig(provisioning_module.ProvisionModule):
         o = os.system(f'sudo chpasswd mirte:{new_password}')
         print(o)
 
+    def overwrite_main_config(self, configuration, config_file, overwrite_key):
+        # read back in the config file, and only overwite that line.
+        with open(config_file, "r") as file:
+            lines = file.readlines()
+        new_lines = []
+        for line in lines:
+            if line.startswith(f"{overwrite_key}:"):
+                new_lines.append(f"{overwrite_key}: {configuration[overwrite_key]}\n")
+            else:
+                new_lines.append(line)
+        with open(config_file, "w") as file:
+            file.writelines(new_lines)
 
     def write_back_configuration(self, configuration, config_file):
         # read back in the hostname file, if not set in this run, then the user can know the hostname after a first boot
@@ -132,18 +149,7 @@ class MachineConfig(provisioning_module.ProvisionModule):
         # if XXXXX, then network setup did not set the hostname yet
         if current_name != "Mirte-XXXXXX":
             configuration["hostname"] = current_name
-        config_text = yaml.dump(configuration) # convert back to yaml, this will remove any comments
-        with open(config_file, "r+") as file:
-            # only replace the hostname to not mess up ordering or comments
-            lines = file.readlines()
-            for(i, line) in enumerate(lines):
-                if line.startswith("hostname:"):
-                    file.seek(0)
-                    file.writelines(lines[:i]) # write back all lines before hostname
-                    file.writelines(f"hostname: {configuration['hostname']}\n") # write the new hostname
-                    file.writelines(lines[i+1:]) # write back all lines after hostname
-                    break
-
+        self.overwrite_main_config(configuration, config_file, "hostname")
 
     def store_prev_config(self, configuration, prev_config_file):
         config_text = yaml.dump(configuration)

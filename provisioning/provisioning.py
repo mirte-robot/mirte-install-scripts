@@ -3,6 +3,7 @@ import time
 import asyncio
 import traceback
 from signal import SIGINT, SIGTERM
+import os
 
 # Provisioning system for the Mirte sd cards.
 # Only activate this service when you want to copy configurations from the second partition to the operating system
@@ -30,6 +31,11 @@ async def stop(event_loop):
 
 
 if __name__ == "__main__":
+    # test if started as root, if not, exit with error
+    if not (os.geteuid() == 0):
+        print("This script must be run as root, exiting.")
+        exit(1)
+
     event_loop = asyncio.get_event_loop()
     mounted = True
     if not mounter.mount(mount_point):
