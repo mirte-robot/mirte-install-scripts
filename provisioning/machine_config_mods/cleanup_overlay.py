@@ -5,6 +5,8 @@ def cleanup_overlayfs(config):
         return
 
     try:
+        # write back to the configuration that overlay has been cleaned
+        
         print("Cleaning up overlay filesystem...")
         subprocess.run(["sudo", "rm", "-rf", "/media/root-rw/*"], check=True)
         # subprocess.run(["sudo", "umount", "/overlay"], check=True)

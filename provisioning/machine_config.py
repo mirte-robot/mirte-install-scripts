@@ -7,8 +7,14 @@ import asyncio
 import provisioning_module
 from machine_config_mods import ap as machine_config_ap
 from machine_config_mods import copy_image as machine_config_copy_image
+from machine_config_mods import cleanup_overlay as machine_config_cleanup_overlay
 needs_mount = True
 
+
+# settings from /mnt/mirte/machine_config.yaml are read
+# settings are applied as possible
+# some are compared to the ones in ./store/machine_config.yaml to check if they have been changed
+# after applying, they are stored in ./store/machine_config.yaml for the next boot.
 
 
 prev_config_file = os.path.join(
@@ -28,7 +34,9 @@ class MachineConfig(provisioning_module.ProvisionModule):
             print("No machine_config configuration, stopping config provisioning")
             self.write_back_configuration({}, config_file)
             return
-
+        with open("/etc/hostname", "r") as file:
+            old_name = file.readlines()[0].strip()
+            self.hostname = old_name
         with open(config_file, "r") as file:
             configuration = yaml.safe_load(file)
         with open(prev_config_file, "r") as file:
@@ -36,6 +44,7 @@ class MachineConfig(provisioning_module.ProvisionModule):
                 file
             )  # this file should have all the configuration options
         configuration = {**prev_configuration, **configuration}
+        
         if "hostname" in configuration:
             self.set_hostname(configuration["hostname"], prev_configuration["hostname"])
         if "access_points" in configuration:
@@ -43,12 +52,10 @@ class MachineConfig(provisioning_module.ProvisionModule):
                 self.hostname, loop
             )
             self.ap_config.access_points(configuration)
-        if "password" in configuration:
-            self.set_password(
-                configuration["password"], prev_configuration["password"]
-            )  # todo: do only when not already done
-        machine_config_copy_image.install_system(configuration=configuration)
+        self.set_passwords(configuration, prev_configuration)
+        # machine_config_copy_image.install_system(configuration=configuration)
         self.set_mirte_type(configuration=configuration)
+        machine_config_cleanup_overlay.cleanup_overlayfs(configuration)
         # todo: if usb is installed with bootable and img, nuke first part of this disk and reboot
         self.write_back_configuration(configuration, config_file)
         self.store_prev_config(configuration, prev_config_file)
@@ -71,7 +78,39 @@ class MachineConfig(provisioning_module.ProvisionModule):
             file.writelines(f"{new_hostname}\n")
             self.hostname = new_hostname
 
+    def set_passwords(self, curr_config, prev_config):
+        if "password" in curr_config:
+            self.set_password(
+                curr_config["password"], prev_config["password"]
+            )
+        if "root_password" in curr_config:
+            self.set_root_password(
+                curr_config["root_password"], prev_config["root_password"]
+            )
 
+    def set_root_password(self, new_password, prev_set_password):
+        # todo
+        # usermod --password $(echo MY_NEW_PASSWORD | openssl passwd -1 -stdin) USERNAME
+        if new_password == prev_set_password:
+            # No need to update it and possibly the user edited it already by using the passwd command
+            return
+        # if password starts with dollar sign, then it is already encrypted, so do not encrypt it again, just set it
+        if new_password.startswith("$"):
+            print(f'Setting root password to already encrypted password')
+            o = os.system(f'sudo usermod --password \'{new_password}\' root')
+            print(o)
+            return
+        if (
+            len(new_password) < 8
+        ):  # when changing as the mirte user, there are some checks, when changing as root, no checks
+            print("Password should be at least 8 characters long, skipping password change")
+            return
+        print(f'Changing root password to "{new_password}"')
+        command = f'echo "root:{new_password}" | sudo chpasswd'
+        o = os.system(command)
+        print(o)
+        print("Root password changed.")
+        pass
     def set_password(self, new_password, prev_set_password):
         if new_password == prev_set_password:
             # No need to update it and possibly the user edited it already by using the passwd command
@@ -79,6 +118,7 @@ class MachineConfig(provisioning_module.ProvisionModule):
         if (
             len(new_password) < 8
         ):  # when changing as the mirte user, there are some checks, when changing as root, no checks
+            print("Password should be at least 8 characters long, skipping password change")
             return
         print(f'Changing password to "{new_password}"')
         o = os.system(f'sudo chpasswd mirte:{new_password}')
@@ -93,8 +133,16 @@ class MachineConfig(provisioning_module.ProvisionModule):
         if current_name != "Mirte-XXXXXX":
             configuration["hostname"] = current_name
         config_text = yaml.dump(configuration) # convert back to yaml, this will remove any comments
-        with open(config_file, "w") as file:
-            file.writelines(config_text)
+        with open(config_file, "r+") as file:
+            # only replace the hostname to not mess up ordering or comments
+            lines = file.readlines()
+            for(i, line) in enumerate(lines):
+                if line.startswith("hostname:"):
+                    file.seek(0)
+                    file.writelines(lines[:i]) # write back all lines before hostname
+                    file.writelines(f"hostname: {configuration['hostname']}\n") # write the new hostname
+                    file.writelines(lines[i+1:]) # write back all lines after hostname
+                    break
 
 
     def store_prev_config(self, configuration, prev_config_file):
@@ -118,25 +166,30 @@ class MachineConfig(provisioning_module.ProvisionModule):
         if not os.path.isfile(service_file):
             print("No mirte-ros service file found, cannot set type")
             return
+        launch_file_mapping = {
+            "mirte": "minimal",
+            "mirte_master": "minimal_master"
+        }
+        launch_file = launch_file_mapping[mirte_type]
         # replace ExecStart=/usr/local/src/mirte/mirte-install-scripts/services/mirte_ros.sh <type> with new type
         with open(service_file, "r") as file:
             lines = file.readlines()
         new_lines = []
         for line in lines:
             if line.startswith("ExecStart="):
-                if(line.endswith(f" {mirte_type}\n")):
+                if(line.endswith(f" {launch_file}\n")):
                     print("Mirte type already correctly set in service file")
                     return
                 print("Updating mirte type in service file" + line.strip())
                 parts = line.strip().split(" ")
-                if parts[-1] == mirte_type:
+                if parts[-1] == launch_file:
                     print("Mirte type already correctly set in service file")
                     return
-                if parts[-1] not in ["mirte", "mirte_master"]:
+                if parts[-1] not in launch_file_mapping.values():
                     print("Unknown mirte type in service file, overwriting")
-                    parts.append(mirte_type)
+                    parts.append(launch_file)
                 else:
-                    parts[-1] = mirte_type
+                    parts[-1] = launch_file
                 line = " ".join(parts) + "\n"
                 print("New line: " + line.strip())
             new_lines.append(line)
@@ -145,3 +198,4 @@ class MachineConfig(provisioning_module.ProvisionModule):
         # reload systemd daemon
         subprocess.run(["systemctl", "daemon-reload"], check=True)
         subprocess.run(["systemctl", "restart", "mirte-ros.service"], check=True)
+        print("Mirte type set and service restarted")

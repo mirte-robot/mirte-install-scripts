@@ -62,6 +62,13 @@ if [[ "$INSTALL_JUPYTER" = true ]]; then
 	./install_jupyter_ros.sh
 fi
 
+if [[ "$INSTALL_PROVISIONING" = true ]]; then
+	# Install Mirte provisioning service
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_provisioning.sh
+fi
+
+
 # Install numpy
 pip3 install numpy
 

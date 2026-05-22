@@ -132,7 +132,11 @@ def install_system(configuration):
     # print(f"Size to copy: {size_to_copy} bytes")
 
     if True:
-        subprocess.run(f"dd if={source_location} of={target_dev} bs=4M status=progress", shell=True, check=True)
+        # copy only the first 5gb to target device, as the rest is overlay and settings partitions that we will remove anyway, and it will speed up the copying process significantly
+        # use cat to speed it up
+        subprocess.run(f"head -c 5G {source_location} | pv -q -L 10M > {target_dev}", shell=True, check=True)
+
+        # subprocess.run(f"cat {source_location} > {target_dev}", shell=True, check=True)
     # partprobe to inform kernel of partition table changes
     subprocess.run(["partprobe", target_dev], check=True)
     subprocess.run("sleep 2", shell=True, check=True)
@@ -198,7 +202,8 @@ def install_system(configuration):
             print("No mirte_root partition found, cannot remove overlay partition")
             # return
         else:
-            subprocess.run(["parted", target_dev, "rm", mirte_root_part_num], check=True)
+            subprocess.run(["echo", "-e", f"rm\n{mirte_root_part_num}\nYes\nquit", "|", "parted", "---pretend-input-tty", target_dev ], check=True, shell=True)
+            # subprocess.run(["parted", target_dev, "rm", mirte_root_part_num], check=True)
             subprocess.run("partprobe", check=True)
             subprocess.run("sleep 2", shell=True, check=True)
     if remove_settings:
@@ -226,7 +231,7 @@ def install_system(configuration):
             print("No MIRTE settings partition found, cannot remove settings partition")
             # return
         else:
-            subprocess.run(["echo", "-e", f"rm\n{mirte_settings_part_num}\nYes\nquit", "|", "parted", "---pretend-input-tty", target_dev ], check=True, shell=True)
+            subprocess.run(["echo", "-e", f"'rm\n{mirte_settings_part_num}\nYes\nIgnore\nquit'", "|", "parted", "---pretend-input-tty", target_dev ], check=True, shell=True)
             subprocess.run("partprobe", check=True)
             subprocess.run("sleep 2", shell=True, check=True)
     # TODO: check if move is neede for armbian_root partition to begin of disk
@@ -266,10 +271,10 @@ def install_system(configuration):
     # reboot system
     if reboot:
         print("Rebooting system to apply changes...")
-        subprocess.run("echo b >/proc/sysrq-trigger", check=True, shell=True)
+        # subprocess.run("echo b >/proc/sysrq-trigger", check=True, shell=True)
     else:
         print("Shutting down system to allow manual reboot...") # when only install (without sd remove), do not reboot as it will keep looping.
-        subprocess.run("sudo shutdown now", check=True, shell=True)
+        # subprocess.run("sudo shutdown now", check=True, shell=True)
     # subprocess.run(["reboot"], check=True)
 
 
@@ -317,7 +322,11 @@ def cleanup_sd(configuration):
         # use parted to move partitions
         if overlay_part_num is not None:
             print(f"Moving overlay partition {overlay_part_num} to begin of disk")
-            subprocess.run(["parted", sd_dev, "move", overlay_part_num, "1MiB"], check=True)
+            # subprocess.run(["echo", "-e", f"rm\n{mirte_settings_part_num}\nYes\nquit", "|", "parted", "---pretend-input-tty", target_dev ], check=True, shell=True)
+            # use pretend-input-tty to move partition with parted, move to 1MiB to leave space for bootloader
+            subprocess.run(["echo", "-e", f"move\n{overlay_part_num}\n1MiB\nYes\nquit", "|", "parted", "---pretend-input-tty", sd_dev ], check=True, shell=True)
+
+            # subprocess.run(["parted", sd_dev, "move", overlay_part_num, "1MiB"], check=True)
         if settings_part_num is not None:
             print(f"Moving settings partition {settings_part_num} to follow overlay partition")
             start_pos = "1MiB"
@@ -331,7 +340,9 @@ def cleanup_sd(configuration):
                     stderr=subprocess.PIPE,
                 ).stdout.decode().strip()
                 start_pos = f"{int(float(end_pos)) + 1}MiB"
-            subprocess.run(["parted", sd_dev, "move", settings_part_num, start_pos], check=True)
+            # OTODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            subprocess.run(["echo", "-e", f"move\n{settings_part_num}\n{start_pos}\nYes\nquit", "|", "parted", "---pretend-input-tty", sd_dev ], check=True, shell=True)
+            # subprocess.run(["parted", sd_dev, "move", settings_part_num, start_pos], check=True)
         print("Partitions moved successfully.")
         # inform kernel of partition table changes
         subprocess.run(["partprobe", sd_dev], check=True)

@@ -24,10 +24,19 @@ class SSHConfig(provisioning_module.ProvisionModule):
                 existing_keys = file.readlines()
 
         new_keys = list(filter(lambda key: not key in existing_keys, new_keys))
+        if(len(new_keys) == 0):
+            print("No new SSH keys to add")
+            return
         print("adding:", new_keys)
         with open(auth_keys_path, "a") as file:
             file.writelines(new_keys)
+        # fix permissions just in case
+        # sudo chown -R $USER:$USER ~/.ssh
+        # chmod -R 700 ~/.ssh
 
+        os.system(f"chown -R mirte:mirte {os.path.dirname(auth_keys_path)}")
+        os.chmod(auth_keys_path, 0o600)
+        print("SSH authorized keys updated successfully.")
 
     async def stop(self):
         print("stop ssh")
