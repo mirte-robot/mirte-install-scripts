@@ -13,12 +13,9 @@ sudo apt install -y dnsmasq-base
 systemctl disable hostapd
 # sed -i 's/#DNSStubListener=yes/DNSStubListener=no/g' /etc/systemd/resolved.conf # TODO: check this
 
-# Install netplan (not installed on armbian) and networmanager (not installed by Raspberry)
-#sudo apt install -y netplan.io
+# Install networkmanager (not installed by Raspberry)
+
 sudo apt install -y network-manager
-#sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/50-cloud-init.yaml /etc/netplan/
-#sudo netplan apply
-#sudo apt purge -y ifupdown
 
 # Install wifi-connect
 MY_ARCH=$(arch)
