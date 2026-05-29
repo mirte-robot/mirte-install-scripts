@@ -33,6 +33,8 @@ sudo apt install -y python3 python3-pip python3-setuptools python3.10-venv
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
 
+./install_github_cli.sh
+
 cd $MIRTE_SRC_DIR/mirte-install-scripts
 ./install_arduino.sh
 
