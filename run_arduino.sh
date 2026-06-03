@@ -16,7 +16,7 @@ PICO_BUILD_LOCATION=$MIRTE_SRC_DIR/mirte-telemetrix4rpipico/build/Telemetrix4Rpi
 
 # Check if ROS is running
 ROS_RUNNING=0
-systemctl is-active mirte-ros | grep 'active' &>/dev/null
+systemctl is-active mirte-ros | grep '^active' &>/dev/null # "inactive" would've also been grepped, so check for active only
 if [ $? == 0 ]; then
 	ROS_RUNNING=1
 fi
