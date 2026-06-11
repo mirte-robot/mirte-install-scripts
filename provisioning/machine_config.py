@@ -8,6 +8,7 @@ import provisioning_module
 from machine_config_mods import ap as machine_config_ap
 from machine_config_mods import copy_image as machine_config_copy_image
 from machine_config_mods import cleanup_overlay as machine_config_cleanup_overlay
+from machine_config_mods import shell as machine_config_shell
 needs_mount = True
 
 
@@ -34,9 +35,14 @@ class MachineConfig(provisioning_module.ProvisionModule):
             print("No machine_config configuration, stopping config provisioning")
             self.write_back_configuration({}, self.config_file)
             return
-        with open("/etc/hostname", "r") as file:
-            old_name = file.readlines()[0].strip()
-            self.hostname = old_name
+        # use hostnamectl to set new hostname
+        self.hostname = subprocess.run(["hostnamectl", "hostname"], check=True, capture_output=True)
+        print(self.hostname)
+        self.hostname = self.hostname.stdout.decode().strip()
+        print(f"Current hostname: {self.hostname}")
+        # with open("/etc/hostname", "r") as file:
+        #     old_name = file.readlines()[0].strip()
+        #     self.hostname = old_name
         with open(self.config_file, "r") as file:
             configuration = yaml.safe_load(file)
         with open(prev_config_file, "r") as file:
@@ -44,7 +50,6 @@ class MachineConfig(provisioning_module.ProvisionModule):
                 file
             )  # this file should have all the configuration options
         configuration = {**prev_configuration, **configuration}
-        
         if "hostname" in configuration:
             self.set_hostname(configuration["hostname"], prev_configuration["hostname"])
         if "access_points" in configuration:
@@ -52,6 +57,8 @@ class MachineConfig(provisioning_module.ProvisionModule):
                 self.hostname, loop
             )
             self.ap_config.access_points(configuration)
+        if "shell" in configuration:
+            machine_config_shell.set_shell(configuration)
         self.set_passwords(configuration, prev_configuration)
         # machine_config_copy_image.install_system(configuration=configuration)
         self.set_mirte_type(configuration=configuration)
@@ -79,10 +86,24 @@ class MachineConfig(provisioning_module.ProvisionModule):
             if new_hostname == old_name:
                 return
         print(f"Renaming from {old_name} to {new_hostname}")
-        with open("/etc/hostname", "w") as file:
-            file.writelines(f"{new_hostname}\n")
-            self.hostname = new_hostname
-
+        out = subprocess.run(["hostnamectl", "set-hostname", new_hostname], check=True, capture_output=True)
+        print(out.stdout.decode())
+        # add new hostname to /etc/hosts, replacing old hostname
+        with open("/etc/hosts", "r") as file:
+            lines = file.readlines()
+        new_lines = []
+        overwritten = False
+        for line in lines:
+            if line.endswith(f" {old_name}\n"):
+                new_lines.append(line.replace(f" {old_name}\n", f" {new_hostname}\n"))
+                overwritten = True
+            else:
+                new_lines.append(line)
+        if not overwritten:
+            new_lines.append(f"127.0.0.1 {new_hostname}\n")
+        with open("/etc/hosts", "w") as file:
+            file.writelines(new_lines)
+        self.hostname = new_hostname
     def set_passwords(self, curr_config, prev_config):
         if "password" in curr_config:
             self.set_password(
@@ -147,7 +168,7 @@ class MachineConfig(provisioning_module.ProvisionModule):
         with open("/etc/hostname", "r") as file:
             current_name = file.readlines()[0].strip()
         # if XXXXX, then network setup did not set the hostname yet
-        if current_name != "Mirte-XXXXXX":
+        if current_name != "Mirte-XXXXXX":  
             configuration["hostname"] = current_name
         self.overwrite_main_config(configuration, config_file, "hostname")
 

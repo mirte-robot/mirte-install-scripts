@@ -25,7 +25,7 @@ class machine_config_ap:
     def remove_aps(self, configuration):
         deletions = configuration.get("remove_access_points", [])
         print(f"Removing access points matching: {deletions}")
-        if len(deletions) == 0:
+        if deletions is None or len(deletions) == 0:
             return
         # deletions is list of regexes to match ssids to remove
         connections = nmcli.connection()
