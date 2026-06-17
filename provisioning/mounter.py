@@ -1,7 +1,6 @@
-
-
 def mount(mount_point, wanted_label="MIRTE"):
     import subprocess
+
     # list all partitions
     # list all unmounted partitions and get the labels
     parts = subprocess.run(
@@ -33,9 +32,20 @@ def mount(mount_point, wanted_label="MIRTE"):
         print(f"No unmounted {wanted_label} partition found")
         return False
     if len(part_to_mount) > 1:
-        print(f"Multiple unmounted {wanted_label} partitions found, picking by order of usb, sdcard, nvme, emmc")
+        print(
+            f"Multiple unmounted {wanted_label} partitions found, picking by order of usb, sdcard, nvme, emmc"
+        )
         print("Found partitions:", part_to_mount)
-        part_to_mount = sorted(part_to_mount, key=lambda p: (p.startswith("sd"), p.startswith("mmcblk1"), p.startswith("nvme"), p.startswith("mmcblk0")), reverse=True)
+        part_to_mount = sorted(
+            part_to_mount,
+            key=lambda p: (
+                p.startswith("sd"),
+                p.startswith("mmcblk1"),
+                p.startswith("nvme"),
+                p.startswith("mmcblk0"),
+            ),
+            reverse=True,
+        )
         print("Sorted partitions:", part_to_mount)
         print("Picking partition:", part_to_mount[0])
     # else:

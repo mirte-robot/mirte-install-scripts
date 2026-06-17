@@ -1,7 +1,8 @@
 import subprocess
 
+
 def cleanup_overlayfs(config, overwrite_main_config):
-    if(not config.get("cleanup_overlay", False)):
+    if not config.get("cleanup_overlay", False):
         return
 
     try:
@@ -17,7 +18,7 @@ def cleanup_overlayfs(config, overwrite_main_config):
         # reboot the system
         print("Rebooting the system to apply changes...")
         # echo b > /proc/sysrq-trigger
-        out =subprocess.run(["sync"], check=True, shell=True)
+        out = subprocess.run(["sync"], check=True, shell=True)
         print(out)
         out = subprocess.run(["echo b > /proc/sysrq-trigger"], check=True, shell=True)
         print(out)

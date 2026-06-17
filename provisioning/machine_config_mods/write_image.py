@@ -1,5 +1,3 @@
-
-
 # # write a img file to emmc/nvme/sdcard
 #     source_location = ""
 #     # if config has image_file, then use that file to install

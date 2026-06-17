@@ -3,8 +3,11 @@ import os
 import provisioning_module
 
 auth_keys_path = "/home/mirte/.ssh/authorized_keys"
+
+
 class SSHConfig(provisioning_module.ProvisionModule):
     needs_mount = True
+
     def start(self, mount_point, loop):
         config_file = f"{mount_point}/authorized_keys"
         if not os.path.isfile(config_file):
@@ -24,7 +27,7 @@ class SSHConfig(provisioning_module.ProvisionModule):
                 existing_keys = file.readlines()
 
         new_keys = list(filter(lambda key: not key in existing_keys, new_keys))
-        if(len(new_keys) == 0):
+        if len(new_keys) == 0:
             print("No new SSH keys to add")
             return
         print("adding:", new_keys)

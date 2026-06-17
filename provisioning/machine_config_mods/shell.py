@@ -1,8 +1,8 @@
-
 import subprocess
 
 import nmcli
 import re
+
 
 def set_shell(configuration):
     if "shell" not in configuration:
@@ -25,5 +25,7 @@ def set_shell(configuration):
     if shell_path == "":
         print(f"Shell {shell} not found, skipping")
         return
-    out =subprocess.run(["chsh", "-s", f"{shell_path}", "mirte"], check=True, capture_output=True)
+    out = subprocess.run(
+        ["chsh", "-s", f"{shell_path}", "mirte"], check=True, capture_output=True
+    )
     print(out.stdout.decode())

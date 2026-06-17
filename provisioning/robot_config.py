@@ -13,14 +13,17 @@ config_files = [
     # TODO: add pid config?
 ]
 
-tmx_config_path = "/usr/local/src/mirte/mirte-ros-packages/mirte_bringup/telemetrix_config/"
+tmx_config_path = (
+    "/usr/local/src/mirte/mirte-ros-packages/mirte_bringup/telemetrix_config/"
+)
 # sd_config_path = "/mnt/mirte/"
+
 
 class RobotConfig(provisioning_module.ProvisionModule):
     needs_mount = True
 
     def start(self, mount_point, loop):
-        
+
         sd_config_path = f"{mount_point}"
         self.observer = None
         if not os.path.isdir(tmx_config_path):
@@ -35,14 +38,14 @@ class RobotConfig(provisioning_module.ProvisionModule):
                 print(f"No {config_file} in telemetrix config, skipping")
                 continue
             if not os.path.isfile(sd_config_path_file):
-                print(
-                    f"No {config_file} on extra partition, copying existing to it."
-                )
+                print(f"No {config_file} on extra partition, copying existing to it.")
                 copy(tmx_config_path_file, sd_config_path_file)
             # Assuming the sd configuration is the 'latest', as it is either copied from tmx/config or it is updated by the user when offline, so always copy the sd config to the user_config
             copy(sd_config_path_file, tmx_config_path_file)
             self.observer = Observer()
-            event_handler = MyEventHandler(self.copy_on_modify(tmx_config_path_file, sd_config_path_file))
+            event_handler = MyEventHandler(
+                self.copy_on_modify(tmx_config_path_file, sd_config_path_file)
+            )
             self.observer.schedule(event_handler, tmx_config_path_file)
             self.observer.schedule(event_handler, sd_config_path_file)
             self.observer.start()
@@ -63,6 +66,7 @@ class RobotConfig(provisioning_module.ProvisionModule):
                 copy(src_path, pathB)
             else:
                 copy(src_path, pathA)
+
         copy_function.last_copy = time.time()
         return copy_function
 
@@ -71,6 +75,7 @@ class MyEventHandler(FileSystemEventHandler):
     def __init__(self, copy_function):
         super().__init__()
         self.copy_function = copy_function
+
     def catch_all_handler(self, event):
         if event.is_directory:
             return
@@ -88,8 +93,6 @@ class MyEventHandler(FileSystemEventHandler):
     def on_modified(self, event):
         print(event)
         self.catch_all_handler(event)
-
-
 
 
 def copy(fr, to):

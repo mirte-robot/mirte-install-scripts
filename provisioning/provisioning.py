@@ -19,6 +19,7 @@ import mounter
 module_types = [robot_config.RobotConfig, machine_config.MachineConfig, ssh.SSHConfig]
 modules = []
 
+
 async def stop(event_loop):
     for module in modules:
         try:
@@ -26,8 +27,6 @@ async def stop(event_loop):
         except Exception as e:
             print(e)
     event_loop.stop()
-
-
 
 
 if __name__ == "__main__":
@@ -42,13 +41,13 @@ if __name__ == "__main__":
         print("Could not mount extra partition, not provisioning configs")
         mounted = False
     for module in module_types:
-        if(module.needs_mount and not mounted):
+        if module.needs_mount and not mounted:
             print(f"Skipping module {module} as mount is required but not available")
             continue
         modules.append(module(mount_point, event_loop))
 
     for module in modules:
-        
+
         try:
             # if mounted or not module.needs_mount:
             module.start(mount_point, event_loop)
@@ -56,14 +55,11 @@ if __name__ == "__main__":
             print(e)
             print(traceback.format_exc())
     for signal in [SIGINT, SIGTERM]:
-        event_loop.add_signal_handler(signal,
-                                lambda: event_loop.create_task(stop(event_loop)))
-
+        event_loop.add_signal_handler(
+            signal, lambda: event_loop.create_task(stop(event_loop))
+        )
 
     event_loop.run_forever()
-
-
-    
 
     pending = asyncio.all_tasks(loop=event_loop)
     event_loop.run_until_complete(asyncio.gather(*pending))

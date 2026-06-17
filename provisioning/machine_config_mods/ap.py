@@ -1,16 +1,16 @@
-
 import nmcli
 import asyncio
 import re
 
+
 class machine_config_ap:
-    
+
     def __init__(self, hostname, loop):
         self.hostname = hostname
         self.stop_signal = asyncio.Event()
         self.loop = loop
         self.hotspot_counter = 0
-    
+
     def access_points(self, configuration):
         print(configuration)
         self.remove_aps(configuration)
@@ -29,16 +29,14 @@ class machine_config_ap:
             return
         # deletions is list of regexes to match ssids to remove
         connections = nmcli.connection()
-        print(connections  )
-        wifi_conns = list(
-            filter(
-                lambda conn: conn.conn_type == "wifi", connections
-            )
-        )
+        print(connections)
+        wifi_conns = list(filter(lambda conn: conn.conn_type == "wifi", connections))
         for conn in wifi_conns:
             print(f"Checking connection {conn.name} for removal")
             for deletion in deletions:
-                print(f"Checking if connection {conn.name} matches deletion regex {deletion}")
+                print(
+                    f"Checking if connection {conn.name} matches deletion regex {deletion}"
+                )
                 if re.match(deletion, conn.name):
                     print(f"Deleting connection {conn.name} matching {deletion}")
                     nmcli.connection.delete(conn.uuid)
@@ -47,22 +45,27 @@ class machine_config_ap:
     async def stop(self):
         self.stopped = True
 
-
     # Nmcli can only connect to a network that is in the air, so we need to continuously check available networks and if not connected, try any known connections
     async def ap_loop(self, configuration):
-        await self.check_ap(configuration) # timeout occurred, so we check access points
+        await self.check_ap(
+            configuration
+        )  # timeout occurred, so we check access points
         while not self.stop_signal.is_set():
             try:
-                await asyncio.wait_for(self.stop_signal.wait(), timeout=60.0) # sleep for 10 seconds, or until stop signal is set
+                await asyncio.wait_for(
+                    self.stop_signal.wait(), timeout=60.0
+                )  # sleep for 10 seconds, or until stop signal is set
             except asyncio.TimeoutError:
-                await self.check_ap(configuration) # timeout occurred, so we check access points
-
+                await self.check_ap(
+                    configuration
+                )  # timeout occurred, so we check access points
 
     async def check_ap(self, configuration):
         connections = nmcli.connection()
         wifi_conn = list(
             filter(
-                lambda conn: conn.conn_type == "wifi" and conn.device != "--", connections
+                lambda conn: conn.conn_type == "wifi" and conn.device != "--",
+                connections,
             )
         )
         if len(wifi_conn) > 0:
@@ -84,20 +87,25 @@ class machine_config_ap:
         def known_ap_filter(known_ap):
             print(f"knownap {known_ap}")
             # known_ap = configuration["access_points"][known_ap]
-            print(f"Checking if known ap {known_ap['ssid']} is in available aps and configuration access points")
+            print(
+                f"Checking if known ap {known_ap['ssid']} is in available aps and configuration access points"
+            )
             print(f"Available aps: {aps}")
             print(f"Known ap ssid: {known_ap['ssid']}")
             print(f"Is known ap ssid in available aps? {known_ap['ssid'] in aps}")
             return known_ap["ssid"] in aps
+
         existing_known_aps = list(
             filter(known_ap_filter, configuration["access_points"])
         )
         print(f"Existing known access points: {existing_known_aps}")
         # keep ordering of known aps
         if len(existing_known_aps) > 0:
-            for((i, ap)) in enumerate(existing_known_aps):
+            for i, ap in enumerate(existing_known_aps):
                 print(ap)
-                print(f"Trying to connect to known ap {ap['ssid']} with password {ap['password']}")
+                print(
+                    f"Trying to connect to known ap {ap['ssid']} with password {ap['password']}"
+                )
                 try:
                     out = nmcli.device.wifi_connect(ap["ssid"], ap["password"])
                     print("connected successfully")
@@ -126,17 +134,17 @@ class machine_config_ap:
             # get password from /home/mirte/.wifi_password
             with open("/home/mirte/.wifi_pwd", "r") as file:
                 password = file.read().strip()
-            nmcli.device.wifi_hotspot(ifname=None,
-                          con_name= None,
-                          ssid=self.hostname,
-                          band=None,
-                          channel= None,
-                          password= password)
+            nmcli.device.wifi_hotspot(
+                ifname=None,
+                con_name=None,
+                ssid=self.hostname,
+                band=None,
+                channel=None,
+                password=password,
+            )
 
             # nmcli.device.wifi_hotspot(self.hostname, password)
             self.hotspot_counter = 0
 
-        
-    
     def stop(self):
         self.stop_signal.set()
