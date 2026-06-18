@@ -6,6 +6,10 @@ set -x
 SECONDS=0
 LAST_SECONDS=0
 WARN_LVL=0
+
+# if battery <= 10%, shutdown in 2 min.
+# otherwise if longer than 15 min no message, shutdown.
+
 mirte_space=$(cat /etc/hostname | tr '[:upper:]' '[:lower:]' | tr '-' '_')
 BATTERY_FILE=/tmp/batteryState
 STOP=false
@@ -21,11 +25,6 @@ ros2 topic echo $topic sensor_msgs/msg/BatteryState --field percentage >$BATTERY
 ECHO_PID=$!
 while ! systemctl list-jobs | grep -q -E 'shutdown.target.*start' && ! $STOP; do
 	OK=false
-	TOPIC_EXISTS=false
-	# if file is more than 2 lines, then there is a new reading, otherwise the topic is not publishing
-	if [ "$(wc -l <$BATTERY_FILE)" -gt 2 ]; then
-		TOPIC_EXISTS=true
-	fi
 	# echo "topics"
 	percentage=$(
 		tail -2 $BATTERY_FILE | head -1
