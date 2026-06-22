@@ -122,6 +122,13 @@ sudo systemctl disable --now unattended-upgrades.service || true # either no net
 # update time in /etc/fake-hwclock.data
 sudo fake-hwclock save
 
+# mark some apt packages as hold to not break when upgrading
+# when using overlay, we don't want to update the kernel, as it will break some things
+# updates are in the overlay, while kernel is started from underlay.
+
+# wildcards and non-existing packages are ignored, so this is safe to run on all images.
+sudo apt-mark hold "linux-dtb-*" "linux-image-*" "linux-u-boot-*" "linux-headers-*" "armbian-plymouth-theme"
+
 # remove force ipv4
 sudo rm /etc/apt/apt.conf.d/99force-ipv4 || true
 sudo rm /etc/resolv.conf || true # remove resolv.conf to use the one from the network.
