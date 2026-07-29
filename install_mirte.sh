@@ -127,7 +127,7 @@ sudo fake-hwclock save
 # updates are in the overlay, while kernel is started from underlay.
 
 # wildcards and non-existing packages are ignored, so this is safe to run on all images.
-sudo apt-mark hold "linux-dtb-*" "linux-image-*" "linux-u-boot-*" "linux-headers-*" "armbian-plymouth-theme"
+sudo apt-mark hold "linux-dtb-*" "linux-image-*" "linux-u-boot-*" "linux-headers-*" "armbian-plymouth-theme" "armbian-firmware"
 
 # remove force ipv4
 sudo rm /etc/apt/apt.conf.d/99force-ipv4 || true
