@@ -21,6 +21,11 @@ make -j
 
 function add_service() {
 	service_name=$1
+	# check if service file exists in install scripts, if not, exit with error
+	if [[ ! -f $MIRTE_SRC_DIR/mirte-install-scripts/services/$service_name ]]; then
+		echo "Service file $service_name does not exist in $MIRTE_SRC_DIR/mirte-install-scripts/services/"
+		exit 1
+	fi
 	sudo rm -f /lib/systemd/system/$service_name
 	sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/$service_name /lib/systemd/system/
 	sudo systemctl daemon-reload
@@ -29,7 +34,7 @@ function add_service() {
 	sudo systemctl enable $service_name
 }
 
-add_service mirte_battery_watcher.service # check that battery is not empty and shutdown if it is
+add_service mirte-battery-watcher.service # check that battery is not empty and shutdown if it is
 add_service mirte-shutdown.service        # show a message on the screen when shutting down and trigger a shutdown of the robot
 add_service mirte-usb-switch.service      # turn on/off depth cam usb port.
 
