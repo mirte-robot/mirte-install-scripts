@@ -9,8 +9,8 @@ sudo apt update || true
 sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
-# Install nodeenv
-nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
+# Install node, lts 22 is tested by the front-end, will need to update after april 2027 https://github.com/nodejs/release#release-schedule
+nodeenv --node=22. $MIRTE_SRC_DIR/mirte-web-interface/node_env
 
 # Install web interface
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
@@ -19,7 +19,7 @@ nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
 npm install .
 npm rebuild
-npm run build
+NUXT_APP_BASE_URL="/" npm run generate
 rm -rf node_modules || true
 
 # Install backend
