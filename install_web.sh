@@ -11,20 +11,16 @@ sudo -H pip install nodeenv
 
 # Install node, lts 22 is tested by the front-end, will need to update after april 2027 https://github.com/nodejs/release#release-schedule
 nodeenv --node=22. $MIRTE_SRC_DIR/mirte-web-interface/node_env
-
-# Install web interface
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
-
-# Install frontend
-cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
-npm install .
-npm rebuild
-NUXT_APP_BASE_URL="/" npm run generate
-rm -rf node_modules || true
-
-# Install backend
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
+
+cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
+nodeenv --node=22.12.0 $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend/node_env
+. $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend/node_env/bin/activate
+npm install
+NUXT_APP_BASE_URL=/ npm run generate
+rm -rf node_modules || true
 deactivate_node
 
 cd $MIRTE_SRC_DIR/mirte-web-interface
