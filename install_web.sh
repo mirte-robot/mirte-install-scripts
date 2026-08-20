@@ -9,8 +9,8 @@ sudo apt update || true
 sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
-# Install backend (node 18.0)
-nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
+# Install backend (node 26.7.0)
+nodeenv --node=26.7.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
