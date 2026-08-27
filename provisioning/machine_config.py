@@ -35,8 +35,10 @@ class MachineConfig(provisioning_module.ProvisionModule):
         self.config_file = f"{mount_point}/machine_config.yaml"
         if not os.path.isfile(self.config_file):
             print("No machine_config configuration, stopping config provisioning")
-            self.write_back_configuration({}, self.config_file)
-            return
+            # copy store/machine_config.yaml to /mnt/mirte/machine_config.yaml
+            subprocess.run(["cp", prev_config_file, self.config_file], check=True)
+            # self.write_back_configuration({}, self.config_file)
+            # return
         # use hostnamectl to set new hostname
         self.hostname = subprocess.run(
             ["hostnamectl", "hostname"], check=True, capture_output=True
@@ -136,13 +138,6 @@ class MachineConfig(provisioning_module.ProvisionModule):
             print(f"Setting root password to already encrypted password")
             o = os.system(f"sudo usermod --password '{new_password}' root")
             print(o)
-            return
-        if (
-            len(new_password) < 8
-        ):  # when changing as the mirte user, there are some checks, when changing as root, no checks
-            print(
-                "Password should be at least 8 characters long, skipping password change"
-            )
             return
         print(f'Changing root password to "{new_password}"')
         command = f'echo "root:{new_password}" | sudo chpasswd'
