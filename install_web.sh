@@ -9,22 +9,20 @@ sudo apt update || true
 sudo apt install -y python3-pip python3-setuptools python3-wheel
 sudo -H pip install nodeenv
 
-# Install nodeenv
-nodeenv --node=18.0.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
-
-# Install web interface
+# Install backend (node 26.7.0)
+nodeenv --node=26.7.0 $MIRTE_SRC_DIR/mirte-web-interface/node_env
 . $MIRTE_SRC_DIR/mirte-web-interface/node_env/bin/activate
-
-# Install frontend
-cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
-npm install .
-npm rebuild
-npm run build
-rm -rf node_modules || true
-
-# Install backend
 cd $MIRTE_SRC_DIR/mirte-web-interface/nodejs-backend || exit 1
 npm install .
+deactivate_node
+
+# Install frontend (node 22.12)
+cd $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend || exit 1
+nodeenv --node=22.12.0 $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend/node_env
+. $MIRTE_SRC_DIR/mirte-web-interface/vue-frontend/node_env/bin/activate
+npm install
+NUXT_APP_BASE_URL=/ npm run generate
+rm -rf node_modules || true
 deactivate_node
 
 cd $MIRTE_SRC_DIR/mirte-web-interface
@@ -66,3 +64,4 @@ curl -s https://install.zerotier.com | sudo bash
 sudo rm /var/lib/zerotier-one/identity.public || true
 sudo rm /var/lib/zerotier-one/identity.secret || true
 # new identity should be generated on first boot
+sudo systemctl disable --now zerotier-one.service || true # fails bc not started with systemd

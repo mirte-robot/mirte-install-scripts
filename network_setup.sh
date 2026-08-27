@@ -3,6 +3,8 @@ MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 
 ($MIRTE_SRC_DIR/mirte-install-scripts/services/mirte_auto_dhcp_eth.sh || true) &
 
+sleep 20 # wait some time for wifi driver to not crash.
+
 # wait for wlan0 to be up, with max 30 seconds
 TIMEOUT=30
 NEXT_WAIT_TIME=0

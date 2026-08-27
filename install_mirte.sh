@@ -128,7 +128,8 @@ sudo apt install -y overlayroot
 } 2>&1 | sed -u 's/^/overlayfs::: /' &
 
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
-sudo systemctl disable --now unattended-upgrades.service || true # disable unattended upgrades, as it probably doesnt have networking.
+sudo systemctl disable --now unattended-upgrades.service || true # either no network or do it manually
+
 # update time in /etc/fake-hwclock.data
 sudo fake-hwclock save
 

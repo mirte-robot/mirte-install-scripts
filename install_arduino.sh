@@ -46,8 +46,6 @@ if [ "$INSTALL_ARDUINO_ALL" = "true" ]; then
 	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
 	git submodule update --init --recursive
 
-	pip install -U "pip>=25" || true                                         # pico-py-serial-flash requires a newer version of pip, otherwise it'll be installed as UNKNOWN package
-	pip install git+https://github.com/arendjan/pico-py-serial-flash.git@cli # uart flashing utility when using the pcb
 else
 	echo "Skipping installation of Pico tools"
 	echo "Only installing tools to upload to Pico with default uf2"
@@ -68,22 +66,22 @@ else
 	sudo tar -xzvf /tmp/picotool-*-$arch-lin.tar.gz picotool/picotool --strip-components=1
 	sudo chmod +x ./picotool
 
+	# uploader when using uart (mirte pioneer pcb)
+	pip install -U "pip>=25" || true                                         # pico-py-serial-flash requires a newer version of pip, otherwise it'll be installed as UNKNOWN package
+	pip install git+https://github.com/arendjan/pico-py-serial-flash.git@cli # uart flashing utility when using the pcb
+
 	# download last uf2 from telemetrix pico repo
 	cd $MIRTE_SRC_DIR/mirte-telemetrix4rpipico || exit 1
-	mkdir -p build || true
-	cd build || exit 1
-	REPO=$(git config --get remote.origin.url | sed 's/https:\/\/github.com\///' | sed 's/\.git//')
-	LAST_TAG=$(git log --format=%H | xargs -n1 git describe --tags --exact-match 2>/dev/null | head -n1)
-	BRANCH=$(git rev-parse --abbrev-ref HEAD)
-	curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"$BRANCH\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.uf2$' | wget -i - -O Telemetrix4RpiPico.uf2
-	# if not found, try to get from main branch
+	# sd-image tools will try to download the correct version to .., otherwise just download the latest and hope for the best (TODO: make it more robust)
+	mkdir -p build/ || true
+	cd build/ || exit 1
+	mv ../../Telemetrix4RpiPico.uf2 . || true
+	mv ../../Telemetrix4RpiPico.elf . || true
 	if [ ! -f Telemetrix4RpiPico.uf2 ]; then
-		curl -s https://api.github.com/repos/$REPO/releases | jq "[.[] | select ((.target_commitish==\"main\"))][0]" | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep '\.uf2$' | wget -i - -O Telemetrix4RpiPico.uf2
-		echo "Downloaded Telemetrix4RpiPico.uf2 from main branch"
-	fi
-	if [ ! -f Telemetrix4RpiPico.uf2 ]; then
-		echo "Failed to download Telemetrix4RpiPico.uf2"
-		exit 1
+		# download latest uf2 for pico from github releases
+		curl -s https://api.github.com/repos/mirte-robot/telemetrix4rpipico/releases/latest | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep "Telemetrix4RpiPico.*.uf2" | wget -i - -O Telemetrix4RpiPico.uf2
+		curl -s https://api.github.com/repos/mirte-robot/telemetrix4rpipico/releases/latest | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep "Telemetrix4RpiPico.*.elf" | wget -i - -O Telemetrix4RpiPico.elf
+
 	fi
 fi
 cd $MIRTE_SRC_DIR/mirte-install-scripts/
