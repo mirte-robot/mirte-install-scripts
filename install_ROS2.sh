@@ -163,13 +163,9 @@ export MIRTE_TYPE=mirte-master
 EOF
 	update_machine_config "type" "mirte-master"
 fi
-sudo rm /lib/systemd/system/mirte-ros.service || true
-# uses same service name, but different links. The service file starts mirte_ros with the correct launch file as argument
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service /lib/systemd/system/mirte-ros.service
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-ros || /bin/true
-sudo systemctl start mirte-ros
-sudo systemctl enable mirte-ros
+
+# The service file starts mirte_ros, which reads the mirte_ros_type.sh file to determine which launch file to use.
+add_service mirte-ros.service
 
 sudo usermod -a -G video mirte
 sudo adduser mirte dialout

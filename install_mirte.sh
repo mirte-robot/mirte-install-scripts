@@ -4,6 +4,7 @@ set -xe
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 . $MIRTE_SRC_DIR/settings.sh || true # read settings, like MIRTE_TYPE
 MIRTE_TYPE="${MIRTE_TYPE:-default}"  # default, mirte-master
+source $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
@@ -126,9 +127,7 @@ sudo apt install -y overlayroot
 # Setup expand overlayfs
 {
 	# enable mirte-overlay service
-	sudo rm /lib/systemd/system/mirte-overlay.service || true
-	sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-overlay.service /lib/systemd/system/
-	sudo systemctl enable mirte-overlay.service
+	add_service mirte-overlay.service
 } 2>&1 | sed -u 's/^/overlayfs::: /' &
 
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"

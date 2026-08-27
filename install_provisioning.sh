@@ -7,8 +7,5 @@ cd $MIRTE_SRC_DIR/mirte-install-scripts/provisioning
 
 pip install -r requirements.txt
 source $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
-# sudo ln -s "$(realpath ./mirte-provisioning.service)" /etc/systemd/system/
-# sudo systemctl daemon-reload
-# sudo systemctl enable mirte-provisioning.service
-# sudo systemctl start mirte-provisioning.service || true # wont start when compiling image
-add_
+# provisioning service, runs on first boot and sets up the robot according to the machine_config.json file
+add_service mirte-provisioning.service

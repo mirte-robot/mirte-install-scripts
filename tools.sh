@@ -28,3 +28,18 @@ update_machine_config() {
 	machine_config_file=$MIRTE_SRC_DIR/provisioning/store/machine_config.yaml
 	yq -i ".$key = \"$value\"" "$machine_config_file"
 }
+
+function add_service() {
+	service_name=$1
+	# check if service file exists in install scripts, if not, exit with error
+	if [[ ! -f $MIRTE_SRC_DIR/mirte-install-scripts/services/$service_name ]]; then
+		echo "Service file $service_name does not exist in $MIRTE_SRC_DIR/mirte-install-scripts/services/"
+		exit 1
+	fi
+	sudo rm -f /lib/systemd/system/$service_name
+	sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/$service_name /lib/systemd/system/
+	sudo systemctl daemon-reload
+	sudo systemctl stop $service_name || /bin/true
+	sudo systemctl start $service_name
+	sudo systemctl enable $service_name
+}
