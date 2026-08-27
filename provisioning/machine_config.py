@@ -162,17 +162,21 @@ class MachineConfig(provisioning_module.ProvisionModule):
         print(o)
 
     def overwrite_main_config(self, configuration, config_file, overwrite_key):
-        # read back in the config file, and only overwite that line.
-        with open(config_file, "r") as file:
-            lines = file.readlines()
-        new_lines = []
-        for line in lines:
-            if line.startswith(f"{overwrite_key}:"):
-                new_lines.append(f"{overwrite_key}: {configuration[overwrite_key]}\n")
-            else:
-                new_lines.append(line)
-        with open(config_file, "w") as file:
-            file.writelines(new_lines)
+
+        # use yq to update config file
+        subprocess.run(f"yq -i '.{overwrite_key} = \"{configuration[overwrite_key]}\"' {config_file}", shell=True, check=True)
+
+        # # read back in the config file, and only overwite that line.
+        # with open(config_file, "r") as file:
+        #     lines = file.readlines()
+        # new_lines = []
+        # for line in lines:
+        #     if line.startswith(f"{overwrite_key}:"):
+        #         new_lines.append(f"{overwrite_key}: {configuration[overwrite_key]}\n")
+        #     else:
+        #         new_lines.append(line)
+        # with open(config_file, "w") as file:
+        #     file.writelines(new_lines)
 
     def write_back_configuration(self, configuration, config_file):
         # read back in the hostname file, if not set in this run, then the user can know the hostname after a first boot
