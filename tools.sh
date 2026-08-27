@@ -25,7 +25,7 @@ update_machine_config() {
 	key=$1
 	value=$2
 	# open the machine_config.yaml file and update the key with the value, if the key does not exist, add it to the end of the file
-	machine_config_file=$MIRTE_SRC_DIR/provisioning/store/machine_config.yaml
+	machine_config_file=$MIRTE_SRC_DIR/mirte-install-scripts/provisioning/store/machine_config.yaml
 	yq -i ".$key = \"$value\"" "$machine_config_file"
 }
 
