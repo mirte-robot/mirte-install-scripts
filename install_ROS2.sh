@@ -161,7 +161,7 @@ if [[ $MIRTE_TYPE == "mirte-master" ]]; then # master version should start a dif
 	cat <<EOF >$MIRTE_SRC_DIR/mirte-install-scripts/services/mirte_ros_type.sh
 export MIRTE_TYPE=mirte-master
 EOF
-update_machine_config "type" "mirte-master"
+	update_machine_config "type" "mirte-master"
 fi
 sudo rm /lib/systemd/system/mirte-ros.service || true
 # uses same service name, but different links. The service file starts mirte_ros with the correct launch file as argument

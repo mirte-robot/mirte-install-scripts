@@ -13,7 +13,6 @@ else
 	LAUNCH_FILE=minimal
 fi
 
-
 source /home/mirte/mirte_ws/install/setup.bash
 # if zenoh is enabled, start the zenoh daemon
 if [ "$RMW_IMPLEMENTATION" = "rmw_zenoh_cpp" ]; then

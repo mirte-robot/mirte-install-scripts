@@ -38,8 +38,6 @@ arch=$(dpkg --print-architecture)
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch} -O /usr/local/bin/yq
 chmod +x /usr/local/bin/yq
 
-
-
 if [[ "$INSTALL_ARDUINO" = true ]]; then
 	# Install Arduino and PlatformIO
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
@@ -74,7 +72,6 @@ if [[ "$INSTALL_PROVISIONING" = true ]]; then
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
 	./install_provisioning.sh
 fi
-
 
 # Install numpy
 pip3 install numpy
