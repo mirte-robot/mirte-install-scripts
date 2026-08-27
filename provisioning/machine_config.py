@@ -200,38 +200,19 @@ class MachineConfig(provisioning_module.ProvisionModule):
             )
             return
         print(f"Setting Mirte type to {mirte_type}")
-        # open mirte-ros service file and set the type
-        service_file = "/etc/systemd/system/mirte-ros.service"
-        if not os.path.isfile(service_file):
-            print("No mirte-ros service file found, cannot set type")
-            return
-        launch_file_mapping = {"mirte": "minimal", "mirte_master": "minimal_master"}
-        launch_file = launch_file_mapping[mirte_type]
-        # replace ExecStart=/usr/local/src/mirte/mirte-install-scripts/services/mirte_ros.sh <type> with new type
-        with open(service_file, "r") as file:
+        # update ../services/mirte_ros_type.sh to set MIRTE_TYPE
+        mirte_ros_type_file = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "../services/mirte_ros_type.sh"
+        )
+        with open(mirte_ros_type_file, "r") as file:
             lines = file.readlines()
-        new_lines = []
-        for line in lines:
-            if line.startswith("ExecStart="):
-                if line.endswith(f" {launch_file}\n"):
-                    print("Mirte type already correctly set in service file")
+        # if already set, then do not change it, otherwise change it
+        for i, line in enumerate(lines):
+            if line.startswith("export MIRTE_TYPE="):
+                if line.strip() == f"export MIRTE_TYPE={mirte_type}":
+                    print("Mirte type already set, skipping")
                     return
-                print("Updating mirte type in service file" + line.strip())
-                parts = line.strip().split(" ")
-                if parts[-1] == launch_file:
-                    print("Mirte type already correctly set in service file")
-                    return
-                if parts[-1] not in launch_file_mapping.values():
-                    print("Unknown mirte type in service file, overwriting")
-                    parts.append(launch_file)
-                else:
-                    parts[-1] = launch_file
-                line = " ".join(parts) + "\n"
-                print("New line: " + line.strip())
-            new_lines.append(line)
-        with open(service_file, "w") as file:
-            file.writelines(new_lines)
-        # reload systemd daemon
-        subprocess.run(["systemctl", "daemon-reload"], check=True)
+        with open(mirte_ros_type_file, "w") as file:
+            file.write(f"export MIRTE_TYPE={mirte_type}\n")
         subprocess.run(["systemctl", "restart", "mirte-ros.service"], check=True)
         print("Mirte type set and service restarted")
