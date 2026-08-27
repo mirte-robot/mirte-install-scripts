@@ -164,7 +164,11 @@ class MachineConfig(provisioning_module.ProvisionModule):
     def overwrite_main_config(self, configuration, config_file, overwrite_key):
 
         # use yq to update config file
-        subprocess.run(f"yq -i '.{overwrite_key} = \"{configuration[overwrite_key]}\"' {config_file}", shell=True, check=True)
+        subprocess.run(
+            f"yq -i '.{overwrite_key} = \"{configuration[overwrite_key]}\"' {config_file}",
+            shell=True,
+            check=True,
+        )
 
         # # read back in the config file, and only overwite that line.
         # with open(config_file, "r") as file:
