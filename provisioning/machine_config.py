@@ -158,7 +158,9 @@ class MachineConfig(provisioning_module.ProvisionModule):
             )
             return
         print(f'Changing password to "{new_password}"')
-        o = os.system(f"sudo chpasswd mirte:{new_password}")
+        o = subprocess.run(
+            f"echo 'mirte:{new_password}' | sudo chpasswd", shell=True, check=True
+        )
         print(o)
 
     def overwrite_main_config(self, configuration, config_file, overwrite_key):

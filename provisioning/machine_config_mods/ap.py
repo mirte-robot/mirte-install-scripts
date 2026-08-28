@@ -15,8 +15,16 @@ class machine_config_ap:
         print(configuration)
         self.remove_aps(configuration)
         try:
-            for ap in configuration["access_points"]:
-                print(ap)
+            if (
+                "access_points" not in configuration
+                or configuration["access_points"] is None
+                or len(configuration["access_points"]) == 0
+            ):
+                print("No access points configured, skipping")
+                configuration["access_points"] = []
+            else:
+                for ap in configuration["access_points"]:
+                    print(ap)
             self.loop.create_task(self.ap_loop(configuration))
 
         except Exception as e:
@@ -31,6 +39,9 @@ class machine_config_ap:
         connections = nmcli.connection()
         print(connections)
         wifi_conns = list(filter(lambda conn: conn.conn_type == "wifi", connections))
+        if len(wifi_conns) == 0:
+            print("No wifi connections found")
+            return
         for conn in wifi_conns:
             print(f"Checking connection {conn.name} for removal")
             for deletion in deletions:
@@ -126,25 +137,29 @@ class machine_config_ap:
         if "disable_hotspot" in configuration and configuration["disable_hotspot"]:
             print("Hotspot disabled")
             print("configuration: " + str(configuration))
+            # TODO: disable hotspot.
             return
-        print("No known access points available, if not found in 1m, start hotspot")
-        self.hotspot_counter += 1
-        if self.hotspot_counter >= 10:  # 30*2s = 1m
-            print("Starting hotspot")
-            # get password from /home/mirte/.wifi_password
-            with open("/home/mirte/.wifi_pwd", "r") as file:
-                password = file.read().strip()
-            nmcli.device.wifi_hotspot(
-                ifname=None,
-                con_name=None,
-                ssid=self.hostname,
-                band=None,
-                channel=None,
-                password=password,
-            )
 
-            # nmcli.device.wifi_hotspot(self.hostname, password)
-            self.hotspot_counter = 0
+        # TODO: starting hotspot from here is not yet good enough (wifi connect has web interface)
+
+        # print("No known access points available, if not found in 1m, start hotspot")
+        # self.hotspot_counter += 1
+        # if self.hotspot_counter >= 2:  # 30*2s = 1m
+        #     print("Starting hotspot")
+        #     # get password from /home/mirte/.wifi_password
+        #     with open("/home/mirte/.wifi_pwd", "r") as file:
+        #         password = file.read().strip()
+        #     nmcli.device.wifi_hotspot(
+        #         ifname=None,
+        #         con_name=None,
+        #         ssid=self.hostname,
+        #         band=None,
+        #         channel=None,
+        #         password=password,
+        #     )
+
+        #     # nmcli.device.wifi_hotspot(self.hostname, password)
+        #     self.hotspot_counter = 0
 
     def stop(self):
         self.stop_signal.set()
