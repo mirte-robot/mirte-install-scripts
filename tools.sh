@@ -38,8 +38,8 @@ function add_service() {
 	fi
 	sudo rm -f /lib/systemd/system/$service_name
 	sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/$service_name /lib/systemd/system/
-	sudo systemctl daemon-reload
+	sudo systemctl daemon-reload || /bin/true
 	sudo systemctl stop $service_name || /bin/true
-	sudo systemctl start $service_name
-	sudo systemctl enable $service_name
+	sudo systemctl start $service_name || /bin/true
+	sudo systemctl enable $service_name || /bin/true
 }
