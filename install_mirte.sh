@@ -36,8 +36,8 @@ sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip
 
 # install yq, needed to update machine_config.yaml
 arch=$(dpkg --print-architecture)
-wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch} -O /usr/local/bin/yq
-chmod +x /usr/local/bin/yq
+sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch} -O /usr/local/bin/yq
+sudo chmod +x /usr/local/bin/yq
 
 if [[ "$INSTALL_ARDUINO" = true ]]; then
 	# Install Arduino and PlatformIO
