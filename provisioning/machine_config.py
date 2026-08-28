@@ -224,5 +224,5 @@ class MachineConfig(provisioning_module.ProvisionModule):
                     return
         with open(mirte_ros_type_file, "w") as file:
             file.write(f"export MIRTE_TYPE={mirte_type}\n")
-        subprocess.run(["systemctl", "restart", "mirte-ros.service"], check=True)
+        print(subprocess.run("sudo systemctl restart mirte-ros.service", check=True))
         print("Mirte type set and service restarted")
