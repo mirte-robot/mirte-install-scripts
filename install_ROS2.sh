@@ -157,17 +157,15 @@ source /home/mirte/mirte_ws/install/setup.bash
 # Add systemd service to start ROS nodes
 if [[ $MIRTE_TYPE == "mirte-master" ]]; then # master version should start a different launch file
 	add_mirte_settings "export ROS_LOCALHOST_ONLY=0"
-	# rename the service file to the correct name, otherwise systemctl will error with a "Failed to look up unit file state: Link has been severed" error
-	mv $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros-pioneer.service
-	mv $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-master-ros.service $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service
+	# write mirte type to file, so that the mirte_ros service can read it and start the correct launch file
+	cat <<EOF >$MIRTE_SRC_DIR/mirte-install-scripts/services/mirte_ros_type.sh
+export MIRTE_TYPE=mirte-master
+EOF
+	update_machine_config "type" "mirte-master"
 fi
-sudo rm /lib/systemd/system/mirte-ros.service || true
-# uses same service name, but different links. The service file starts mirte_ros with the correct launch file as argument
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service /lib/systemd/system/mirte-ros.service
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-ros || /bin/true
-sudo systemctl start mirte-ros
-sudo systemctl enable mirte-ros
+
+# The service file starts mirte_ros, which reads the mirte_ros_type.sh file to determine which launch file to use.
+add_service mirte-ros.service
 
 sudo usermod -a -G video mirte
 sudo adduser mirte dialout

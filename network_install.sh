@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
+source $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 
 # Fix for bug in systemd-resolved
 # (https://askubuntu.com/questions/973017/wrong-nameserver-set-by-resolvconf-and-networkmanager)
@@ -13,12 +14,9 @@ sudo apt install -y dnsmasq-base
 systemctl disable hostapd
 # sed -i 's/#DNSStubListener=yes/DNSStubListener=no/g' /etc/systemd/resolved.conf # TODO: check this
 
-# Install netplan (not installed on armbian) and networmanager (not installed by Raspberry)
-#sudo apt install -y netplan.io
+# Install networkmanager (not installed by Raspberry)
+
 sudo apt install -y network-manager
-#sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/50-cloud-init.yaml /etc/netplan/
-#sudo netplan apply
-#sudo apt purge -y ifupdown
 
 # Install wifi-connect
 MY_ARCH=$(arch)
@@ -37,22 +35,10 @@ if [[ "$MY_ARCH" != "x86_64" ]]; then
 	rm wifi-connect*
 fi
 # Added systemd service to account for fix: https://askubuntu.com/questions/472794/hostapd-error-nl80211-could-not-configure-driver-mode
-sudo rm /lib/systemd/system/mirte-ap.service || true
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ap.service /lib/systemd/system/
-
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-ap || /bin/true
-sudo systemctl start mirte-ap
-sudo systemctl enable mirte-ap
+add_service mirte-ap.service
 
 # Added systemd service to check on boot error for OPi
-sudo rm /lib/systemd/system/mirte-wifi-watchdog.service || true
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-wifi-watchdog.service /lib/systemd/system/
-
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-wifi-watchdog || /bin/true
-sudo systemctl start mirte-wifi-watchdog
-sudo systemctl enable mirte-wifi-watchdog
+add_service mirte-wifi-watchdog.service
 
 # Install avahi
 sudo apt install -y libnss-mdns

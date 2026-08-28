@@ -4,6 +4,7 @@ set -xe
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
 . $MIRTE_SRC_DIR/settings.sh || true # read settings, like MIRTE_TYPE
 MIRTE_TYPE="${MIRTE_TYPE:-default}"  # default, mirte-master
+source $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 
 # disable ipv6, as not all package repositories are available over ipv6
 sudo tee /etc/apt/apt.conf.d/99force-ipv4 <<EOF
@@ -33,13 +34,22 @@ sudo apt install -y python3 python3-pip python3-setuptools python3.10-venv
 sudo bash -c "echo '[global]' > /etc/pip.conf"
 sudo bash -c "echo 'extra-index-url=https://www.piwheels.org/simple' >> /etc/pip.conf"
 
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_arduino.sh
+# install yq, needed to update machine_config.yaml
+arch=$(dpkg --print-architecture)
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch} -O /usr/local/bin/yq
+chmod +x /usr/local/bin/yq
+
+if [[ "$INSTALL_ARDUINO" = true ]]; then
+	# Install Arduino and PlatformIO
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_arduino.sh
+fi
 
 # Install Mirte ROS2 packages
-cd $MIRTE_SRC_DIR/mirte-install-scripts
-./install_ROS2.sh
-
+if [[ "$INSTALL_ROS2" = true ]]; then
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_ROS2.sh
+fi
 # Install Mirte Python package
 if [[ "$INSTALL_PYTHON" = true ]]; then
 	cd $MIRTE_SRC_DIR/mirte-python
@@ -56,6 +66,12 @@ fi
 if [[ "$INSTALL_JUPYTER" = true ]]; then
 	cd $MIRTE_SRC_DIR/mirte-install-scripts
 	./install_jupyter_ros.sh
+fi
+
+if [[ "$INSTALL_PROVISIONING" = true ]]; then
+	# Install Mirte provisioning service
+	cd $MIRTE_SRC_DIR/mirte-install-scripts
+	./install_provisioning.sh
 fi
 
 # Install numpy
@@ -111,9 +127,7 @@ sudo apt install -y overlayroot
 # Setup expand overlayfs
 {
 	# enable mirte-overlay service
-	sudo rm /lib/systemd/system/mirte-overlay.service || true
-	sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-overlay.service /lib/systemd/system/
-	sudo systemctl enable mirte-overlay.service
+	add_service mirte-overlay.service
 } 2>&1 | sed -u 's/^/overlayfs::: /' &
 
 #sudo bash -c "echo 'overlayroot=\"tmpfs\"' >> /etc/overlayroot.conf"
@@ -121,6 +135,14 @@ sudo systemctl disable --now unattended-upgrades.service || true # either no net
 
 # update time in /etc/fake-hwclock.data
 sudo fake-hwclock save
+
+# mark some apt packages as hold to not break when upgrading
+# when using overlay, we don't want to update the kernel, as it will break some things
+# updates are in the overlay, while kernel is started from underlay.
+
+# wildcards and non-existing packages are ignored, so this is safe to run on all images.
+# if a wildcard/non-existing package is not found, it will be ignored and the script will continue.
+sudo apt-mark hold "linux-dtb-*" "linux-image-*" "linux-u-boot-*" "linux-headers-*" "armbian-plymouth-theme" "armbian-firmware" || true
 
 # remove force ipv4
 sudo rm /etc/apt/apt.conf.d/99force-ipv4 || true

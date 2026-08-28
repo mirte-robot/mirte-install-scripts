@@ -1,0 +1,38 @@
+
+# Current or new hostname of the machine
+hostname: Mirte-XXXXXX
+
+# access point to connect to. If not found, hotspot will be enabled. If found, hotspot will be disabled.
+access_points:
+  # - ssid: "smartfridge"
+  #   password: "kaasblokje"
+disable_hotspot: false
+
+# set a fresh password for mirte user, if empty, the default password will be used
+# will only update if changed, not when password is changed thru other means, like passwd command
+# after reboot, this will also be hotspot password
+# needs to be at least 8 characters long, otherwise it will be ignored
+password: ""
+
+
+# Type of mirte, will be used to change $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-ros.service
+# to start the correct ros2 launch file
+
+# mirte or mirte_master
+type: 
+
+# should the overlay(settings) need to be cleaned up
+# all settings, except for the things in the MIRTE partition will be removed
+cleanup_overlay: false
+
+# root password, if empty, the default password will be used, usually not needed to be changed
+# can be an already encrypted password, or a plain text password
+root_password: # "mirte_mirte" or "mdp_mirte_master" by default
+
+# list of access points to remove
+remove_access_points: # list of regexes to match ssids to remove, needs to match completely(no ^ or $ needed), for example:
+#   - "Mirte-.*"
+#  - "Mirte-.*"
+
+
+shell: bash # or zsh

@@ -2,7 +2,7 @@
 set -xe
 
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
-
+source $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 if [[ ${type:=""} != "mirte_orangepi3b" ]]; then
 	# Fix for wrong sound card
 	sudo bash -c 'cat <<EOT >> /etc/asound.conf
@@ -18,17 +18,10 @@ mkdir build
 cd build
 cmake ..
 make -j
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-usb-switch.service /lib/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-usb-switch.service || /bin/true
-sudo systemctl start mirte-usb-switch.service
-sudo systemctl enable mirte-usb-switch.service
 
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-shutdown.service /lib/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-shutdown.service || /bin/true
-sudo systemctl start mirte-shutdown.service
-sudo systemctl enable mirte-shutdown.service
+add_service mirte-battery-watcher.service # check that battery is not empty and shutdown if it is
+add_service mirte-shutdown.service        # show a message on the screen when shutting down and trigger a shutdown of the robot
+add_service mirte-usb-switch.service      # turn on/off depth cam usb port.
 
 # create a gpio group and add mirte to it. This is needed to access the gpio ports, otherwise only sudo is allowed.
 sudo groupadd gpiod
@@ -41,19 +34,6 @@ pip install gpiod==1.5.4 # python3.8 version
 pip install gtts playsound openai==0.28.0 sounddevice scipy SpeechRecognition soundfile transformers datasets pyyaml pydub Elevenlabs || true # some strange package versions
 pip install numpy==1.23.1                                                                                                                     # python3.8 fix
 
-# mkdir ~/uboot_fix/
-# cd ~/uboot_fix/
-# # audio fix uboot for orange pi 3b
-# if [[ ${type:=""} == "mirte_orangepi3b" ]]; then
-# 	wget https://mirte.arend-jan.com/files/fixes/uboot/linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
-# 	sudo apt install ./linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
-# 	rm linux-u-boot-orangepi3b-edge_24.2.1_arm64__2023.10-S095b-P0000-H264e-V49ed-B11a8-R448a.deb
-# 	cd ../
-# 	rm -rf uboot_fix/
-# fi
-
-# cd ~/mirte_ws/src
-# git clone --recurse-submodules https://github.com/arendjan/mirte-telemetrix-cpp.git
 cd ~/mirte_ws
 source /opt/ros/humble/setup.bash
 rosdep install -y --from-paths src/ --ignore-src --rosdistro humble

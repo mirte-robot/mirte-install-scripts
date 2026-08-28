@@ -1,0 +1,4 @@
+watchdog
+nmcli
+pyyaml
+deepdiff

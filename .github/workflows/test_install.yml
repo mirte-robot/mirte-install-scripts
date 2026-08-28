@@ -12,9 +12,20 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - shell: bash
       run: |
+        # get current branch, if not develop or main, then use develop as fallback
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        if [ "$BRANCH" != "develop" ] && [ "$BRANCH" != "main" ]; then
+          echo "Current branch is $BRANCH, using develop as fallback"
+          BRANCH="develop"
+        fi
+        # if main, then use master
+        if [ "$BRANCH" = "main" ]; then
+          echo "Current branch is $BRANCH, using master for arduino"
+          BRANCH="master"
+        fi
         mkdir -p /etc/udev/rules.d/ # just for testing, folder should just exist on the real image
         sudo useradd -m -s /bin/bash mirte 
         pwd
@@ -39,8 +50,8 @@ jobs:
         sudo cp -r ./* $MIRTE_SRC_DIR/mirte-install-scripts/
         cd $MIRTE_SRC_DIR
         sudo apt update
-        sudo git clone https://github.com/mirte-robot/telemetrix4arduino.git mirte-telemetrix4arduino -b develop
-        sudo git clone https://github.com/mirte-robot/telemetrix4rpipico.git mirte-telemetrix4rpipico -b develop --recursive
+        sudo git clone https://github.com/mirte-robot/telemetrix4arduino.git mirte-telemetrix4arduino -b ${BRANCH}
+        sudo git clone https://github.com/mirte-robot/telemetrix4rpipico.git mirte-telemetrix4rpipico -b ${BRANCH} --recursive
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
         sudo -E ./install_arduino.sh
 
@@ -52,9 +63,15 @@ jobs:
         type: [mirte, mirte-master]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - shell: bash
       run: |
+        # get current branch, if not develop or main, then use develop as fallback
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        if [ "$BRANCH" != "develop" ] && [ "$BRANCH" != "main" ]; then
+          echo "Current branch is $BRANCH, using develop as fallback"
+          BRANCH="develop"
+        fi
         echo $0
         sudo useradd -m -s /bin/bash mirte
         # allow nopasswd sudo for mirte user
@@ -67,7 +84,7 @@ jobs:
         sudo -u mirte mkdir $MIRTE_SRC_DIR/mirte-install-scripts/
         sudo -u mirte cp -r ./* $MIRTE_SRC_DIR/mirte-install-scripts/
         cd $MIRTE_SRC_DIR
-        sudo -u mirte git clone https://github.com/arendjan/mirte-ros-packages.git mirte-ros-packages -b develop --recursive
+        sudo -u mirte git clone https://github.com/arendjan/mirte-ros-packages.git mirte-ros-packages -b ${BRANCH} --recursive
 
         sudo apt update
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
@@ -85,9 +102,15 @@ jobs:
   web-install:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - shell: bash
       run: |
+        # get current branch, if not develop or main, then use develop as fallback
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        if [ "$BRANCH" != "develop" ] && [ "$BRANCH" != "main" ]; then
+          echo "Current branch is $BRANCH, using develop as fallback"
+          BRANCH="develop"
+        fi
         sudo useradd -m -s /bin/bash mirte
         # allow root from user
         echo "mirte ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/mirte
@@ -98,7 +121,7 @@ jobs:
         sudo -u mirte mkdir $MIRTE_SRC_DIR/mirte-install-scripts/
         sudo -u mirte cp -r ./* $MIRTE_SRC_DIR/mirte-install-scripts/
         cd $MIRTE_SRC_DIR
-        sudo -u mirte git clone https://github.com/mirte-robot/mirte-web-interface.git mirte-web-interface -b develop
+        sudo -u mirte git clone https://github.com/mirte-robot/mirte-web-interface.git mirte-web-interface -b ${BRANCH}
         # remove all lines with systemctl as not available in github runner
         cd $MIRTE_SRC_DIR/mirte-install-scripts/
         sudo -u mirte sed -i '/sudo systemctl/d' install_web.sh

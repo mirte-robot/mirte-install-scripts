@@ -1,0 +1,23 @@
+# this should contain all the settings, to check for changes.
+
+hostname: Mirte-XXXXXX
+access_points:
+  - ssid: "smartfridge"
+    password: "kaasblokje"
+password: ""
+type: # mirte or mirte_master
+install: emmc # or sd, nvme
+remove_overlay_partition: true # remove from target device
+remove_settings_partition: true # remove from target device
+image_file: "" # optional, if empty, dd from current rootfs to target device
+remove_os_from_sd: false # only for emmc installs, remove os from sdcard
+
+cleanup_overlay: false
+
+disable_hotspot: true
+root_password: "mirte_mirte"
+remove_access_points: # list of regexes to match ssids to remove, needs to match completely(no ^ or $ needed), for example:
+#   - "Mirte-.*"
+#  - "Mirte-.*"
+
+shell: bash # or zsh

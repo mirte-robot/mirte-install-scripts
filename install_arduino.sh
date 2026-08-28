@@ -51,7 +51,7 @@ else
 	echo "Only installing tools to upload to Pico with default uf2"
 	# download latest picotool for current arch linux
 	arch=$(uname -m)
-	curl -s https://api.github.com/repos/raspberrypi/pico-sdk-tools/releases/latest | grep -F "browser_download_url" | awk -F\" '{print $4}' | grep "picotool-.*-$arch-lin.tar.gz" | wget -i - -O /tmp/picotool-latest-$arch-lin.tar.gz
+	gh release download -R raspberrypi/pico-sdk-tools -p "picotool-*-$arch-lin.tar.gz" -O /tmp/picotool-latest-$arch-lin.tar.gz
 	# Check that the file was downloaded and is a valid tar.gz
 	if [ ! -s /tmp/picotool-latest-$arch-lin.tar.gz ]; then
 		echo "Error: Failed to download picotool tarball for architecture $arch."
@@ -63,7 +63,7 @@ else
 	fi
 	# unzip only picotool/picotool file to /usr/local/bin/picotool
 	cd /usr/local/bin || exit 1
-	sudo tar -xzvf /tmp/picotool-latest-$arch-lin.tar.gz picotool/picotool --strip-components=1
+	sudo tar -xzvf /tmp/picotool-*-$arch-lin.tar.gz picotool/picotool --strip-components=1
 	sudo chmod +x ./picotool
 
 	# uploader when using uart (mirte pioneer pcb)

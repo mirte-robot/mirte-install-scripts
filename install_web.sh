@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 MIRTE_SRC_DIR=${MIRTE_SRC_DIR:-/usr/local/src/mirte}
-
+source $MIRTE_SRC_DIR/mirte-install-scripts/tools.sh
 # Update
 sudo apt update || true
 
@@ -51,12 +51,7 @@ sudo usermod -aG shadow www-data
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/sites/401.html /var/www/html/
 
 # Add systemd service
-sudo rm /lib/systemd/system/mirte-web-interface.service || true
-sudo ln -s $MIRTE_SRC_DIR/mirte-install-scripts/services/mirte-web-interface.service /lib/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl stop mirte-web-interface || /bin/true
-sudo systemctl start mirte-web-interface
-sudo systemctl enable mirte-web-interface
+add_service mirte-web-interface.service
 
 # install zerotier for better ros2 networking. User will need to manually join the network
 curl -s https://install.zerotier.com | sudo bash
