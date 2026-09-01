@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # read ./mirte_ros_type.sh to set MIRTE_TYPE, which is used to determine which launch file to use
-source $(dirname $0)/mirte_ros_type.sh
+source "$(dirname $0)/mirte_ros_type.sh"
 
 # If the robot user wants to add their own config:
 source /home/mirte/.mirte_settings.sh
