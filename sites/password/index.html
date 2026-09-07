@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Password Change</h1>
+        <form>
+            <label for="password">Old password:</label>
+            <input type="password" id="password" name="password" required><br>
+            <label for="new-password">New password:</label>
+            <input type="password" id="new-password" name="new-password" required><br>
+            <label for="confirm-password">Confirm new password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" required><br>
+            <button type="submit">Submit</button>
+        </form>
+        <p>The new password will be used to log in to the robot's services, SSH and the robot's WiFi network.
+            <br>
+            Only letters, numbers and - and _ characters are allowed. The new password must be at least 8 characters long.
+        </p>
+    </div>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const newPassword = document.getElementById('new-password').value;
+            const oldPassword = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                event.preventDefault();
+                alert('New password and confirmation do not match.');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                event.preventDefault();
+                alert('New password must be at least 8 characters long.');
+                return;
+            }
+
+            // remove strange characters from new password
+            // only allow letters, numbers and - and _ characters
+            const regex = /^[a-zA-Z0-9-_]+$/;
+            if (!regex.test(newPassword)) {
+                event.preventDefault();
+                alert('New password can only contain letters, numbers, - and _ .');
+                return;
+            }
+
+
+            event.preventDefault();
+            // request /change_password with old password and new password
+            fetch('/password/change_password.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.ok) {
+                    alert('Password changed successfully. Your wifi password will also be changed to the new password after a reboot.');
+                } else {
+                    alert('Error changing password: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while changing the password.');
+            });
+        });
+    </script>
+</body>
+</html>
