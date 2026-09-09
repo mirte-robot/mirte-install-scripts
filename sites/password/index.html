@@ -51,7 +51,7 @@
         .toggle-password:hover {
             background-color: #666;
         }
-        button {
+        .submit-button, button {
             padding: 10px;
             background-color: #4CAF50;
             color: white;
@@ -59,7 +59,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        button:hover {
+        .submit-button:hover, button:hover {
             background-color: #45a049;
         }
         p {
@@ -74,15 +74,17 @@
         <form>
             <label for="password">Old password:</label>
             <div class="password-field">
-                <input type="input" id="password" name="password" required>
+                <input type="text" id="password" name="password" required>
                 <button type="button" class="toggle-password" data-target="password">Hide</button>
             </div>
             <label for="new-password">New password:</label>
             <div class="password-field">
-                <input type="input" id="new-password" name="new-password" required>
+                <input type="text" id="new-password" name="new-password" required>
                 <button type="button" class="toggle-password" data-target="new-password">Hide</button>
             </div>
-            <button type="submit">Submit</button>
+            <input type="submit"   class="submit-button" value="Change Password">
+
+            <!-- <button type="submit">Submit</button> -->
         </form>
         <p>The new password will be used to log in to the robot's web services, SSH and the robot's WiFi network. Username is always mirte.
             <br>
@@ -92,12 +94,25 @@
         </p>
     </div>
     <script>
+
+        function resetButton() {
+            const submitButton = document.querySelector('.submit-button');
+            submitButton.value = 'Change Password';
+            submitButton.disabled = false;
+        }
+
         document.querySelector('form').addEventListener('submit', function(event) {
             const newPassword = document.getElementById('new-password').value;
             const oldPassword = document.getElementById('password').value;
+            
+            // change button text to "Changing..." and disable it
+            const submitButton = document.querySelector('.submit-button');
+            submitButton.value = 'Changing...';
+            submitButton.disabled = true;
 
             if (newPassword.length < 8) {
                 event.preventDefault();
+                resetButton();
                 alert('New password must be at least 8 characters long.');
                 return;
             }
@@ -107,6 +122,7 @@
             const regex = /^[a-zA-Z0-9-_]+$/;
             if (!regex.test(newPassword)) {
                 event.preventDefault();
+                resetButton();
                 alert('New password can only contain letters, numbers, - and _ .');
                 return;
             }
@@ -127,11 +143,17 @@
                 if (data.ok) {
                     alert('Password changed successfully. Your wifi password will also be changed to the new password after a reboot.');
                 } else {
-                    alert('Error changing password: ' + data.msg);
+                    if(data.msg.includes("(return code: 1)")) {
+                        alert('Error changing password: old password is probably incorrect.');
+                    } else {
+                        alert('Error changing password: ' + data.msg);
+                    }
                 }
+                resetButton();
             })
             .catch(error => {
                 console.error('Error:', error);
+                resetButton();
                 alert('An error occurred while changing the password.');
             });
         });
