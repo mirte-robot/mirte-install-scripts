@@ -1,13 +1,8 @@
 <?php
 // get POST parameters
-
-// $old_password = $_POST['old_password'];
-// $new_password = $_POST['new_password'];
-// echo $_POST;
 $fields = json_decode(file_get_contents('php://input'), true);
 $old_password = $fields['old_password'];
 $new_password = $fields['new_password'];
-// validate input
 $ok = false;
 $msg = "";
 function report() {
@@ -15,7 +10,7 @@ function report() {
     echo json_encode(array("ok" => $ok, "msg" => $msg));
 }
 
-
+// validate input
 if (empty($old_password) || empty($new_password)) {
     $msg = "Please fill in all fields.";
     report();
@@ -29,6 +24,13 @@ if (strlen($new_password) < 8) {
     exit;
 }
 
+// set new password for user mirte
+// chpasswd gets mirte:<new_pw> from stdin
+// su gets the old password from stdin to check that the old password is correct
+// sudo (chpasswd) doesnt need a password as mirte (from su) is in the sudoers file with NOPASSWD
+
+// su will return after a few seconds if incorrect, otherwise it's 'instantaneous' and the old password was correct.
+// return code 0 means success, other means failure (incorrect old password)
 exec("echo $old_password | su -c \"echo mirte:$new_password | sudo chpasswd \" mirte", $out, $return_var);
 if ($return_var === 0) {
     // echo "Password changed successfully.";
