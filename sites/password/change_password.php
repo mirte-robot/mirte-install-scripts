@@ -40,6 +40,8 @@ if (strlen($new_password) < 8) {
 // just make sure old password is also safe to use in eval, although it will be passed to su and sudo, so it can contain any character.
 $old_password = escapeshellarg($old_password);
 
+$new_password = escapeshellarg($new_password); // works with the echo and chpasswd.
+
 // set new password for user mirte
 // chpasswd gets mirte:<new_pw> from stdin
 // su gets the old password from stdin to check that the old password is correct
@@ -49,12 +51,9 @@ $old_password = escapeshellarg($old_password);
 // return code 0 means success, other means failure (incorrect old password)
 exec("echo $old_password | su -c \"echo mirte:$new_password | sudo chpasswd \" mirte", $out, $return_var);
 if ($return_var === 0) {
-    // echo "Password changed successfully.";
     $msg = "Password changed successfully.";
     $ok = true;
 } else {
-    // echo "Failed to change password: $out";
-    // print_r($out);
     $msg = "Failed to change password: " . join("\n", $out) . " (return code: $return_var)";
     $ok = false;
 }
