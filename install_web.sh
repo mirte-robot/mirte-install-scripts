@@ -39,7 +39,7 @@ sudo apt install -y strace
 sudo apt install xxd
 
 # Install nginx (as reverse proxy to all services)
-sudo apt install -y nginx libnginx-mod-http-auth-pam
+sudo apt install -y nginx libnginx-mod-http-auth-pam php-fpm
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx.conf /etc/nginx/sites-available/mirte.conf
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/nginx_login.conf /etc/nginx/nginx_login.conf
 sudo ln /etc/nginx/sites-available/mirte.conf /etc/nginx/sites-enabled/
@@ -49,6 +49,7 @@ sudo rm /etc/nginx/sites-enabled/default # otherwise this will catch :80 by defa
 sudo usermod -aG shadow www-data
 
 sudo cp $MIRTE_SRC_DIR/mirte-install-scripts/sites/401.html /var/www/html/
+sudo cp -r $MIRTE_SRC_DIR/mirte-install-scripts/sites/password /var/www/html/
 
 # Add systemd service
 add_service mirte-web-interface.service
