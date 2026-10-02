@@ -1,13 +1,17 @@
 [Unit]
-Description=Mirte-shutdown
+Description=Mirte-battery-watcher
 After=mirte-ros.service
 
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
 [Service]
+Restart=always
+RestartSec=5s
+TimeoutStopSec=5s
 User=mirte
-Type=oneshot
 RemainAfterExit=true
 ExecStart=/usr/local/src/mirte/mirte-install-scripts/services/mirte_battery_watcher.sh
-TimeoutSec=30
 [Install]
 WantedBy=multi-user.target
 WantedBy=mirte-ros.service
