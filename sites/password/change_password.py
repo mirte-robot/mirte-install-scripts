@@ -31,7 +31,7 @@ def change_password(old_password, new_password):
         }
     return {
         "ok": result.returncode == 0,
-        "msg": f"Password change {'succeeded' if result.returncode == 0 else 'failed'}: {result.stdout.strip()} (return code: {result.returncode})",
+        "msg": "Password changed successfully.",
     }
 
 
@@ -53,12 +53,7 @@ def parse_request(body):
             "ok": False,
             "msg": "New password must be at least 8 characters long.",
         }
-    # escape old password to prevent injection
-    escaped_old_password = re.escape(old_password)
-    # escape new password to prevent injection
-    escaped_new_password = re.escape(new_password)
-
-    if escaped_old_password == escaped_new_password:
+    if old_password == new_password:
         return {
             "ok": False,
             "msg": "New password cannot be the same as the old password.",
@@ -70,7 +65,7 @@ def parse_request(body):
             "msg": "New password can only contain letters, numbers, - and _ .",
         }
 
-    return change_password(escaped_old_password, escaped_new_password)
+    return change_password(old_password, new_password)
 
 
 class PasswordChangeHandler(BaseHTTPRequestHandler):
