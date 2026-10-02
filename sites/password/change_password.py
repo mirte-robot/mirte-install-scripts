@@ -7,10 +7,13 @@ from urllib.parse import urlsplit
 
 
 def change_password(old_password, new_password):
+    # using su is not possible as expired passwords will not allow su to work, so we use sudo passwd instead
+    # THis'll ask for the old password, then the new password twice, and will return 0 on success
+
     try:
         result = subprocess.run(
-            ["su", "-c", "sudo chpasswd", "mirte"],
-            input=f"{old_password}\nmirte:{new_password}\n",
+            ["sudo", "-u", "mirte", "passwd"],
+            input=f"{old_password}\n{new_password}\n{new_password}\n",
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -18,14 +21,17 @@ def change_password(old_password, new_password):
             check=False,
         )
     except subprocess.TimeoutExpired:
-        return {"ok": False, "msg": "Password verification timed out."}
-
-    if result.returncode == 0:
-        return {"ok": True, "msg": "Password changed successfully."}
-
+        return {"ok": False, "msg": "Password change timed out."}
+    if result.returncode != 0:
+        if "Authentication token manipulation error" in result.stdout:
+            return {"ok": False, "msg": "Old password is incorrect."}
+        return {
+            "ok": False,
+            "msg": f"Password change failed: {result.stdout.strip()} (return code: {result.returncode})",
+        }
     return {
-        "ok": False,
-        "msg": f"Failed to change password: {result.stdout.strip()} (return code: {result.returncode})",
+        "ok": result.returncode == 0,
+        "msg": f"Password change {'succeeded' if result.returncode == 0 else 'failed'}: {result.stdout.strip()} (return code: {result.returncode})",
     }
 
 
@@ -39,7 +45,7 @@ def parse_request(body):
 
     old_password = str(fields.get("old_password") or "")
     new_password = str(fields.get("new_password") or "")
-    
+
     if not old_password or not new_password:
         return {"ok": False, "msg": "Please fill in all fields."}
     if len(new_password) < 8:
@@ -52,6 +58,11 @@ def parse_request(body):
     # escape new password to prevent injection
     escaped_new_password = re.escape(new_password)
 
+    if escaped_old_password == escaped_new_password:
+        return {
+            "ok": False,
+            "msg": "New password cannot be the same as the old password.",
+        }
 
     if re.fullmatch(r"[a-zA-Z0-9_-]+", new_password) is None:
         return {
@@ -59,20 +70,6 @@ def parse_request(body):
             "msg": "New password can only contain letters, numbers, - and _ .",
         }
 
-    # unlock the account before changing the password
-    unlock_result = subprocess.run(
-        ["sudo", "passwd", "-u", "mirte"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        timeout=10,
-        check=False,
-    )
-    if unlock_result.returncode != 0:
-        return {
-            "ok": False,
-            "msg": f"Failed to unlock account: {unlock_result.stdout.strip()} (return code: {unlock_result.returncode})",
-        }
     return change_password(escaped_old_password, escaped_new_password)
 
 
