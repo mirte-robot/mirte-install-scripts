@@ -24,13 +24,17 @@ def change_password(old_password, new_password):
         return {"ok": False, "msg": "Password change timed out."}
     if result.returncode != 0:
         if "Authentication token manipulation error" in result.stdout:
-            return {"ok": False, "msg": "Old password is incorrect."}
+            return {
+                "ok": False,
+                "msg": "Old password is incorrect.",
+                "log": result.stdout.strip(),
+            }
         return {
             "ok": False,
             "msg": f"Password change failed: {result.stdout.strip()} (return code: {result.returncode})",
         }
     return {
-        "ok": result.returncode == 0,
+        "ok": result.returncode,
         "msg": "Password changed successfully.",
     }
 
