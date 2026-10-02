@@ -34,7 +34,7 @@ sudo pip3 install simplejpeg # recommended, but ROSboard can fall back to cv2 or
 # Install ArrayPlotViewer. This is already a PR, but not merged yet into main:
 # https://github.com/dheera/rosboard/pull/136
 wget https://raw.githubusercontent.com/robuildxyz/rosboard/fb789d30909c337c431bfc8c83d558ef15ea3a45/rosboard/html/js/viewers/ArrayPlotViewer.js -O rosboard/rosboard/html/js/viewers/ArrayPlotViewer.js
-sed -i 's#"use strict";#"use strict";\nimportJsOnce("js/viewers/meta/ArrayPlotViewer.js");#g' rosboard/rosboard/html/js/index.js
+sed -i 's#importJsOnce("js/viewers/JointStateViewer.js");#importJsOnce("js/viewers/JointStateViewer.js");\nimportJsOnce("js/viewers/ArrayPlotViewer.js");#g' rosboard/rosboard/html/js/index.js
 
 # Install wetty
 #cd $MIRTE_SRC_DIR/mirte-web-interface
