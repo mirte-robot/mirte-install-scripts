@@ -73,7 +73,7 @@ def parse_request(body):
 
 
 class PasswordChangeHandler(BaseHTTPRequestHandler):
-    endpoint = "/password/change_password.py"
+    endpoint = "/password/update"
     max_content_length = 16_384
 
     def do_POST(self):
