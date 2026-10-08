@@ -100,7 +100,7 @@ if [[ $branch == "develop" || $branch == "main" ]]; then
 	sudo apt update
 
 	cd /home/mirte/mirte_ws/src/ || exit 1
-	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_base_control mirte_master_arm_control mirte_control usb_cam)
+	ignore=(mirte_telemetrix_cpp mirte_msgs mirte_teleop astra_camera astra_camera_msgs libuvc mirte_base_control mirte_master_arm_control mirte_control usb_cam teleop_twist_keyboard web_video_server rplidar_ros)
 	packages=''
 	for i in "${ignore[@]}"; do
 		path=$(colcon list --packages-select $i -p)
