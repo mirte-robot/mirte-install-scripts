@@ -83,6 +83,12 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 arch=$(dpkg --print-architecture)
 ubuntu_version=$(lsb_release -cs)
 github_url=$(git config --get remote.origin.url | sed 's/\.git$//')
+
+# if there is a repo USER/mirte-ros-prebuilt-packages, use that instead of github_url
+if curl --output /dev/null --silent --head --fail "$github_url/../mirte-ros-prebuilt-packages"; then
+	github_url=$(echo $github_url | sed 's/\/mirte-ros-packages$/\/mirte-ros-prebuilt-packages/')
+fi
+
 fallback=true
 cd /home/mirte/mirte_ws/ || exit 1
 vcs import src <$MIRTE_SRC_DIR/mirte-ros-packages/sources.repos || true
