@@ -38,3 +38,6 @@ cd ~/mirte_ws
 source /opt/ros/humble/setup.bash
 rosdep install -y --from-paths src/ --ignore-src --rosdistro humble
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+# Install bluetooth for bluetooth controller.
+sudo apt install bluez bluetooth
