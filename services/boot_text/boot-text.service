@@ -1,0 +1,10 @@
+[Unit]
+Description=Boot text MIRTE
+DefaultDependencies=no
+
+[Service]
+Type=simple
+ExecStart=/..........
+
+[Install]
+WantedBy=sysinit.target
